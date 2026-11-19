@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Our Heritage & Craft | AL-AMEEN PERFUMES</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230B2B20'%3E%3Cpath d='M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z'/%3E%3C/svg%3E">
+  <script src="core.js"></script>
+
+  <style>
+    :root {
+      --green-950: #04140E;
+      --green-900: #0A261C;
+      --green-800: #10382B;
+      --green-700: #185340;
+      --green-600: #227B5E;
+      --green-400: #54B08C;
+      --green-200: #A8DDC2;
+      --green-50:  #F4F7F5;
+      
+      --gold-500: #D4AF37;
+      --gold-700: #A88120;
+      --gold-300: #ECD485;
+      
+      --text-dark: #061F17;
+      --text-muted: #3B5448;
+      --text-light: #718D80;
+      
+      --border-card: #E5ECE8;
+      --border-subtle: #DEE8E3;
+      --border-gold: rgba(212, 175, 55, 0.4);
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --radius-pill: 9999px;
+      
+      --shadow-sm: 0 2px 8px rgba(6, 31, 23, 0.05);
+      --shadow-md: 0 10px 28px rgba(6, 31, 23, 0.08);
+      
+      --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --transition: all 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--green-50);
+      color: var(--text-dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, .brand-title {
+      font-family: var(--font-main);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Navbar */
+    .navbar-sticky {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(10, 38, 28, 0.95);
+      backdrop-filter: blur(14px);
+      color: #FFFFFF;
+      box-shadow: 0 4px 20px rgba(5, 26, 19, 0.25);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .navbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      gap: 16px;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-logo-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--green-700), var(--green-950));
+      border: 1.5px solid var(--gold-500);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-500);
+    }
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+    .nav-link {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--green-200);
+      padding: 6px 2px;
+      position: relative;
+    }
+    .nav-link:hover, .nav-link.active { color: #FFFFFF; }
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--gold-500);
+    }
+
+    .action-icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      position: relative;
+    }
+    .action-icon-btn .count-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: var(--gold-500);
+      color: var(--green-950);
+      font-size: 0.68rem;
+      font-weight: 800;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Hero Banner */
+    .about-hero {
+      background: linear-gradient(175deg, var(--green-950) 0%, var(--green-900) 100%);
+      color: #FFFFFF;
+      padding: 60px 0;
+      text-align: center;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    }
+    .about-hero-title {
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .about-hero-subtitle {
+      color: var(--green-200);
+      max-width: 650px;
+      margin: 0 auto;
+      font-size: 1rem;
+    }
+
+    /* Content Sections */
+    .heritage-section {
+      padding: 70px 0;
+    }
+    .split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      align-items: center;
+      margin-bottom: 70px;
+    }
+    .split-grid.reverse {
+      direction: rtl;
+    }
+    .split-grid.reverse > * {
+      direction: ltr;
+    }
+    .split-image-card {
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      border: 1px solid var(--border-gold);
+      box-shadow: var(--shadow-md);
+      height: 380px;
+    }
+    .split-image-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .split-text h2 {
+      font-size: 2.1rem;
+      color: var(--green-950);
+      margin-bottom: 16px;
+    }
+    .split-text p {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+    }
+
+    /* Notes Architecture Box */
+    .notes-alchemy-box {
+      background: var(--green-900);
+      color: #FFFFFF;
+      border-radius: var(--radius-xl);
+      padding: 50px 30px;
+      margin: 40px 0 80px;
+      text-align: center;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    .alchemy-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 36px;
+      text-align: left;
+    }
+    .alchemy-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 24px;
+      border-radius: var(--radius-lg);
+    }
+    .alchemy-item h4 {
+      color: var(--gold-300);
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+    .alchemy-item p {
+      color: var(--green-200);
+      font-size: 0.86rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold-500) 0%, var(--gold-700) 100%);
+      color: var(--green-950);
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding: 13px 26px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Footer */
+    .main-footer {
+      background: #04140E;
+      color: var(--green-200);
+      padding: 60px 0 30px;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr repeat(3, 1fr);
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+    .footer-col h4 { color: #FFFFFF; font-size: 1rem; margin-bottom: 16px; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; }
+    .footer-socials { display: flex; gap: 12px; margin-top: 18px; }
+    .social-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      transition: var(--transition);
+    }
+    .social-btn:hover { background: var(--gold-500); color: var(--green-950); }
+
+    /* STRICTLY HIDE MOBILE TAB BAR ON LAPTOP/DESKTOP */
+    .mobile-tab-bar { display: none !important; }
+
+    @media (max-width: 768px) {
+      body { padding-bottom: 84px; }
+      .desktop-only { display: none !important; }
+      .split-grid { grid-template-columns: 1fr; gap: 24px; }
+      .split-image-card { height: 240px; }
+      .alchemy-grid { grid-template-columns: 1fr; gap: 14px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+
+      .mobile-tab-bar {
+        display: flex !important;
+        position: fixed;
+        bottom: 12px;
+        left: 14px;
+        right: 14px;
+        height: 62px;
+        background: linear-gradient(135deg, rgba(10, 38, 28, 0.96) 0%, rgba(4, 20, 14, 0.98) 100%);
+        backdrop-filter: blur(16px);
+        border-radius: 36px;
+        border: 1.5px solid rgba(212, 175, 55, 0.4);
+        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+        z-index: 95;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 8px;
+      }
+      .tab-bar-item {
+        flex: 1;
+        height: 46px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        color: #E2F0EA !important;
+        border-radius: 20px;
+        position: relative;
+      }
+      .tab-bar-item.active {
+        background: linear-gradient(135deg, rgba(34, 123, 94, 0.85), rgba(16, 56, 43, 0.95));
+        border: 1px solid rgba(212, 175, 55, 0.5);
+        color: var(--gold-300) !important;
+      }
+      .tab-bar-item.active svg { color: var(--gold-500) !important; }
+      .tab-bar-item span { font-size: 0.68rem; font-weight: 700; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Navbar -->
+  <header class="navbar-sticky">
+    <div class="container navbar-inner">
+      <a href="index.html" class="brand-logo" aria-label="Al-Ameen Perfumes Home">
+        <div class="brand-logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"/></svg>
+        </div>
+        <span class="brand-title">AL-AMEEN PERFUMES</span>
+      </a>
+
+      <nav aria-label="Main Navigation" class="desktop-only">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="shop.html" class="nav-link">Shop</a></li>
+          <li><a href="about.html" class="nav-link active">About Heritage</a></li>
+          <li><a href="contact.html" class="nav-link">Contact & Inquiries</a></li>
+        </ul>
+      </nav>
+
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="shop.html" class="action-icon-btn" aria-label="Shop Bag">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          <span class="count-badge" id="navCartCount">0</span>
+        </a>
+        <a href="admin.html" class="action-icon-btn desktop-only" style="color:var(--gold-500);" title="Admin Portal">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="about-hero">
+    <div class="container">
+      <h1 class="about-hero-title">The Al-Ameen Heritage</h1>
+      <p class="about-hero-subtitle">Centuries of Arabian & Indian Perfumery Alchemy, refined for modern connoisseurs and boutique partners worldwide.</p>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="heritage-section container">
+    
+    <!-- Story 1 -->
+    <div class="split-grid">
+      <div class="split-image-card">
+        <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80" alt="Pure Attar Distillation">
+      </div>
+      <div class="split-text">
+        <span style="color:var(--green-600); font-size:0.75rem; font-weight:800; text-transform:uppercase;">The Roots of Pure Oil</span>
+        <h2>Distilling the Soul of Assam Agarwood</h2>
+        <p>Founded on a singular passion for pure olfactory excellence, Al-Ameen Perfumes preserves the sacred art of traditional attar-making. We never dilute with synthetic fillers or carrier alcohols.</p>
+        <p>Our flagship <strong>Al-Ameen Sultan Attar</strong> is extracted from wild Assam agarwood, aged in dark oak casks for months to allow its resinous depth to bloom with spicy Kashmiri saffron and dewy Taif roses.</p>
+      </div>
+    </div>
+
+    <!-- Story 2 -->
+    <div class="split-grid reverse">
+      <div class="split-image-card">
+        <img src="https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=800&q=80" alt="French Formulation Craft">
+      </div>
+      <div class="split-text">
+        <span style="color:var(--green-600); font-size:0.75rem; font-weight:800; text-transform:uppercase;">East Meets West</span>
+        <h2>French Precision Meets Oriental Mystique</h2>
+        <p>While our attars embody pure oriental richness, our Eau de Parfum creations bridge Grasse's refined French perfumery standards with Arabian warmth.</p>
+        <p>Each blend undergoes 14 weeks of cold maceration, resulting in seamless harmony between sparkling top notes and intoxicating, long-lingering base resins.</p>
+        <a href="shop.html" class="btn-primary" style="margin-top:10px;">Explore Our 12 Formulations</a>
+      </div>
+    </div>
+
+    <!-- Notes Alchemy Box -->
+    <div class="notes-alchemy-box">
+      <span style="color:var(--gold-500); font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em;">Olfactory Mastery</span>
+      <h3 style="font-size:2rem; margin-top:6px;">The Three Movements of Scent</h3>
+      <p style="color:var(--green-200); max-width:600px; margin:0 auto; font-size:0.92rem;">A master perfume unfolds in a three-stage symphonic journey over hours.</p>
+
+      <div class="alchemy-grid">
+        <div class="alchemy-item">
+          <h4>1. Top Notes</h4>
+          <p>The exhilarating initial burst lasting 15 to 30 minutes. Calabrian bergamot, Kashmiri saffron, and pink pepper ignite the senses.</p>
+        </div>
+        <div class="alchemy-item">
+          <h4>2. Heart Notes</h4>
+          <p>The core emotional character blooming over 2 to 4 hours. Taif rose petals, smoky amber, and French clary sage create an unforgettable aura.</p>
+        </div>
+        <div class="alchemy-item">
+          <h4>3. Base Notes</h4>
+          <p>The profound anchor clinging to skin and garments for 24+ hours. Aged Assam agarwood, Mysore sandalwood, and ambergris crystals.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wholesale & Custom Blends -->
+    <div class="split-grid">
+      <div class="split-text">
+        <span style="color:var(--gold-700); font-size:0.75rem; font-weight:800; text-transform:uppercase;">Wholesale & Boutique Partners</span>
+        <h2>Empowering Fragrance Entrepreneurs</h2>
+        <p>Al-Ameen Perfumes is proud to supply over 150 independent perfume houses, boutique retailers, and luxury wedding planners across India and the GCC.</p>
+        <p>We provide tiered wholesale volume discounts starting from just 6 units, accompanied by tamper-proof master cartons and fast Pan-India air dispatch.</p>
+        <a href="contact.html" class="btn-primary" style="margin-top:10px;">Inquire for Wholesale Rates</a>
+      </div>
+      <div class="split-image-card">
+        <img src="https://images.unsplash.com/photo-1563178406-4cdc2923acbc?auto=format&fit=crop&w=800&q=80" alt="Wholesale Perfume Chest">
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Mobile Floating Tab Bar -->
+  <nav class="mobile-tab-bar" aria-label="Mobile Navigation">
+    <a href="index.html" class="tab-bar-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+      <span>Home</span>
+    </a>
+    <a href="shop.html" class="tab-bar-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <span>Shop</span>
+    </a>
+    <a href="about.html" class="tab-bar-item active">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      <span>About</span>
+    </a>
+    <a href="shop.html" class="tab-bar-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+      <span>Bag</span>
+    </a>
+  </nav>
+
+  <!-- Footer with SVG Icons -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <span class="brand-title" style="font-size:1.25rem; color:#FFFFFF;">AL-AMEEN PERFUMES</span>
+          <p style="margin: 12px 0 18px; font-size:0.86rem; line-height:1.6;">
+            Royal oriental attars, French Eau de Parfum, and luxury scented formulations. Dedicated to both retail connoisseurs and wholesale partners.
+          </p>
+          <div class="footer-socials">
+            <a href="https://instagram.com" target="_blank" rel="noopener" class="social-btn" aria-label="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noopener" class="social-btn" aria-label="Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noopener" class="social-btn" aria-label="YouTube">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+            </a>
+            <a href="https://wa.me/919876543210" target="_blank" rel="noopener" class="social-btn" aria-label="WhatsApp">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore Shop</h4>
+          <ul class="footer-links">
+            <li><a href="shop.html?category=Men">Men's Fragrances</a></li>
+            <li><a href="shop.html?category=Women">Women's Perfumes</a></li>
+            <li><a href="shop.html?category=Luxury">Pure Oriental Attars</a></li>
+            <li><a href="shop.html?category=Gift Sets">Gift Sets</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="shop.html">Shop Catalog</a></li>
+            <li><a href="about.html">Heritage Story</a></li>
+            <li><a href="contact.html">Contact & Wholesale</a></li>
+            <li><a href="admin.html">Admin Portal</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Direct Support</h4>
+          <p style="font-size:0.86rem;">WhatsApp: +91 98765 43210</p>
+          <p style="font-size:0.86rem; margin-top:8px;">Fast Dispatch Across India.</p>
+        </div>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:20px; text-align:center; font-size:0.8rem;">
+        © 2026 AL-AMEEN PERFUMES. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const cart = getStorage('alameen_cart', []);
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
+    const navCart = document.getElementById('navCartCount');
+    if (navCart) navCart.textContent = count;
+  </script>
+</body>
+</html>

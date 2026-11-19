@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Contact & Wholesale Inquiries | AL-AMEEN PERFUMES</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230B2B20'%3E%3Cpath d='M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z'/%3E%3C/svg%3E">
+  <script src="core.js"></script>
+
+  <style>
+    :root {
+      --green-950: #04140E;
+      --green-900: #0A261C;
+      --green-800: #10382B;
+      --green-700: #185340;
+      --green-600: #227B5E;
+      --green-400: #54B08C;
+      --green-200: #A8DDC2;
+      --green-50:  #F4F7F5;
+      
+      --gold-500: #D4AF37;
+      --gold-700: #A88120;
+      --gold-300: #ECD485;
+      
+      --text-dark: #061F17;
+      --text-muted: #3B5448;
+      --text-light: #718D80;
+      
+      --border-card: #E5ECE8;
+      --border-subtle: #DEE8E3;
+      --border-gold: rgba(212, 175, 55, 0.4);
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --radius-pill: 9999px;
+      
+      --shadow-sm: 0 2px 8px rgba(6, 31, 23, 0.05);
+      --shadow-md: 0 10px 28px rgba(6, 31, 23, 0.08);
+      
+      --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --transition: all 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--green-50);
+      color: var(--text-dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, .brand-title {
+      font-family: var(--font-main);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Navbar */
+    .navbar-sticky {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(10, 38, 28, 0.95);
+      backdrop-filter: blur(14px);
+      color: #FFFFFF;
+      box-shadow: 0 4px 20px rgba(5, 26, 19, 0.25);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .navbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      gap: 16px;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-logo-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--green-700), var(--green-950));
+      border: 1.5px solid var(--gold-500);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-500);
+    }
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+    .nav-link {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--green-200);
+      padding: 6px 2px;
+      position: relative;
+    }
+    .nav-link:hover, .nav-link.active { color: #FFFFFF; }
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--gold-500);
+    }
+
+    .action-icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      position: relative;
+    }
+    .action-icon-btn .count-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: var(--gold-500);
+      color: var(--green-950);
+      font-size: 0.68rem;
+      font-weight: 800;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Page Header */
+    .contact-hero {
+      background: linear-gradient(175deg, var(--green-950) 0%, var(--green-900) 100%);
+      color: #FFFFFF;
+      padding: 50px 0;
+      text-align: center;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    }
+    .contact-hero-title {
+      font-size: clamp(2rem, 3.8vw, 2.8rem);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .contact-hero-subtitle {
+      color: var(--green-200);
+      max-width: 600px;
+      margin: 0 auto;
+      font-size: 0.95rem;
+    }
+
+    /* Main Contact Content */
+    .contact-layout {
+      padding: 60px 0 80px;
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 40px;
+      align-items: flex-start;
+    }
+
+    /* Direct Connect Cards */
+    .contact-info-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .info-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .info-card h4 {
+      font-size: 1.05rem;
+      color: var(--green-950);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-card p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .wa-direct-banner {
+      background: linear-gradient(135deg, #0A3626, #04140E);
+      border: 1.5px solid var(--border-gold);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      color: #FFFFFF;
+      text-align: center;
+    }
+    .wa-btn {
+      background: #25D366;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 13px 24px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
+      transition: var(--transition);
+    }
+    .wa-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.45);
+      background: #20BA5A;
+    }
+
+    /* Form Card */
+    .contact-form-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-xl);
+      padding: 34px;
+      box-shadow: var(--shadow-md);
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--green-950);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      font-size: 0.94rem;
+      outline: none;
+      transition: var(--transition);
+      background: var(--green-50);
+    }
+    .form-control:focus {
+      border-color: var(--green-600);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(34, 123, 94, 0.15);
+    }
+    .form-type-radios {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      background: var(--green-50);
+      padding: 6px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+    }
+    .form-type-label {
+      flex: 1;
+      text-align: center;
+      padding: 8px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .form-type-label.active {
+      background: var(--green-900);
+      color: #FFFFFF;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--gold-500) 0%, var(--gold-700) 100%);
+      color: var(--green-950);
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 14px 28px;
+      border-radius: var(--radius-pill);
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 18px rgba(212, 175, 55, 0.35);
+      cursor: pointer;
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(212, 175, 55, 0.45);
+    }
+
+    /* FAQ Section */
+    .faq-section {
+      padding: 60px 0;
+      background: #FFFFFF;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .faq-list {
+      max-width: 800px;
+      margin: 30px auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .faq-item {
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--green-50);
+    }
+    .faq-question {
+      padding: 16px 20px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--green-950);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .faq-answer {
+      padding: 0 20px 16px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      display: none;
+    }
+    .faq-item.open .faq-answer { display: block; }
+    .faq-item.open .faq-question { color: var(--green-700); }
+
+    /* Footer */
+    .main-footer {
+      background: #04140E;
+      color: var(--green-200);
+      padding: 60px 0 30px;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr repeat(3, 1fr);
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+    .footer-col h4 { color: #FFFFFF; font-size: 1rem; margin-bottom: 16px; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; }
+    .footer-socials { display: flex; gap: 12px; margin-top: 18px; }
+    .social-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      transition: var(--transition);
+    }
+    .social-btn:hover { background: var(--gold-500); color: var(--green-950); }
+
+    /* STRICTLY HIDE MOBILE TAB BAR ON LAPTOP/DESKTOP */
+    .mobile-tab-bar { display: none !important; }
+
+    @media (max-width: 768px) {
+      body { padding-bottom: 84px; }
+      .desktop-only { display: none !important; }
+      .contact-layout { grid-template-columns: 1fr; gap: 30px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+
+      .mobile-tab-bar {
+        display: flex !important;
+        position: fixed;
+        bottom: 12px;
+        left: 14px;
+        right: 14px;
+        height: 62px;
+        background: linear-gradient(135deg, rgba(10, 38, 28, 0.96) 0%, rgba(4, 20, 14, 0.98) 100%);
+        backdrop-filter: blur(16px);
+        border-radius: 36px;
+        border: 1.5px solid rgba(212, 175, 55, 0.4);
+        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+        z-index: 95;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 8px;
+      }
+      .tab-bar-item {
+        flex: 1;
+        height: 46px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        color: #E2F0EA !important;
+        border-radius: 20px;
+        position: relative;
+      }
+      .tab-bar-item.active {
+        background: linear-gradient(135deg, rgba(34, 123, 94, 0.85), rgba(16, 56, 43, 0.95));
+        border: 1px solid rgba(212, 175, 55, 0.5);
+        color: var(--gold-300) !important;
+      }
+      .tab-bar-item.active svg { color: var(--gold-500) !important; }
+      .tab-bar-item span { font-size: 0.68rem; font-weight: 700; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Navbar -->
+  <header class="navbar-sticky">
+    <div class="container navbar-inner">
+      <a href="index.html" class="brand-logo" aria-label="Al-Ameen Perfumes Home">
+        <div class="brand-logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"/></svg>
+        </div>
+        <span class="brand-title">AL-AMEEN PERFUMES</span>
+      </a>
+
+      <nav aria-label="Main Navigation" class="desktop-only">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="shop.html" class="nav-link">Shop</a></li>
+          <li><a href="about.html" class="nav-link">About Heritage</a></li>
+          <li><a href="contact.html" class="nav-link active">Contact & Inquiries</a></li>
+        </ul>
+      </nav>
+
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="shop.html" class="action-icon-btn" aria-label="Shop Bag">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          <span class="count-badge" id="navCartCount">0</span>
+        </a>
+        <a href="admin.html" class="action-icon-btn desktop-only" style="color:var(--gold-500);" title="Admin Portal">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Header -->
+  <section class="contact-hero">
+    <div class="container">
+      <h1 class="contact-hero-title">Contact & Wholesale Desk</h1>
+      <p class="contact-hero-subtitle">Speak directly with our master perfumers and wholesale distribution directors via WhatsApp or the direct form below.</p>
+    </div>
+  </section>
+
+  <!-- Main Grid -->
+  <main class="container contact-layout">
+    
+    <!-- Left: Direct Info & 1-Click WhatsApp -->
+    <div class="contact-info-wrap">
+      <div class="wa-direct-banner">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="#25D366"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        <h3 style="font-size:1.3rem; margin:10px 0 6px;">Instant WhatsApp Assistance</h3>
+        <p style="font-size:0.86rem; color:var(--green-200);">Our representative is online Monday to Saturday, 9:30 AM to 8:30 PM IST.</p>
+        <a href="https://wa.me/919876543210?text=Hello%20Al-Ameen%20Perfumes,%20I%20have%20an%20inquiry%20regarding%20your%20fragrances" target="_blank" rel="noopener" class="wa-btn">
+          <span>Start WhatsApp Chat</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+      </div>
+
+      <div class="info-card">
+        <h4>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          Headquarters & Flagship Atelier
+        </h4>
+        <p>Al-Ameen Perfumery Works<br>Shop 14, Royal Arcade, Near Crawford Market,<br>Mumbai, Maharashtra – 400003</p>
+      </div>
+
+      <div class="info-card">
+        <h4>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          Agarwood Distillation Unit
+        </h4>
+        <p>Assam Agarwood Reserves & Hydro-distillery,<br>Hojai District, Assam – 782435</p>
+      </div>
+
+      <div class="info-card">
+        <h4>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          Helpline & Email
+        </h4>
+        <p>Phone: +91 98765 43210<br>Wholesale: wholesale@alameenperfumes.com</p>
+      </div>
+    </div>
+
+    <!-- Right: Message / Inquiry Form -->
+    <div class="contact-form-card">
+      <h3 style="font-size:1.45rem; color:var(--green-950); margin-bottom:6px;">Send Us an Inquiry</h3>
+      <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:20px;">Submitting immediately prepares a formatted direct WhatsApp dispatch.</p>
+
+      <form id="contactInquiryForm" onsubmit="handleInquirySubmit(event)">
+        
+        <!-- Toggle: Retail vs Wholesale Inquiry -->
+        <div class="form-type-radios">
+          <div class="form-type-label active" id="tabRetailInquiry" onclick="switchInquiryType('retail')">
+            Retail Inquiry
+          </div>
+          <div class="form-type-label" id="tabWholesaleInquiry" onclick="switchInquiryType('wholesale')">
+            Wholesale / Bulk Partner
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Your Full Name *</label>
+          <input type="text" id="inqName" class="form-control" required placeholder="e.g. Adil Qureshi">
+        </div>
+
+        <div class="form-group">
+          <label>10-Digit WhatsApp Mobile No. *</label>
+          <input type="tel" id="inqPhone" pattern="[0-9]{10}" class="form-control" required placeholder="e.g. 9876543210">
+        </div>
+
+        <div class="form-group">
+          <label>City & State *</label>
+          <input type="text" id="inqCity" class="form-control" required placeholder="e.g. Hyderabad, Telangana">
+        </div>
+
+        <div class="form-group" id="wholesaleQtyGroup" style="display:none;">
+          <label>Estimated Quantity / Monthly Volume</label>
+          <input type="text" id="inqQty" class="form-control" placeholder="e.g. 24 - 48 units / Wedding order">
+        </div>
+
+        <div class="form-group">
+          <label>Message / Specific Formulations of Interest *</label>
+          <textarea id="inqMessage" class="form-control" rows="4" required placeholder="Tell us how we can assist you..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          <span>Transmit via WhatsApp</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </form>
+    </div>
+
+  </main>
+
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <div class="container">
+      <div style="text-align:center;">
+        <span style="color:var(--green-600); font-size:0.75rem; font-weight:800; text-transform:uppercase;">Frequently Answered</span>
+        <h2 style="font-size:1.8rem; color:var(--green-950); margin-top:4px;">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>What is the Minimum Order Quantity (MOQ) for Wholesale rates?</span>
+            <span>+</span>
+          </div>
+          <div class="faq-answer">
+            Our wholesale pricing tiers start from just 6 units for standard attars and Eau de Parfum, and 4 units for luxury gift sets. Higher tiers (12+ and 24+ pcs) unlock steeper tiered discounts.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>Are Al-Ameen attars 100% alcohol-free?</span>
+            <span>+</span>
+          </div>
+          <div class="faq-answer">
+            Yes! All our concentrated attars (such as Al-Ameen Sultan Attar and Zafraan & Sandalwood) are 100% alcohol-free pure oils crafted via slow hydro-distillation.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>How fast does pan-India dispatch take?</span>
+            <span>+</span>
+          </div>
+          <div class="faq-answer">
+            Orders placed via WhatsApp are dispatched within 24–48 hours using express air cargo (Blue Dart, DTDC, Delhivery). Delivery typically takes 2–4 business days across India.
+          </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">
+            <span>Can boutiques order sample vials before placing bulk orders?</span>
+            <span>+</span>
+          </div>
+          <div class="faq-answer">
+            Certainly! We offer our Royal Miniature Attar Set (6 × 6ml) and discovery vials specifically so boutique partners can evaluate our formulations before committing to commercial volumes.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mobile Floating Tab Bar -->
+  <nav class="mobile-tab-bar" aria-label="Mobile Navigation">
+    <a href="index.html" class="tab-bar-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+      <span>Home</span>
+    </a>
+    <a href="shop.html" class="tab-bar-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <span>Shop</span>
+    </a>
+    <a href="about.html" class="tab-bar-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      <span>About</span>
+    </a>
+    <a href="shop.html" class="tab-bar-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+      <span>Bag</span>
+    </a>
+  </nav>
+
+  <!-- Footer with SVG Icons -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <span class="brand-title" style="font-size:1.25rem; color:#FFFFFF;">AL-AMEEN PERFUMES</span>
+          <p style="margin: 12px 0 18px; font-size:0.86rem; line-height:1.6;">
+            Royal oriental attars, French Eau de Parfum, and luxury scented formulations. Dedicated to both retail connoisseurs and wholesale partners.
+          </p>
+          <div class="footer-socials">
+            <a href="https://instagram.com" target="_blank" rel="noopener" class="social-btn" aria-label="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noopener" class="social-btn" aria-label="Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noopener" class="social-btn" aria-label="YouTube">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+            </a>
+            <a href="https://wa.me/919876543210" target="_blank" rel="noopener" class="social-btn" aria-label="WhatsApp">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore Shop</h4>
+          <ul class="footer-links">
+            <li><a href="shop.html?category=Men">Men's Fragrances</a></li>
+            <li><a href="shop.html?category=Women">Women's Perfumes</a></li>
+            <li><a href="shop.html?category=Luxury">Pure Oriental Attars</a></li>
+            <li><a href="shop.html?category=Gift Sets">Gift Sets</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="shop.html">Shop Catalog</a></li>
+            <li><a href="about.html">Heritage Story</a></li>
+            <li><a href="contact.html">Contact & Wholesale</a></li>
+            <li><a href="admin.html">Admin Portal</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Direct Support</h4>
+          <p style="font-size:0.86rem;">WhatsApp: +91 98765 43210</p>
+          <p style="font-size:0.86rem; margin-top:8px;">Fast Dispatch Across India.</p>
+        </div>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:20px; text-align:center; font-size:0.8rem;">
+        © 2026 AL-AMEEN PERFUMES. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let activeInquiryType = 'retail';
+
+    function switchInquiryType(type) {
+      activeInquiryType = type;
+      const tabR = document.getElementById('tabRetailInquiry');
+      const tabW = document.getElementById('tabWholesaleInquiry');
+      const qtyGroup = document.getElementById('wholesaleQtyGroup');
+
+      if (type === 'wholesale') {
+        tabW.classList.add('active');
+        tabR.classList.remove('active');
+        qtyGroup.style.display = 'block';
+      } else {
+        tabR.classList.add('active');
+        tabW.classList.remove('active');
+        qtyGroup.style.display = 'none';
+      }
+    }
+
+    function toggleFaq(el) {
+      el.classList.toggle('open');
+      const sign = el.querySelector('.faq-question span:last-child');
+      if (sign) {
+        sign.textContent = el.classList.contains('open') ? '−' : '+';
+      }
+    }
+
+    function handleInquirySubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('inqName').value.trim();
+      const phone = document.getElementById('inqPhone').value.trim();
+      const city = document.getElementById('inqCity').value.trim();
+      const qty = document.getElementById('inqQty').value.trim();
+      const message = document.getElementById('inqMessage').value.trim();
+
+      const text = `*New Inquiry – ${CONFIG.STORE_NAME}*\n` +
+        `Type: ${activeInquiryType === 'wholesale' ? 'WHOLESALE / BULK' : 'RETAIL INQUIRY'}\n` +
+        `-----------------------------------\n` +
+        `Name: ${name}\n` +
+        `Phone: ${phone}\n` +
+        `City: ${city}\n` +
+        (activeInquiryType === 'wholesale' && qty ? `Est. Volume: ${qty}\n` : '') +
+        `Message: ${message}\n` +
+        `-----------------------------------`;
+
+      const waUrl = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+      window.open(waUrl, '_blank');
+      alert('Your inquiry message has been prepared for WhatsApp!');
+    }
+
+    const cart = getStorage('alameen_cart', []);
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
+    const navCart = document.getElementById('navCartCount');
+    if (navCart) navCart.textContent = count;
+  </script>
+</body>
+</html>

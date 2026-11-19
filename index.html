@@ -1,0 +1,2156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>AL-AMEEN PERFUMES | Luxury Scents & Pure Attars | Wholesale & Retail</title>
+  
+  <!-- Google Fonts: Poppins (Clean Modern Firm Geometric Sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230B2B20'%3E%3Cpath d='M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z'/%3E%3C/svg%3E">
+
+  <!-- Core Catalog Engine -->
+  <script src="core.js"></script>
+
+  <!-- Supabase Official JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* ==========================================================================
+       LUXURY DESIGN SYSTEM: EMERALD NOIR + CHAMPAGNE GOLD + FIRM GEOMETRIC SANS
+       ========================================================================== */
+    :root {
+      --green-950: #04140E; /* Deep obsidian bottle green */
+      --green-900: #0A261C; /* Primary brand dark, hero, footer */
+      --green-800: #10382B; /* Rich pine, hover on dark */
+      --green-700: #185340; /* Primary buttons, active tabs */
+      --green-600: #227B5E; /* Emerald accents, badges */
+      --green-400: #54B08C; /* Subtle borders, icons */
+      --green-200: #A8DDC2; /* Soft chips, dividers */
+      --green-50:  #F4F7F5; /* Crisp luxury background */
+      
+      --gold-900: #7A5B12;
+      --gold-700: #A88120;
+      --gold-500: #D4AF37; /* Champagne Gold highlight */
+      --gold-300: #ECD485;
+      --gold-100: #FBF6E4;
+      
+      --surface: #FFFFFF;
+      --surface-card: #FFFFFF;
+      --surface-alt: #F8FAF9;
+      
+      --text-dark: #061F17;
+      --text-muted: #3B5448;
+      --text-light: #718D80;
+      --text-white: #FFFFFF;
+      
+      --border-subtle: #DEE8E3;
+      --border-card: #E5ECE8;
+      --border-gold: rgba(212, 175, 55, 0.4);
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --radius-pill: 9999px;
+      
+      --shadow-sm: 0 2px 8px rgba(6, 31, 23, 0.05);
+      --shadow-md: 0 10px 28px rgba(6, 31, 23, 0.08);
+      --shadow-lg: 0 20px 48px rgba(6, 31, 23, 0.14);
+      --shadow-glow: 0 0 24px rgba(212, 175, 55, 0.28);
+      
+      /* Typography: Poppins Firm Font */
+      --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      
+      --header-height: 72px;
+      --container-max: 1240px;
+      --transition: all 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--green-50);
+      color: var(--text-dark);
+      line-height: 1.55;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Typography Hierarchy: Firm, Bold Headings & Clean Body */
+    h1, h2, h3, h4, .brand-title, .hero-title, .section-title, .card-title, .promo-title {
+      font-family: var(--font-main);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    .text-minimal, .section-subtitle, .card-category, .card-mode-badge, .wholesale-moq-label {
+      font-family: var(--font-main);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+    }
+
+    button, input, select, textarea {
+      font-family: var(--font-main);
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .container {
+      width: 100%;
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--green-50); }
+    ::-webkit-scrollbar-thumb { background: var(--green-200); border-radius: 4px; }
+
+    /* ==========================================================================
+       1. TOP ANNOUNCEMENT BAR (Controlled by Admin - Default OFF)
+       ========================================================================== */
+    .announcement-bar {
+      background: var(--green-950);
+      color: var(--gold-300);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 8px 16px;
+      text-align: center;
+      display: none; /* Default OFF as requested */
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      position: relative;
+      z-index: 50;
+    }
+    .announcement-badge {
+      background: rgba(212, 175, 55, 0.18);
+      color: var(--gold-500);
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    /* ==========================================================================
+       2. STICKY NAVBAR
+       ========================================================================== */
+    .navbar-sticky {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(10, 38, 28, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: #FFFFFF;
+      box-shadow: 0 4px 20px rgba(5, 26, 19, 0.25);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      transition: var(--transition);
+    }
+
+    .navbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--header-height);
+      gap: 16px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-logo-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--green-700), var(--green-950));
+      border: 1.5px solid var(--gold-500);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-500);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      flex-shrink: 0;
+    }
+    .brand-title {
+      font-size: 1.25rem;
+      color: #FFFFFF;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+    .nav-link {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--green-200);
+      position: relative;
+      padding: 6px 2px;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: #FFFFFF;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--gold-500);
+      transition: width 0.22s ease;
+      border-radius: 2px;
+    }
+    .nav-link:hover::after, .nav-link.active::after {
+      width: 100%;
+    }
+
+    /* Wholesale / Retail Switch */
+    .mode-switch-wrapper {
+      display: flex;
+      align-items: center;
+      background: rgba(5, 26, 19, 0.8);
+      padding: 4px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    .mode-btn {
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--green-200);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mode-btn.active {
+      background: linear-gradient(135deg, var(--green-600), var(--green-800));
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .action-icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      position: relative;
+    }
+    .action-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: var(--gold-500);
+      color: var(--gold-300);
+      transform: translateY(-2px);
+    }
+    .action-icon-btn .count-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: var(--gold-500);
+      color: var(--green-950);
+      font-size: 0.68rem;
+      font-weight: 800;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #FFFFFF;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ==========================================================================
+       3. HERO SECTION (Firm, Luxury, Responsive)
+       ========================================================================== */
+    .hero-section {
+      background: radial-gradient(circle at 80% 20%, rgba(34, 123, 94, 0.28) 0%, rgba(4, 20, 14, 0) 65%),
+                  linear-gradient(175deg, var(--green-950) 0%, #071F17 60%, var(--green-900) 100%);
+      color: #FFFFFF;
+      padding: 60px 0 70px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(212, 175, 55, 0.14);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      color: var(--gold-300);
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero-title {
+      font-size: clamp(2.3rem, 4.4vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 18px;
+      color: #FFFFFF;
+    }
+    .hero-title span.gold-gradient {
+      background: linear-gradient(135deg, #FFF7D6 0%, #D4AF37 50%, #ECD485 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 1.05rem;
+      color: var(--green-200);
+      line-height: 1.65;
+      margin-bottom: 30px;
+      max-width: 540px;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold-500) 0%, var(--gold-700) 100%);
+      color: var(--green-950);
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding: 13px 26px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 18px rgba(212, 175, 55, 0.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(212, 175, 55, 0.45);
+      background: linear-gradient(135deg, #E6C24E 0%, var(--gold-500) 100%);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      color: #FFFFFF;
+      font-weight: 600;
+      font-size: 0.92rem;
+      padding: 12px 24px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: var(--gold-500);
+      color: var(--gold-300);
+      transform: translateY(-2px);
+    }
+
+    .hero-trust-strip {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-top: 36px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      flex-wrap: wrap;
+    }
+    .trust-badge-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--green-200);
+    }
+    .trust-badge-item svg {
+      color: var(--gold-500);
+    }
+
+    /* Hero Visual Card */
+    .hero-card-frame {
+      position: relative;
+      background: linear-gradient(145deg, rgba(20, 70, 52, 0.5), rgba(5, 26, 19, 0.85));
+      border: 1px solid var(--border-gold);
+      border-radius: var(--radius-xl);
+      padding: 12px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(212, 175, 55, 0.12);
+    }
+    .hero-img {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      border-radius: calc(var(--radius-xl) - 8px);
+    }
+    .hero-float-badge {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      background: rgba(6, 31, 23, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-gold);
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .float-badge-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--gold-500);
+      color: var(--green-950);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+
+    /* ==========================================================================
+       4. CATEGORY SELECTOR ("Find Your Signature")
+       ========================================================================== */
+    .category-section {
+      padding: 56px 0 36px;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .section-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 36px;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3.2vw, 2.3rem);
+      color: var(--green-950);
+      margin-bottom: 8px;
+    }
+    .section-subtitle {
+      color: var(--green-600);
+      margin-bottom: 6px;
+    }
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 0.94rem;
+    }
+
+    .categories-carousel {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding-bottom: 14px;
+      scrollbar-width: none;
+      justify-content: flex-start;
+    }
+    .categories-carousel::-webkit-scrollbar { display: none; }
+    
+    .category-circle-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+      flex: 0 0 100px;
+      cursor: pointer;
+    }
+    .category-circle-img-wrap {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      padding: 4px;
+      background: linear-gradient(135deg, var(--green-200), var(--green-50));
+      border: 2px solid var(--green-400);
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+    .category-circle-card:hover .category-circle-img-wrap,
+    .category-circle-card.active .category-circle-img-wrap {
+      border-color: var(--gold-500);
+      box-shadow: 0 6px 18px rgba(212, 175, 55, 0.35);
+      transform: translateY(-3px) scale(1.04);
+    }
+    .category-circle-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .category-circle-title {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--green-950);
+    }
+
+    /* ==========================================================================
+       5. BESTSELLERS SHOWCASE (Side scrolling on phone, grid on desktop)
+       ========================================================================== */
+    .bestsellers-section {
+      padding: 60px 0;
+      background: var(--green-50);
+    }
+    .section-top-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .view-all-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--green-700);
+    }
+    .view-all-link:hover {
+      color: var(--gold-700);
+      transform: translateX(3px);
+    }
+
+    /* Product Card */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+    }
+    .product-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(212, 175, 55, 0.5);
+    }
+    .card-media {
+      position: relative;
+      height: 220px;
+      background: #F7FAF8;
+      overflow: hidden;
+    }
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .product-card:hover .card-img {
+      transform: scale(1.05);
+    }
+    .card-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(10, 38, 28, 0.88);
+      backdrop-filter: blur(6px);
+      color: #FFFFFF;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .card-badge.offer-badge {
+      background: linear-gradient(135deg, #DC2626, #991B1B);
+      border-color: #FECACA;
+      color: #FFFFFF;
+      font-weight: 800;
+    }
+    .card-wish-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dark);
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+    .card-wish-btn.active {
+      color: #E11D48;
+      background: #FFFFFF;
+    }
+    .card-wish-btn:hover {
+      transform: scale(1.12);
+      background: #FFFFFF;
+    }
+
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .card-category {
+      color: var(--green-600);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .card-size {
+      font-size: 0.74rem;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+    .card-title {
+      font-size: 1.02rem;
+      color: var(--green-950);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+    .card-notes-brief {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-rating-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 14px;
+    }
+    .stars {
+      color: var(--gold-500);
+      display: flex;
+    }
+
+    .card-footer {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .price-current {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--green-950);
+    }
+    .price-mrp {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      text-decoration: line-through;
+    }
+    .wholesale-moq-label {
+      font-size: 0.68rem;
+      color: var(--gold-700);
+      font-weight: 700;
+    }
+
+    /* Card Action Button: Full-width / longer pill button with writing (Img 4 fix) */
+    .card-add-btn {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, var(--green-700) 0%, var(--green-900) 100%);
+      color: #FFFFFF;
+      border-radius: var(--radius-md);
+      font-size: 0.84rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(11, 43, 32, 0.15);
+      transition: var(--transition);
+    }
+    .card-add-btn:hover {
+      background: linear-gradient(135deg, var(--green-600) 0%, var(--green-800) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(11, 43, 32, 0.25);
+    }
+    .card-add-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* ==========================================================================
+       6. PROMO BANNERS & FEATURES
+       ========================================================================== */
+    .promos-section { padding: 36px 0; }
+    .promos-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    .promo-banner-card {
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      color: #FFFFFF;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+      border: 1px solid var(--border-gold);
+      box-shadow: var(--shadow-md);
+    }
+    .promo-banner-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(4, 20, 14, 0.2) 0%, rgba(4, 20, 14, 0.92) 100%);
+    }
+    .promo-content {
+      position: relative;
+      z-index: 2;
+    }
+    .promo-badge {
+      background: var(--gold-500);
+      color: var(--green-950);
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    .promo-title {
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+    .promo-desc {
+      font-size: 0.88rem;
+      color: var(--green-200);
+      margin-bottom: 18px;
+      max-width: 420px;
+    }
+
+    /* Features Strip */
+    .features-section {
+      background: #FFFFFF;
+      padding: 48px 0;
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background: var(--green-50);
+      border: 1px solid var(--border-card);
+    }
+    .feature-icon-box {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: var(--green-900);
+      color: var(--gold-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .feature-item h4 {
+      font-size: 0.94rem;
+      color: var(--green-950);
+      margin-bottom: 2px;
+    }
+    .feature-item p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       7. HERITAGE STORY PREVIEW & TESTIMONIALS
+       ========================================================================== */
+    .heritage-preview-section {
+      padding: 70px 0;
+      background: #FFFFFF;
+    }
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .story-tile-big {
+      height: 380px;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      border: 1px solid var(--border-gold);
+      box-shadow: var(--shadow-md);
+    }
+    .story-tile-big img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .story-content h3 {
+      font-size: 2rem;
+      color: var(--green-950);
+      margin-bottom: 16px;
+    }
+    .story-content p {
+      font-size: 0.94rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    /* Testimonials Slider */
+    .testimonials-section {
+      background: var(--green-900);
+      color: #FFFFFF;
+      padding: 70px 0;
+    }
+    .testimonials-slider-box {
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    .quote-text {
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: #FFFFFF;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+    .reviewer-name {
+      font-weight: 700;
+      color: var(--gold-300);
+    }
+    .reviewer-loc {
+      font-size: 0.8rem;
+      color: var(--green-200);
+    }
+
+    /* Newsletter */
+    .newsletter-section {
+      background: var(--green-950);
+      color: #FFFFFF;
+      padding: 50px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .newsletter-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .newsletter-form {
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 6px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      width: 100%;
+      max-width: 440px;
+    }
+    .newsletter-input {
+      background: transparent;
+      border: none;
+      padding: 10px 18px;
+      color: #FFFFFF;
+      flex: 1;
+      font-size: 0.9rem;
+    }
+    .newsletter-input::placeholder { color: var(--green-200); }
+    .newsletter-btn {
+      background: var(--gold-500);
+      color: var(--green-950);
+      font-weight: 700;
+      padding: 10px 22px;
+      border-radius: var(--radius-pill);
+      font-size: 0.85rem;
+    }
+
+    /* ==========================================================================
+       8. FOOTER WITH AUTHENTIC SOCIAL SVG ICONS (Img 3 Fix)
+       ========================================================================== */
+    .main-footer {
+      background: #04140E;
+      color: var(--green-200);
+      padding: 60px 0 30px;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr repeat(3, 1fr);
+      gap: 40px;
+      margin-bottom: 50px;
+    }
+    .footer-col h4 {
+      color: #FFFFFF;
+      font-size: 1rem;
+      margin-bottom: 18px;
+    }
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 0.88rem;
+    }
+    .footer-links a:hover {
+      color: var(--gold-500);
+    }
+    .footer-socials {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .social-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      transition: var(--transition);
+    }
+    .social-btn:hover {
+      background: var(--gold-500);
+      color: var(--green-950);
+      border-color: var(--gold-500);
+      transform: translateY(-2px);
+    }
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 24px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    /* ==========================================================================
+       9. CART DRAWER & MODALS
+       ========================================================================== */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 20, 14, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+    .drawer-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 100%;
+      max-width: 420px;
+      height: 100%;
+      background: #FFFFFF;
+      z-index: 101;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.25);
+    }
+    .cart-drawer.active {
+      transform: translateX(0);
+    }
+    .drawer-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--green-900);
+      color: #FFFFFF;
+    }
+    .drawer-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+    .drawer-items-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .cart-item-card {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      background: var(--green-50);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-card);
+      align-items: center;
+    }
+    .cart-item-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    .cart-item-info { flex: 1; }
+    .cart-item-title { font-size: 0.88rem; font-weight: 700; color: var(--green-950); }
+    .cart-item-price { font-size: 0.85rem; font-weight: 800; color: var(--green-700); }
+    .drawer-footer {
+      padding: 20px;
+      border-top: 1px solid var(--border-subtle);
+      background: #FFFFFF;
+    }
+    .drawer-total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--green-950);
+      margin-bottom: 16px;
+    }
+
+    /* WhatsApp Order Form Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 20, 14, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 120;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.active { display: flex; }
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 500px;
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-gold);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--green-950);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      font-size: 0.92rem;
+      transition: var(--transition);
+    }
+    .form-control:focus {
+      border-color: var(--green-600);
+      box-shadow: 0 0 0 3px rgba(34, 123, 94, 0.15);
+    }
+
+    /* ==========================================================================
+       10. CRITICAL FIX: MOBILE BOTTOM TAB BAR STRICTLY HIDDEN ON DESKTOP (Img 1)
+       ========================================================================== */
+    .mobile-tab-bar {
+      display: none !important; /* STRICTLY HIDDEN BY DEFAULT ON LAPTOPS / DESKTOPS */
+    }
+
+    /* ==========================================================================
+       11. RESPONSIVE MEDIA QUERIES (Phone, Tablet, Laptop)
+       ========================================================================== */
+    /* Tablet & Small Laptop (<= 1024px) */
+    @media (max-width: 1024px) {
+      .products-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+    }
+
+    /* Phone Screens (<= 768px) */
+    @media (max-width: 768px) {
+      :root {
+        --header-height: 62px;
+      }
+      body {
+        padding-bottom: 84px; /* Space for mobile floating dock */
+      }
+
+      /* Desktop only elements */
+      .desktop-only { display: none !important; }
+
+      /* Mobile Navbar Alignment: Logo Left, Shop Name Centered, Cart + Burger Right */
+      .navbar-inner {
+        padding: 0 14px;
+        position: relative;
+      }
+      .brand-title {
+        font-size: 1.05rem;
+      }
+      .mobile-menu-btn {
+        display: flex !important;
+      }
+
+      /* FIX IMG 5: Hero Image placed BELOW headline & CTAs on mobile/tablet */
+      .hero-section {
+        padding: 24px 0 36px;
+      }
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .hero-content {
+        order: 1; /* Headline & actions lead first */
+      }
+      .hero-visual {
+        order: 2; /* Image visible as you scroll down */
+      }
+      .hero-title {
+        font-size: 1.85rem;
+        margin-bottom: 12px;
+      }
+      .hero-subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+      }
+      .hero-img {
+        height: 240px;
+      }
+
+      /* Horizontal side-scrolling bestsellers on mobile */
+      .bestsellers-scroll-wrap {
+        overflow-x: auto;
+        padding-bottom: 12px;
+        margin: 0 -20px;
+        padding-left: 20px;
+        padding-right: 20px;
+        scrollbar-width: none;
+      }
+      .bestsellers-scroll-wrap::-webkit-scrollbar { display: none; }
+      .products-grid.mobile-horizontal {
+        display: flex !important;
+        flex-wrap: nowrap;
+        gap: 14px;
+        width: max-content;
+      }
+      .products-grid.mobile-horizontal .product-card {
+        width: 220px;
+        flex: 0 0 220px;
+      }
+
+      .promos-grid { grid-template-columns: 1fr; gap: 14px; }
+      .promo-banner-card { padding: 24px; min-height: 220px; }
+      .story-grid { grid-template-columns: 1fr; gap: 24px; }
+      .story-tile-big { height: 220px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+
+      /* Curved Floating Bottom Dock for Mobile */
+      .mobile-tab-bar {
+        display: flex !important;
+        position: fixed;
+        bottom: 12px;
+        left: 14px;
+        right: 14px;
+        height: 62px;
+        background: linear-gradient(135deg, rgba(10, 38, 28, 0.96) 0%, rgba(4, 20, 14, 0.98) 100%);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-radius: 36px;
+        border: 1.5px solid rgba(212, 175, 55, 0.4);
+        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45), 0 0 16px rgba(212, 175, 55, 0.15);
+        z-index: 95;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 8px;
+      }
+      .tab-bar-item {
+        flex: 1;
+        height: 46px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        color: #E2F0EA !important;
+        border-radius: 20px;
+        position: relative;
+      }
+      .tab-bar-item.active {
+        background: linear-gradient(135deg, rgba(34, 123, 94, 0.85), rgba(16, 56, 43, 0.95));
+        border: 1px solid rgba(212, 175, 55, 0.5);
+        color: var(--gold-300) !important;
+      }
+      .tab-bar-item.active svg {
+        color: var(--gold-500) !important;
+      }
+      .tab-bar-item span {
+        font-size: 0.68rem;
+        font-weight: 700;
+      }
+      .tab-bar-item .count-badge {
+        position: absolute;
+        top: 2px;
+        right: 18px;
+        background: var(--gold-500);
+        color: var(--green-950);
+        font-size: 0.62rem;
+        font-weight: 900;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       1. TOP ANNOUNCEMENT BAR (Toggled from Admin Settings)
+       ========================================================================== -->
+  <div class="announcement-bar" id="announcementBar">
+    <span class="announcement-badge">Notice</span>
+    <span id="announcementText">Free shipping Pan-India · Wholesale rates available</span>
+  </div>
+
+  <!-- ==========================================================================
+       2. STICKY NAVBAR
+       ========================================================================== -->
+  <header class="navbar-sticky" id="mainNavbar">
+    <div class="container navbar-inner">
+      
+      <!-- Brand Logo (Clean Icon + AL-AMEEN PERFUMES, No cluttered tagline) -->
+      <a href="index.html" class="brand-logo" aria-label="Al-Ameen Perfumes Home">
+        <div class="brand-logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"/></svg>
+        </div>
+        <span class="brand-title">AL-AMEEN PERFUMES</span>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav aria-label="Main Navigation" class="desktop-only">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link active">Home</a></li>
+          <li><a href="shop.html" class="nav-link">Shop</a></li>
+          <li><a href="about.html" class="nav-link">About Heritage</a></li>
+          <li><a href="contact.html" class="nav-link">Contact & Inquiries</a></li>
+        </ul>
+      </nav>
+
+      <!-- Wholesale ↔ Retail Switch (Desktop) -->
+      <div class="mode-switch-wrapper desktop-only" role="radiogroup" aria-label="Shopping Mode">
+        <button type="button" class="mode-btn active" id="retailModeBtn" onclick="app.setMode('retail')">
+          <span>Retail</span>
+        </button>
+        <button type="button" class="mode-btn" id="wholesaleModeBtn" onclick="app.setMode('wholesale')">
+          <span>Wholesale</span>
+        </button>
+      </div>
+
+      <!-- Right Nav Actions -->
+      <div class="nav-actions">
+        <!-- Trolley Cart Button -->
+        <button class="action-icon-btn trolley-cart-btn" onclick="app.openCartDrawer()" aria-label="Shopping Cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="count-badge" id="navCartCount">0</span>
+        </button>
+
+        <!-- Admin Portal Icon Link -->
+        <a href="admin.html" class="action-icon-btn desktop-only" aria-label="Admin Portal" title="Admin Portal" style="color: var(--gold-500);">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </a>
+
+        <!-- Mobile Burger Menu -->
+        <button class="mobile-menu-btn" onclick="app.toggleMobileMenu()" aria-label="Open Menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Menu -->
+  <div class="drawer-backdrop" id="mobileMenuBackdrop" onclick="app.closeMobileMenu()"></div>
+  <aside class="cart-drawer" id="mobileMenuDrawer" style="right:auto; left:0; transform:translateX(-100%);">
+    <div class="drawer-header">
+      <span class="brand-title" style="font-size:1.15rem;">AL-AMEEN PERFUMES</span>
+      <button class="drawer-close-btn" onclick="app.closeMobileMenu()">✕</button>
+    </div>
+    <div style="padding: 24px; display:flex; flex-direction:column; gap:16px;">
+      <!-- Wholesale/Retail Mode for Mobile Drawer -->
+      <div style="margin-bottom: 12px;">
+        <span class="text-minimal" style="display:block; margin-bottom:8px; color:var(--text-muted);">Shopping Mode:</span>
+        <div class="mode-switch-wrapper" style="width:100%; justify-content:space-around;">
+          <button type="button" class="mode-btn" id="drawerRetailBtn" onclick="app.setMode('retail')" style="flex:1; justify-content:center;">Retail</button>
+          <button type="button" class="mode-btn" id="drawerWholesaleBtn" onclick="app.setMode('wholesale')" style="flex:1; justify-content:center;">Wholesale</button>
+        </div>
+      </div>
+      <a href="index.html" class="nav-link" style="color:var(--green-950); font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">Home</a>
+      <a href="shop.html" class="nav-link" style="color:var(--green-950); font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">Shop Catalog</a>
+      <a href="about.html" class="nav-link" style="color:var(--green-950); font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">About Heritage</a>
+      <a href="contact.html" class="nav-link" style="color:var(--green-950); font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">Contact & Inquiries</a>
+      <a href="admin.html" class="nav-link" style="color:var(--gold-700); font-weight:700; font-size:1.05rem; padding:8px 0;">Admin Portal</a>
+    </div>
+  </aside>
+
+  <!-- ==========================================================================
+       3. HERO SECTION (Firm Font & Image Visible When Scrolled on Mobile)
+       ========================================================================== -->
+  <section class="hero-section">
+    <div class="container hero-grid">
+      
+      <!-- Left Content: Leads First -->
+      <div class="hero-content">
+        <div class="hero-tag">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          Imperial Perfumery Formulation
+        </div>
+        <h1 class="hero-title">
+          A Scent For Every <br><span class="gold-gradient">Side Of You</span>
+        </h1>
+        <p class="hero-subtitle">
+          Handcrafted pure attars & French Eau de Parfum formulations made for royalty. Available in retail flacons and wholesale master batches.
+        </p>
+        <div class="hero-actions">
+          <a href="shop.html" class="btn-primary">
+            <span>Shop Bestsellers</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+          <a href="about.html" class="btn-secondary">
+            <span>Explore Heritage</span>
+          </a>
+        </div>
+
+        <div class="hero-trust-strip">
+          <div class="trust-badge-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <span>24h+ Long-Lasting</span>
+          </div>
+          <div class="trust-badge-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+            <span>Aged Assam Agarwood</span>
+          </div>
+          <div class="trust-badge-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <span>Pan-India Dispatch</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Visual Card: Appears Below on Mobile (Img 5 Fix) -->
+      <div class="hero-visual">
+        <div class="hero-card-frame">
+          <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80" alt="Al-Ameen Sultan Attar" class="hero-img">
+          <div class="hero-float-badge">
+            <div class="float-badge-icon">★</div>
+            <div>
+              <div style="font-size:0.88rem; font-weight:800; color:#FFFFFF;">Al-Ameen Sultan Attar</div>
+              <div style="font-size:0.72rem; color:var(--gold-300); font-weight:600;">Flagship Royal Blend · 100% Pure Oil</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       4. "FIND YOUR SIGNATURE" CATEGORIES
+       ========================================================================== -->
+  <section class="category-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Fragrance Families</span>
+        <h2 class="section-title">Find Your Signature</h2>
+        <p class="section-desc">Select a fragrance family to curate notes matched to your unique aura and occasion.</p>
+      </div>
+
+      <div class="categories-carousel" id="categoryCarousel">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       5. BESTSELLERS SHOWCASE
+       ========================================================================== -->
+  <section class="bestsellers-section">
+    <div class="container">
+      <div class="section-top-row">
+        <div>
+          <span class="section-subtitle">Connoisseur Favorites</span>
+          <h2 class="section-title">Bestselling Scents</h2>
+        </div>
+        <a href="shop.html" class="view-all-link">
+          <span>View All 12 Formulations</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </a>
+      </div>
+
+      <div class="bestsellers-scroll-wrap">
+        <div class="products-grid mobile-horizontal" id="bestsellersGrid">
+          <!-- Rendered via JS with Longer "Add to Bag" Buttons -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       6. PROMO BANNERS & FEATURES
+       ========================================================================== -->
+  <section class="promos-section container">
+    <div class="promos-grid">
+      <div class="promo-banner-card" style="background-image: url('https://images.unsplash.com/photo-1563178406-4cdc2923acbc?auto=format&fit=crop&w=800&q=80');">
+        <div class="promo-content">
+          <span class="promo-badge">Collector's Chest</span>
+          <h3 class="promo-title">Oriental Discovery Gift Box</h3>
+          <p class="promo-desc">Four iconic EDP creations in a velvet-lined collector box. Ideal for luxury corporate gifting & weddings.</p>
+          <a href="shop.html?category=Gift Sets" class="btn-primary" style="padding:10px 20px; font-size:0.84rem;">Explore Gift Sets</a>
+        </div>
+      </div>
+
+      <div class="promo-banner-card" style="background-image: url('https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=800&q=80');">
+        <div class="promo-content">
+          <span class="promo-badge">New Arrival</span>
+          <h3 class="promo-title">Royal Oud Intense Formulation</h3>
+          <p class="promo-desc">French bergamot infused with wild Angelica root and smoked Assam agarwood.</p>
+          <a href="shop.html?category=Men" class="btn-primary" style="padding:10px 20px; font-size:0.84rem;">View Formulation</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Strip -->
+  <section class="features-section">
+    <div class="container features-grid">
+      <div class="feature-item">
+        <div class="feature-icon-box">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+        <div>
+          <h4>100% Pure Oils</h4>
+          <p>Zero animal testing & alcohol-free pure oils.</p>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon-box">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+        </div>
+        <div>
+          <h4>Cold Maturation</h4>
+          <p>Macerated for 14 weeks for deep longevity.</p>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon-box">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+        </div>
+        <div>
+          <h4>Pan-India Delivery</h4>
+          <p>Secure shock-proof luxury bubble packaging.</p>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon-box">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+        </div>
+        <div>
+          <h4>Wholesale Tiers</h4>
+          <p>Tiered MOQ pricing for boutique partners.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       7. HERITAGE PREVIEW & TESTIMONIALS
+       ========================================================================== -->
+  <section class="heritage-preview-section">
+    <div class="container story-grid">
+      <div class="story-tile-big">
+        <img src="https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=800&q=80" alt="Perfume Craft">
+      </div>
+      <div class="story-content">
+        <span class="section-subtitle">Since Inception</span>
+        <h3>The Al-Ameen Heritage of Royal Blending</h3>
+        <p>Every bottle of Al-Ameen Perfumes represents weeks of meticulous hydro-distillation and French maceration. Our master perfumers source directly from certified plantations across Assam, Kannauj, Grasse, and Taif.</p>
+        <p>Whether you require single flacons for personal prestige or custom-branded wholesale orders for international boutiques, we uphold an uncompromising benchmark of purity.</p>
+        <a href="about.html" class="btn-primary">Read Our Full Heritage Story</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials-section">
+    <div class="container">
+      <div class="testimonials-slider-box">
+        <div class="stars" style="justify-content:center; margin-bottom:14px;">
+          ★★★★★
+        </div>
+        <p class="quote-text" id="testimonialQuote">
+          "The Sultan Attar is on another level. I apply two dabs in the morning and can still smell the Taif rose and oud at night. Truly royal quality."
+        </p>
+        <div class="reviewer-name" id="testimonialAuthor">Zayd Merchant</div>
+        <div class="reviewer-loc" id="testimonialLoc">Boutique Owner · Hyderabad</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter-section">
+    <div class="container newsletter-wrap">
+      <div>
+        <h3 style="font-size:1.4rem; margin-bottom:4px; color:#FFFFFF;">Join the Al-Ameen Fragrance Circle</h3>
+        <p style="color:var(--green-200); font-size:0.88rem;">Receive private invitations to limited harvest batches and wholesale tier catalogs.</p>
+      </div>
+      <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for joining our fragrance circle!');">
+        <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
+        <button type="submit" class="newsletter-btn">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       8. FOOTER WITH REAL SOCIAL SVG ICONS (Img 3 Fix)
+       ========================================================================== -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <span class="brand-title" style="font-size:1.25rem; color:#FFFFFF;">AL-AMEEN PERFUMES</span>
+          <p style="margin: 12px 0 18px; font-size:0.86rem; line-height:1.6;">
+            Royal oriental attars, French Eau de Parfum, and luxury scented formulations. Dedicated to both retail connoisseurs and wholesale partners.
+          </p>
+          
+          <!-- Authentic SVG Icons for Instagram, Facebook, YouTube, WhatsApp -->
+          <div class="footer-socials">
+            <a href="https://instagram.com" target="_blank" rel="noopener" class="social-btn" aria-label="Instagram" title="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noopener" class="social-btn" aria-label="Facebook" title="Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+              </svg>
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noopener" class="social-btn" aria-label="YouTube" title="YouTube">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+              </svg>
+            </a>
+            <a href="https://wa.me/919876543210" target="_blank" rel="noopener" class="social-btn" aria-label="WhatsApp" title="WhatsApp">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Explore Shop</h4>
+          <ul class="footer-links">
+            <li><a href="shop.html?category=Men">Men's Collection</a></li>
+            <li><a href="shop.html?category=Women">Women's Perfumes</a></li>
+            <li><a href="shop.html?category=Luxury">Pure Oriental Attars</a></li>
+            <li><a href="shop.html?category=Gift Sets">Gift Sets & Miniatures</a></li>
+            <li><a href="shop.html">Full Catalog</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="shop.html">Shop Catalog</a></li>
+            <li><a href="about.html">Heritage Story</a></li>
+            <li><a href="contact.html">Contact & Wholesale Inquiry</a></li>
+            <li><a href="admin.html">Admin Portal</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Direct Inquiries</h4>
+          <p style="font-size:0.86rem; margin-bottom:12px;">WhatsApp Direct: <br><strong style="color:#FFFFFF;">+91 98765 43210</strong></p>
+          <p style="font-size:0.86rem;">Shipping Pan-India from Mumbai & Assam.</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        © <span id="currentYear">2026</span> AL-AMEEN PERFUMES. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       9. CART DRAWER & ORDER MODAL
+       ========================================================================== -->
+  <div class="drawer-backdrop" id="cartBackdrop" onclick="app.closeCartDrawer()"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="drawer-header">
+      <div>
+        <span class="brand-title" style="font-size:1.1rem;">Your Bag</span>
+        <div style="font-size:0.75rem; color:var(--gold-300);" id="cartModeLabel">Mode: Retail</div>
+      </div>
+      <button class="drawer-close-btn" onclick="app.closeCartDrawer()">✕</button>
+    </div>
+
+    <div class="drawer-items-list" id="cartItemsList">
+      <!-- Items dynamically populated -->
+    </div>
+
+    <div class="drawer-footer">
+      <div class="drawer-total-row">
+        <span>Total:</span>
+        <span id="cartDrawerTotal">₹0</span>
+      </div>
+      <button type="button" class="btn-primary" style="width:100%; justify-content:center; padding:14px;" onclick="app.openOrderModal()">
+        Proceed to WhatsApp Order
+      </button>
+    </div>
+  </aside>
+
+  <!-- Order Details Modal -->
+  <div class="modal-backdrop" id="orderModalBackdrop">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <h3 style="color:var(--green-950); font-size:1.3rem;">Complete Order via WhatsApp</h3>
+        <button class="drawer-close-btn" style="background:#DEE8E3; color:#061F17;" onclick="app.closeOrderModal()">✕</button>
+      </div>
+      <form id="orderForm" onsubmit="app.handleOrderSubmit(event)">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" class="form-control" id="orderName" required placeholder="e.g. Tariq Khan">
+        </div>
+        <div class="form-group">
+          <label>10-Digit Mobile No. *</label>
+          <input type="tel" class="form-control" id="orderPhone" pattern="[0-9]{10}" required placeholder="e.g. 9876543210">
+        </div>
+        <div class="form-group">
+          <label>Delivery Address *</label>
+          <textarea class="form-control" id="orderAddress" rows="3" required placeholder="Street address, city, state"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Pincode *</label>
+          <input type="text" class="form-control" id="orderPincode" pattern="[0-9]{6}" required placeholder="6-digit pincode">
+        </div>
+        <div class="form-group">
+          <label>Order Notes (Optional)</label>
+          <input type="text" class="form-control" id="orderNotes" placeholder="e.g. Gift wrap requested / Leave at door">
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:14px; margin-top:12px;">
+          Send Order to WhatsApp
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       10. MOBILE FLOATING CURVED NAVIGATION DOCK (Strictly Hidden on Laptop/Desktop)
+       ========================================================================== -->
+  <nav class="mobile-tab-bar" aria-label="Mobile Navigation">
+    <a href="index.html" class="tab-bar-item active">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+      <span>Home</span>
+    </a>
+    <a href="shop.html" class="tab-bar-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <span>Shop</span>
+    </a>
+    <a href="about.html" class="tab-bar-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      <span>About</span>
+    </a>
+    <div class="tab-bar-item" onclick="app.openCartDrawer()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+      <span>Bag</span>
+      <span class="count-badge" id="mobileDockCartCount">0</span>
+    </div>
+  </nav>
+
+  <!-- ==========================================================================
+       11. JAVASCRIPT APPLICATION LOGIC
+       ========================================================================== -->
+  <script>
+    class StorefrontApp {
+      constructor() {
+        this.products = getStoredProducts();
+        this.settings = getStoredSettings();
+        this.mode = getStorage('alameen_mode', 'retail');
+        this.cart = getStorage('alameen_cart', []);
+        this.wishlist = getStorage('alameen_wishlist', []);
+        
+        this.testimonials = [
+          { quote: "The Sultan Attar is on another level. I apply two dabs in the morning and can still smell the Taif rose and oud at night. Truly royal quality.", name: "Zayd Merchant", loc: "Boutique Owner · Hyderabad" },
+          { quote: "We ordered 40 units for our boutique in Calicut. The wholesale pricing was unbeatable, dispatch took 48 hours, and clients adore the formulation.", name: "Farhan Al-Kassim", loc: "Perfume Connoisseur · Calicut" },
+          { quote: "Noor-E-Gulab has become my signature daily fragrance. So velvety, luxurious, and completely non-irritating to sensitive skin.", name: "Ayesha Siddiqui", loc: "Fragrance Enthusiast · Mumbai" }
+        ];
+        this.testimonialIndex = 0;
+
+        this.init();
+      }
+
+      init() {
+        this.applySettings();
+        this.updateModeUI();
+        this.renderCategoryCircles();
+        this.renderBestsellers();
+        this.updateBadges();
+
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        setInterval(() => this.rotateTestimonial(), 6000);
+      }
+
+      applySettings() {
+        const bar = document.getElementById('announcementBar');
+        const text = document.getElementById('announcementText');
+        if (bar && this.settings.announcement_enabled) {
+          bar.style.display = 'flex';
+          text.textContent = this.settings.announcement_text;
+        } else if (bar) {
+          bar.style.display = 'none';
+        }
+      }
+
+      setMode(newMode) {
+        this.mode = newMode;
+        setStorage('alameen_mode', this.mode);
+        this.updateModeUI();
+        this.renderBestsellers();
+        this.renderCartItems();
+      }
+
+      updateModeUI() {
+        const retailBtn = document.getElementById('retailModeBtn');
+        const wholesaleBtn = document.getElementById('wholesaleModeBtn');
+        const drawerRetailBtn = document.getElementById('drawerRetailBtn');
+        const drawerWholesaleBtn = document.getElementById('drawerWholesaleBtn');
+        const cartLabel = document.getElementById('cartModeLabel');
+
+        if (this.mode === 'wholesale') {
+          if (retailBtn) retailBtn.classList.remove('active');
+          if (wholesaleBtn) wholesaleBtn.classList.add('active');
+          if (drawerRetailBtn) drawerRetailBtn.classList.remove('active');
+          if (drawerWholesaleBtn) drawerWholesaleBtn.classList.add('active');
+          if (cartLabel) cartLabel.textContent = 'Mode: Wholesale (MOQ Applied)';
+        } else {
+          if (retailBtn) retailBtn.classList.add('active');
+          if (wholesaleBtn) wholesaleBtn.classList.remove('active');
+          if (drawerRetailBtn) drawerRetailBtn.classList.add('active');
+          if (drawerWholesaleBtn) drawerWholesaleBtn.classList.remove('active');
+          if (cartLabel) cartLabel.textContent = 'Mode: Retail';
+        }
+      }
+
+      renderCategoryCircles() {
+        const container = document.getElementById('categoryCarousel');
+        if (!container) return;
+        container.innerHTML = CATEGORIES.map(cat => `
+          <div class="category-circle-card" onclick="window.location.href='shop.html?category=${encodeURIComponent(cat.name)}'">
+            <div class="category-circle-img-wrap">
+              <img src="${cat.image}" alt="${cat.name}" class="category-circle-img" loading="lazy">
+            </div>
+            <span class="category-circle-title">${cat.name}</span>
+          </div>
+        `).join('');
+      }
+
+      renderBestsellers() {
+        const grid = document.getElementById('bestsellersGrid');
+        if (!grid) return;
+        const bestsellers = this.products.filter(p => p.bestseller).slice(0, 5);
+
+        grid.innerHTML = bestsellers.map(product => {
+          const pricing = calculateProductPrice(product, this.mode, 1, this.settings);
+          const isWish = this.wishlist.includes(product.id);
+
+          return `
+            <div class="product-card" onclick="window.location.href='shop.html?product=${product.id}'" style="cursor:pointer;">
+              <div class="card-media">
+                <img src="${product.images[0]}" alt="${product.name}" class="card-img" loading="lazy">
+                ${pricing.isOffer ? `<span class="card-badge offer-badge">${this.settings.offer_badge}</span>` : `<span class="card-badge">${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'}</span>`}
+                <button type="button" class="card-wish-btn ${isWish ? 'active' : ''}" onclick="event.stopPropagation(); app.toggleWishlist('${product.id}')" aria-label="Wishlist">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="${isWish ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                </button>
+              </div>
+
+              <div class="card-body">
+                <div class="card-meta">
+                  <span class="card-category">${product.category}</span>
+                  <span class="card-size">${product.size}</span>
+                </div>
+                <h3 class="card-title">${product.name}</h3>
+                <div class="card-notes-brief">Notes: ${product.notes.top}</div>
+
+                <div class="card-rating-row">
+                  <span class="stars">★★★★★</span>
+                  <span>${product.rating} (${product.reviews})</span>
+                </div>
+
+                <div class="card-footer">
+                  <div class="price-row">
+                    <span class="price-current">₹${pricing.unitPrice.toLocaleString('en-IN')}</span>
+                    ${pricing.isOffer ? `<span class="price-mrp">₹${pricing.originalPrice.toLocaleString('en-IN')}</span>` : `<span class="price-mrp">₹${product.mrp.toLocaleString('en-IN')}</span>`}
+                  </div>
+                  ${this.mode === 'wholesale' ? `<span class="wholesale-moq-label">Min Order: ${product.wholesaleMOQ} pcs</span>` : ''}
+
+                  <!-- Longer Button with Text (Img 4 Fix) -->
+                  <button type="button" class="card-add-btn" onclick="event.stopPropagation(); app.addToCart('${product.id}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span>Add to Bag</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      addToCart(productId, qtyToAdd = null) {
+        const product = this.products.find(p => p.id === productId);
+        if (!product) return;
+
+        const defaultQty = (this.mode === 'wholesale') ? product.wholesaleMOQ : 1;
+        const qty = qtyToAdd || defaultQty;
+
+        const existing = this.cart.find(item => item.productId === productId);
+        if (existing) {
+          existing.qty += qty;
+        } else {
+          this.cart.push({ productId, qty });
+        }
+
+        setStorage('alameen_cart', this.cart);
+        this.updateBadges();
+        this.openCartDrawer();
+      }
+
+      toggleWishlist(productId) {
+        const index = this.wishlist.indexOf(productId);
+        if (index > -1) {
+          this.wishlist.splice(index, 1);
+        } else {
+          this.wishlist.push(productId);
+        }
+        setStorage('alameen_wishlist', this.wishlist);
+        this.renderBestsellers();
+      }
+
+      updateBadges() {
+        const totalItems = this.cart.reduce((sum, item) => sum + item.qty, 0);
+        const navCart = document.getElementById('navCartCount');
+        const mobileDock = document.getElementById('mobileDockCartCount');
+        if (navCart) navCart.textContent = totalItems;
+        if (mobileDock) mobileDock.textContent = totalItems;
+      }
+
+      openCartDrawer() {
+        this.renderCartItems();
+        document.getElementById('cartBackdrop').classList.add('active');
+        document.getElementById('cartDrawer').classList.add('active');
+      }
+
+      closeCartDrawer() {
+        document.getElementById('cartBackdrop').classList.remove('active');
+        document.getElementById('cartDrawer').classList.remove('active');
+      }
+
+      renderCartItems() {
+        const list = document.getElementById('cartItemsList');
+        const totalEl = document.getElementById('cartDrawerTotal');
+        if (!list || !totalEl) return;
+
+        if (this.cart.length === 0) {
+          list.innerHTML = `<div style="text-align:center; padding:40px 10px; color:var(--text-muted);">Your bag is empty.<br><a href="shop.html" style="color:var(--green-700); font-weight:700; display:inline-block; margin-top:10px;">Explore Fragrances →</a></div>`;
+          totalEl.textContent = '₹0';
+          return;
+        }
+
+        let overallTotal = 0;
+        list.innerHTML = this.cart.map(item => {
+          const product = this.products.find(p => p.id === item.productId);
+          if (!product) return '';
+          const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings);
+          overallTotal += pricing.totalPrice;
+
+          return `
+            <div class="cart-item-card">
+              <img src="${product.images[0]}" alt="${product.name}" class="cart-item-thumb">
+              <div class="cart-item-info">
+                <div class="cart-item-title">${product.name}</div>
+                <div class="cart-item-price">₹${pricing.unitPrice.toLocaleString('en-IN')} × ${item.qty} = ₹${pricing.totalPrice.toLocaleString('en-IN')}</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="app.updateItemQty('${item.productId}', -1)">−</button>
+                <span style="font-size:0.85rem; font-weight:700;">${item.qty}</span>
+                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="app.updateItemQty('${item.productId}', 1)">+</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        totalEl.textContent = `₹${overallTotal.toLocaleString('en-IN')}`;
+      }
+
+      updateItemQty(productId, delta) {
+        const item = this.cart.find(i => i.productId === productId);
+        if (!item) return;
+        const product = this.products.find(p => p.id === productId);
+        const minQty = (this.mode === 'wholesale' && product) ? product.wholesaleMOQ : 1;
+
+        item.qty += delta;
+        if (item.qty < minQty) {
+          this.cart = this.cart.filter(i => i.productId !== productId);
+        }
+        setStorage('alameen_cart', this.cart);
+        this.updateBadges();
+        this.renderCartItems();
+      }
+
+      openOrderModal() {
+        if (this.cart.length === 0) {
+          alert("Your bag is empty! Please add products before placing an order.");
+          return;
+        }
+        this.closeCartDrawer();
+        document.getElementById('orderModalBackdrop').classList.add('active');
+      }
+
+      closeOrderModal() {
+        document.getElementById('orderModalBackdrop').classList.remove('active');
+      }
+
+      handleOrderSubmit(e) {
+        e.preventDefault();
+        const name = document.getElementById('orderName').value.trim();
+        const phone = document.getElementById('orderPhone').value.trim();
+        const address = document.getElementById('orderAddress').value.trim();
+        const pincode = document.getElementById('orderPincode').value.trim();
+        const notes = document.getElementById('orderNotes').value.trim();
+
+        let total = 0;
+        let itemsText = "";
+        this.cart.forEach((item, idx) => {
+          const product = this.products.find(p => p.id === item.productId);
+          if (product) {
+            const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings);
+            total += pricing.totalPrice;
+            itemsText += `${idx + 1}. ${product.name} (${product.size}) × ${item.qty} = ₹${pricing.totalPrice.toLocaleString('en-IN')}\n`;
+          }
+        });
+
+        const message = `*New Order – ${CONFIG.STORE_NAME}*\n` +
+          `Order Type: ${this.mode.toUpperCase()}\n` +
+          `-----------------------------------\n` +
+          `${itemsText}` +
+          `*Total: ₹${total.toLocaleString('en-IN')}*\n` +
+          `-----------------------------------\n` +
+          `*Customer Details:*\n` +
+          `Name: ${name}\n` +
+          `Phone: ${phone}\n` +
+          `Address: ${address}\n` +
+          `Pincode: ${pincode}\n` +
+          (notes ? `Notes: ${notes}\n` : '') +
+          `Payment: Settle on WhatsApp\n` +
+          `-----------------------------------`;
+
+        const waUrl = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+        window.open(waUrl, '_blank');
+
+        // Clear cart
+        this.cart = [];
+        setStorage('alameen_cart', this.cart);
+        this.updateBadges();
+        this.closeOrderModal();
+        alert("Your order has been initiated! WhatsApp has opened to finalize dispatch.");
+      }
+
+      toggleMobileMenu() {
+        document.getElementById('mobileMenuBackdrop').classList.toggle('active');
+        document.getElementById('mobileMenuDrawer').classList.toggle('active');
+      }
+
+      closeMobileMenu() {
+        document.getElementById('mobileMenuBackdrop').classList.remove('active');
+        document.getElementById('mobileMenuDrawer').classList.remove('active');
+      }
+
+      rotateTestimonial() {
+        this.testimonialIndex = (this.testimonialIndex + 1) % this.testimonials.length;
+        const item = this.testimonials[this.testimonialIndex];
+        const quoteEl = document.getElementById('testimonialQuote');
+        const authorEl = document.getElementById('testimonialAuthor');
+        const locEl = document.getElementById('testimonialLoc');
+        if (quoteEl && authorEl && locEl) {
+          quoteEl.textContent = `"${item.quote}"`;
+          authorEl.textContent = item.name;
+          locEl.textContent = item.loc;
+        }
+      }
+    }
+
+    const app = new StorefrontApp();
+  </script>
+</body>
+</html>

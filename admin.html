@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Admin Portal | AL-AMEEN PERFUMES</title>
+  
+  <!-- Google Fonts: Poppins Firm Geometric Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230B2B20'%3E%3Cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.4 0 2.5 1.1 2.5 2.5S13.4 12 12 12s-2.5-1.1-2.5-2.5S10.6 7 12 7zm3 10H9v-1.5c0-1.5 3-2.3 3-2.3s3 .8 3 2.3V17z'/%3E%3C/svg%3E">
+
+  <!-- Core Catalog Engine -->
+  <script src="core.js"></script>
+
+  <!-- Supabase Official JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      /* Obsidian Emerald Noir & Champagne Gold Theme */
+      --green-950: #04140E;
+      --green-900: #0A261C;
+      --green-800: #10382B;
+      --green-700: #185340;
+      --green-600: #227B5E;
+      --green-400: #54B08C;
+      --green-200: #A8DDC2;
+      --green-50:  #F4F7F5;
+      
+      --gold-500: #D4AF37;
+      --gold-700: #A88120;
+      --gold-300: #ECD485;
+      --gold-100: #FBF6E4;
+      
+      --surface: #FFFFFF;
+      --surface-subtle: #F8FAF9;
+      --border: #DEE8E3;
+      --border-light: #E5ECE8;
+      
+      --text: #061F17;
+      --text-muted: #3B5448;
+      --text-light: #718D80;
+      
+      --danger: #EF4444;
+      --success: #10B981;
+      --warning: #F59E0B;
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 22px;
+      --radius-pill: 9999px;
+      
+      --shadow-sm: 0 2px 8px rgba(6, 31, 23, 0.05);
+      --shadow-md: 0 10px 28px rgba(6, 31, 23, 0.08);
+      --shadow-lg: 0 20px 48px rgba(6, 31, 23, 0.14);
+      
+      --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --header-h: 70px;
+      --sidebar-w: 250px;
+      --bottom-nav-h: 64px;
+      --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--surface-subtle);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2, h3, h4, .metric-num {
+      font-family: var(--font-main);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    button, input, select, textarea {
+      font-family: var(--font-main);
+      outline: none;
+      font-size: 0.92rem;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: var(--transition);
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ==========================================================================
+       1. SECURE SIGN IN SCREEN (NO CREDENTIAL HINT BOX - Img 6 Fix)
+       ========================================================================== */
+    .signin-container {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top right, var(--green-800) 0%, var(--green-950) 60%, #020C08 100%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .signin-card {
+      width: 100%;
+      max-width: 420px;
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      padding: clamp(24px, 5vw, 36px);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      animation: zoomIn 0.3s ease;
+    }
+
+    .signin-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      justify-content: center;
+    }
+    .signin-logo-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--green-700), var(--green-950));
+      border: 1.5px solid var(--gold-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-500);
+    }
+    .signin-brand-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--green-950);
+      letter-spacing: 0.02em;
+    }
+    .signin-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--green-950);
+      margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border);
+      background: var(--surface-subtle);
+      font-size: 0.92rem;
+      transition: var(--transition);
+    }
+    .form-input:focus {
+      border-color: var(--green-600);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(34, 123, 94, 0.15);
+    }
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .password-toggle-btn {
+      position: absolute;
+      right: 12px;
+      color: var(--text-light);
+    }
+    .btn-login {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, var(--green-700) 0%, var(--green-950) 100%);
+      color: #FFFFFF;
+      font-weight: 700;
+      border-radius: var(--radius-pill);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+      box-shadow: 0 4px 14px rgba(10, 38, 28, 0.25);
+    }
+    .btn-login:hover {
+      background: linear-gradient(135deg, var(--green-600) 0%, var(--green-800) 100%);
+      transform: translateY(-2px);
+    }
+
+    /* ==========================================================================
+       2. ADMIN HEADER & ACTIONS (Img 7 Fix: Clean Admin Portal, luxury buttons)
+       ========================================================================== */
+    .admin-app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .admin-header {
+      height: var(--header-h);
+      background: linear-gradient(135deg, var(--green-950) 0%, var(--green-900) 100%);
+      color: #FFFFFF;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    .admin-header-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    /* Luxury home-page style buttons for Admin */
+    .btn-luxury-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      color: #FFFFFF;
+      padding: 7px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+    .btn-luxury-pill:hover {
+      background: var(--gold-500);
+      color: var(--green-950);
+      transform: translateY(-1px);
+    }
+    .btn-luxury-pill.danger {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #FCA5A5;
+    }
+    .btn-luxury-pill.danger:hover {
+      background: #EF4444;
+      color: #FFFFFF;
+    }
+
+    /* Centered Add Product Button Banner for Mobile & Quick Actions */
+    .mobile-add-center-wrap {
+      padding: 12px 16px;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: center;
+    }
+    .btn-add-product-center {
+      background: linear-gradient(135deg, var(--gold-500) 0%, var(--gold-700) 100%);
+      color: var(--green-950);
+      font-weight: 800;
+      font-size: 0.92rem;
+      padding: 12px 28px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 4px 16px rgba(212, 175, 55, 0.35);
+    }
+    .btn-add-product-center:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.45);
+    }
+
+    /* Layout & Sidebar */
+    .admin-body {
+      display: flex;
+      flex: 1;
+    }
+    .admin-sidebar {
+      width: var(--sidebar-w);
+      background: #FFFFFF;
+      border-right: 1px solid var(--border-light);
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .nav-item:hover, .nav-item.active {
+      background: var(--green-900);
+      color: #FFFFFF;
+      border-left: 4px solid var(--gold-500);
+    }
+    .nav-badge {
+      margin-left: auto;
+      background: var(--green-700);
+      color: #FFFFFF;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      font-size: 0.72rem;
+    }
+
+    .admin-main {
+      flex: 1;
+      padding: 24px;
+      max-width: 1160px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .admin-tab-view { display: none; }
+    .admin-tab-view.active { display: block; animation: fadeIn 0.25s ease; }
+
+    /* Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .metric-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .metric-icon-box {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: var(--green-50);
+      border: 1px solid var(--green-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+    .metric-info h4 { font-size: 0.78rem; text-transform: uppercase; color: var(--text-light); }
+    .metric-num { font-size: 1.45rem; color: var(--green-950); margin-top: 2px; }
+
+    /* Card Panels */
+    .card-panel {
+      background: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+    }
+    .card-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Switch Component */
+    .switch-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 28px;
+      background: #CBD5E1;
+      border-radius: 14px;
+      transition: var(--transition);
+      display: inline-block;
+    }
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      background: #FFFFFF;
+      border-radius: 50%;
+      transition: var(--transition);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    input[type="checkbox"]:checked + .toggle-switch {
+      background: var(--green-600);
+    }
+    input[type="checkbox"]:checked + .toggle-switch::after {
+      transform: translateX(22px);
+    }
+
+    /* ==========================================================================
+       3. EXPANDABLE PRODUCT CARDS (Avoid Horizontal Table Scroll - Prompt Fix)
+       ========================================================================== */
+    .product-expand-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .expand-product-item {
+      background: var(--green-50);
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .expand-product-item:hover {
+      border-color: var(--green-400);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Compact Top Row (Always Visible) */
+    .expand-summary-row {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .expand-product-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--border-light);
+    }
+    .expand-info-col {
+      flex: 1;
+      min-width: 0;
+    }
+    .expand-p-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--green-950);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .expand-p-meta {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .expand-price-col {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .expand-price-retail {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--green-700);
+    }
+    .expand-price-wholesale {
+      font-size: 0.72rem;
+      color: var(--gold-700);
+      font-weight: 700;
+    }
+    .expand-toggle-arrow {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.25s ease;
+      color: var(--green-900);
+    }
+    .expand-product-item.open .expand-toggle-arrow {
+      transform: rotate(180deg);
+      background: var(--green-900);
+      color: #FFFFFF;
+    }
+
+    /* Expandable Bottom Panel (Opens Vertically - Zero Side Scroll) */
+    .expand-details-panel {
+      padding: 0 16px 16px;
+      display: none;
+      border-top: 1px solid var(--border-light);
+      background: #FFFFFF;
+    }
+    .expand-product-item.open .expand-details-panel {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+    .expand-grid-specs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+      font-size: 0.8rem;
+    }
+    .spec-box {
+      background: var(--green-50);
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-light);
+    }
+    .spec-label { font-size: 0.7rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; }
+    .spec-value { font-weight: 700; color: var(--green-950); }
+
+    .expand-actions-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      justify-content: flex-end;
+    }
+    .btn-action-edit {
+      padding: 8px 16px;
+      background: var(--green-700);
+      color: #FFFFFF;
+      font-weight: 700;
+      border-radius: 8px;
+      font-size: 0.82rem;
+    }
+    .btn-action-delete {
+      padding: 8px 16px;
+      background: #FEE2E2;
+      color: #DC2626;
+      font-weight: 700;
+      border-radius: 8px;
+      font-size: 0.82rem;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 20, 14, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 1100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 600px;
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      font-size: 1.2rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #E5ECE8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Mobile Bottom Navigation Dock */
+    .admin-bottom-bar {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      body { padding-bottom: 74px; }
+      .admin-sidebar { display: none; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .admin-main { padding: 14px; }
+      .expand-grid-specs { grid-template-columns: 1fr; }
+
+      .admin-bottom-bar {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: var(--green-950);
+        border-top: 1.5px solid rgba(212, 175, 55, 0.3);
+        z-index: 90;
+        justify-content: space-around;
+        align-items: center;
+      }
+      .bottom-tab-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        color: var(--green-200);
+        font-size: 0.68rem;
+        font-weight: 700;
+        height: 100%;
+      }
+      .bottom-tab-item.active {
+        color: var(--gold-500);
+      }
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       1. SECURE SIGN IN SCREEN (Clean, No Disclosed Password Hint)
+       ========================================================================== -->
+  <div class="signin-container" id="adminSignInOverlay">
+    <div class="signin-card">
+      <div class="signin-logo">
+        <div class="signin-logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.4 0 2.5 1.1 2.5 2.5S13.4 12 12 12s-2.5-1.1-2.5-2.5S10.6 7 12 7zm3 10H9v-1.5c0-1.5 3-2.3 3-2.3s3 .8 3 2.3V17z"/></svg>
+        </div>
+        <span class="signin-brand-title">Admin Portal</span>
+      </div>
+      <p class="signin-subtitle">Enter authorized credentials to manage Al-Ameen catalog, orders, and offer batches.</p>
+
+      <form onsubmit="adminApp.handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Admin ID</label>
+          <input type="text" id="loginAdminId" class="form-input" placeholder="Admin username" required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-wrap">
+            <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" class="password-toggle-btn" onclick="adminApp.togglePassword()" aria-label="Toggle password">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem; margin-bottom:14px;">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" id="rememberMe" checked>
+            <span>Remember session</span>
+          </label>
+          <a href="index.html" style="color:var(--green-700); font-weight:700;">Back to Storefront</a>
+        </div>
+
+        <button type="submit" class="btn-login">
+          <span>Authorize Access</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       2. ADMIN DASHBOARD APP
+       ========================================================================== -->
+  <div class="admin-app" id="adminAppContainer" style="display:none;">
+    
+    <!-- Top Header -->
+    <header class="admin-header">
+      <div class="admin-header-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="color:var(--gold-500);"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.4 0 2.5 1.1 2.5 2.5S13.4 12 12 12s-2.5-1.1-2.5-2.5S10.6 7 12 7zm3 10H9v-1.5c0-1.5 3-2.3 3-2.3s3 .8 3 2.3V17z"/></svg>
+        <span>Admin Portal</span>
+      </div>
+
+      <!-- Action Buttons with Home-page luxury styling (Img 7 Fix) -->
+      <div class="header-actions">
+        <a href="index.html" target="_blank" rel="noopener" class="btn-luxury-pill" title="Open Storefront">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          <span>Live Store</span>
+        </a>
+        <button type="button" class="btn-luxury-pill danger" onclick="adminApp.logout()" title="Logout">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          <span>Logout</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Centered Add Product Banner (Phone/Tablet Size - Img 7 Fix) -->
+    <div class="mobile-add-center-wrap">
+      <button type="button" class="btn-add-product-center" onclick="adminApp.openProductModal()">
+        <span>➕</span>
+        <span>Add New Perfume</span>
+      </button>
+    </div>
+
+    <div class="admin-body">
+      <!-- Left Sidebar (Desktop/Laptop) -->
+      <aside class="admin-sidebar">
+        <div class="nav-item active" data-tab="overview" onclick="adminApp.switchTab('overview')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>Overview</span>
+        </div>
+        <div class="nav-item" data-tab="products" onclick="adminApp.switchTab('products')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg>
+          <span>Product Catalog</span>
+          <span class="nav-badge" id="sidebarProductCount">12</span>
+        </div>
+        <div class="nav-item" data-tab="offers" onclick="adminApp.switchTab('offers')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
+          <span>Offers & Announce</span>
+        </div>
+      </aside>
+
+      <!-- Main Body Views -->
+      <main class="admin-main">
+        
+        <!-- ==================================================================
+             TAB 1: OVERVIEW
+             ================================================================== -->
+        <section class="admin-tab-view active" id="tabView-overview">
+          <div style="margin-bottom: 20px;">
+            <h2 style="font-size:1.6rem; color:var(--green-950);">Operations Overview</h2>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Catalog summary & real-time controls</p>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon-box">🌸</div>
+              <div class="metric-info">
+                <h4>Active Perfumes</h4>
+                <div class="metric-num" id="metricProductsCount">12</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon-box">🏷️</div>
+              <div class="metric-info">
+                <h4>Festive Offer</h4>
+                <div class="metric-num" id="metricOfferStatus" style="font-size:1.15rem; color:var(--green-700);">Inactive</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon-box">📢</div>
+              <div class="metric-info">
+                <h4>Top Notice Bar</h4>
+                <div class="metric-num" id="metricNoticeStatus" style="font-size:1.15rem; color:var(--text-light);">Disabled</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon-box">⭐</div>
+              <div class="metric-info">
+                <h4>Avg. Rating</h4>
+                <div class="metric-num">4.9 / 5.0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Access Cards for Announcement & Festive Offer -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+            <div class="card-panel" style="margin-bottom:0;">
+              <h3 style="font-size:1.1rem; color:var(--green-950); margin-bottom:8px;">Announcement Banner</h3>
+              <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:14px;">Toggle top store banner on/off (Default: OFF).</p>
+              <button type="button" class="btn-luxury-pill" style="color:var(--green-950); background:var(--green-50);" onclick="adminApp.switchTab('offers')">
+                Manage Announcement →
+              </button>
+            </div>
+            <div class="card-panel" style="margin-bottom:0;">
+              <h3 style="font-size:1.1rem; color:var(--green-950); margin-bottom:8px;">Offer Batch & Discount Rates</h3>
+              <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:14px;">Enable festive discount % on retail & wholesale.</p>
+              <button type="button" class="btn-luxury-pill" style="color:var(--green-950); background:var(--green-50);" onclick="adminApp.switchTab('offers')">
+                Configure Offers →
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             TAB 2: PRODUCT MANAGEMENT (Expandable Cards - Zero Side Scroll)
+             ================================================================== -->
+        <section class="admin-tab-view" id="tabView-products">
+          <div class="card-panel-header">
+            <div>
+              <h2 style="font-size:1.6rem; color:var(--green-950);">Product Catalog</h2>
+              <p style="color:var(--text-muted); font-size:0.88rem;">Click any item or arrow to expand details vertically</p>
+            </div>
+            <input type="text" id="adminSearchInput" class="form-input" placeholder="Search perfumes..." style="max-width:280px;" oninput="adminApp.renderProductCards()">
+          </div>
+
+          <!-- Expandable Vertical Cards List (Img 7 Fix) -->
+          <div class="product-expand-list" id="adminProductCardsContainer">
+            <!-- Populated via JS -->
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             TAB 3: OFFERS & ANNOUNCEMENT SETTINGS (Prompt Fix)
+             ================================================================== -->
+        <section class="admin-tab-view" id="tabView-offers">
+          <div style="margin-bottom: 24px;">
+            <h2 style="font-size:1.6rem; color:var(--green-950);">Offer Batch & Announcement Controls</h2>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Configure timed offers, discount rates, and store notification tags.</p>
+          </div>
+
+          <!-- Announcement Tag Option (Default: OFF) -->
+          <div class="card-panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div>
+                <h3 style="font-size:1.15rem; color:var(--green-950);">Announcement Bar Notice</h3>
+                <p style="font-size:0.84rem; color:var(--text-muted);">Displays top emerald announcement band across the store</p>
+              </div>
+              <label class="switch-wrap">
+                <input type="checkbox" id="settingAnnouncementToggle" style="display:none;" onchange="adminApp.updateSettingsPreview()">
+                <span class="toggle-switch"></span>
+                <span id="announcementToggleLabel" style="font-weight:700; font-size:0.84rem;">OFF</span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Notice Text</label>
+              <input type="text" id="settingAnnouncementText" class="form-input" value="Free shipping Pan-India · Wholesale rates available">
+            </div>
+          </div>
+
+          <!-- Offer Batch / Festive Rate Manager (Prompt Fix) -->
+          <div class="card-panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div>
+                <h3 style="font-size:1.15rem; color:var(--green-950);">Festive Offer Batch</h3>
+                <p style="font-size:0.84rem; color:var(--text-muted);">When turned ON, product prices automatically calculate discounts and show badges</p>
+              </div>
+              <label class="switch-wrap">
+                <input type="checkbox" id="settingOfferToggle" style="display:none;" onchange="adminApp.updateSettingsPreview()">
+                <span class="toggle-switch"></span>
+                <span id="offerToggleLabel" style="font-weight:700; font-size:0.84rem;">OFF</span>
+              </label>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div class="form-group">
+                <label class="form-label">Discount Percentage (%)</label>
+                <input type="number" id="settingOfferDiscount" class="form-input" min="1" max="90" value="15">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Offer Badge Title</label>
+                <input type="text" id="settingOfferBadge" class="form-input" value="Festive Offer">
+              </div>
+            </div>
+
+            <div style="background:var(--green-50); border:1px solid var(--border); padding:14px; border-radius:10px; margin-top:10px;">
+              <span style="font-size:0.75rem; font-weight:800; color:var(--gold-700); text-transform:uppercase;">Live Preview:</span>
+              <p style="font-size:0.86rem; color:var(--text-dark); margin-top:4px;" id="offerRatePreviewText">
+                A ₹1,499 fragrance will be discounted to <strong>₹1,274</strong> with strikethrough.
+              </p>
+            </div>
+          </div>
+
+          <button type="button" class="btn-add-product-center" style="max-width:300px;" onclick="adminApp.saveSettings()">
+            Save Settings & Apply
+          </button>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- Mobile Bottom Navigation Dock -->
+    <nav class="admin-bottom-bar">
+      <div class="bottom-tab-item active" data-tab="overview" onclick="adminApp.switchTab('overview')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Overview</span>
+      </div>
+      <div class="bottom-tab-item" data-tab="products" onclick="adminApp.switchTab('products')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg>
+        <span>Products</span>
+      </div>
+      <div class="bottom-tab-item" data-tab="offers" onclick="adminApp.switchTab('offers')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
+        <span>Offers</span>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: ADD / EDIT PERFUME
+       ========================================================================== -->
+  <div class="modal-overlay" id="productModal" onclick="adminApp.closeProductModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="adminApp.closeProductModal()">×</button>
+      <h3 id="modalTitle" style="font-size:1.35rem; color:var(--green-950); margin-bottom:16px;">Add New Perfume</h3>
+
+      <form onsubmit="adminApp.handleSaveProduct(event)">
+        <input type="hidden" id="editProductId">
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Perfume Name *</label>
+            <input type="text" id="pName" class="form-input" required placeholder="e.g. Royal Amber Oud">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category *</label>
+            <select id="pCategory" class="form-input" required>
+              <option value="Luxury">Luxury</option>
+              <option value="Men">Men</option>
+              <option value="Women">Women</option>
+              <option value="Unisex">Unisex</option>
+              <option value="Gift Sets">Gift Sets</option>
+              <option value="Miniatures">Miniatures</option>
+              <option value="Body Mists">Body Mists</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Type / Concentration *</label>
+            <input type="text" id="pType" class="form-input" required placeholder="e.g. Pure Concentrated Oil">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bottle Size *</label>
+            <input type="text" id="pSize" class="form-input" required placeholder="e.g. 12ml / 100ml">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label class="form-label">Retail Price (₹) *</label>
+            <input type="number" id="pRetailPrice" class="form-input" required placeholder="1499">
+          </div>
+          <div class="form-group">
+            <label class="form-label">MRP (₹)</label>
+            <input type="number" id="pMrp" class="form-input" placeholder="2199">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Wholesale MOQ *</label>
+            <input type="number" id="pMoq" class="form-input" required placeholder="6" value="6">
+          </div>
+        </div>
+
+        <!-- Wholesale Tier Prices -->
+        <div style="background:var(--green-50); border:1px solid var(--border); padding:12px; border-radius:10px; margin-bottom:16px;">
+          <label class="form-label" style="color:var(--gold-700);">Wholesale Tier Unit Rates (₹)</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+            <div>
+              <span style="font-size:0.72rem; color:var(--text-light);">6–11 pcs:</span>
+              <input type="number" id="pTier1" class="form-input" placeholder="780" required>
+            </div>
+            <div>
+              <span style="font-size:0.72rem; color:var(--text-light);">12–23 pcs:</span>
+              <input type="number" id="pTier2" class="form-input" placeholder="710" required>
+            </div>
+            <div>
+              <span style="font-size:0.72rem; color:var(--text-light);">24+ pcs:</span>
+              <input type="number" id="pTier3" class="form-input" placeholder="640" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Fragrance Notes (Top, Heart, Base) *</label>
+          <input type="text" id="pNotesTop" class="form-input" placeholder="Top notes (e.g. Cambodian Oud, Saffron)" style="margin-bottom:6px;" required>
+          <input type="text" id="pNotesHeart" class="form-input" placeholder="Heart notes (e.g. Taif Rose, Smoked Amber)" style="margin-bottom:6px;" required>
+          <input type="text" id="pNotesBase" class="form-input" placeholder="Base notes (e.g. Assam Agarwood, Sandalwood)" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Image URL</label>
+          <input type="url" id="pImage" class="form-input" placeholder="https://images.unsplash.com/...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea id="pDesc" class="form-input" rows="2" placeholder="Royal formulation notes..."></textarea>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+          <input type="checkbox" id="pBestseller">
+          <label for="pBestseller" style="font-size:0.85rem; font-weight:700; cursor:pointer;">Feature as Bestseller on Home</label>
+        </div>
+
+        <button type="submit" class="btn-add-product-center" style="width:100%; max-width:100%;">Save Perfume</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT LOGIC
+       ========================================================================== -->
+  <script>
+    class AdminPortalApp {
+      constructor() {
+        this.adminId = "AlameenPerfumes";
+        this.password = "Alameen@786";
+        this.isLoggedIn = sessionStorage.getItem('alameen_admin_auth') === 'true' || localStorage.getItem('alameen_admin_auth') === 'true';
+        
+        this.products = getStoredProducts();
+        this.settings = getStoredSettings();
+
+        this.init();
+      }
+
+      init() {
+        if (this.isLoggedIn) {
+          this.showDashboard();
+        } else {
+          this.showSignIn();
+        }
+      }
+
+      showSignIn() {
+        document.getElementById('adminSignInOverlay').style.display = 'flex';
+        document.getElementById('adminAppContainer').style.display = 'none';
+      }
+
+      showDashboard() {
+        document.getElementById('adminSignInOverlay').style.display = 'none';
+        document.getElementById('adminAppContainer').style.display = 'flex';
+        
+        this.renderProductCards();
+        this.loadSettingsUI();
+        this.updateOverviewMetrics();
+      }
+
+      handleLogin(e) {
+        e.preventDefault();
+        const id = document.getElementById('loginAdminId').value.trim();
+        const pass = document.getElementById('loginPassword').value.trim();
+        const remember = document.getElementById('rememberMe').checked;
+
+        if (id === this.adminId && pass === this.password) {
+          if (remember) {
+            localStorage.setItem('alameen_admin_auth', 'true');
+          } else {
+            sessionStorage.setItem('alameen_admin_auth', 'true');
+          }
+          this.isLoggedIn = true;
+          this.showDashboard();
+        } else {
+          alert('Invalid Admin Credentials. Please verify and try again.');
+        }
+      }
+
+      logout() {
+        localStorage.removeItem('alameen_admin_auth');
+        sessionStorage.removeItem('alameen_admin_auth');
+        this.isLoggedIn = false;
+        this.showSignIn();
+      }
+
+      togglePassword() {
+        const input = document.getElementById('loginPassword');
+        input.type = input.type === 'password' ? 'text' : 'password';
+      }
+
+      switchTab(tabId) {
+        document.querySelectorAll('.admin-tab-view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.bottom-tab-item').forEach(b => b.classList.remove('active'));
+
+        const targetView = document.getElementById(`tabView-${tabId}`);
+        if (targetView) targetView.classList.add('active');
+
+        const activeNavItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+        if (activeNavItem) activeNavItem.classList.add('active');
+
+        const activeBottom = document.querySelector(`.bottom-tab-item[data-tab="${tabId}"]`);
+        if (activeBottom) activeBottom.classList.add('active');
+      }
+
+      updateOverviewMetrics() {
+        document.getElementById('metricProductsCount').textContent = this.products.length;
+        document.getElementById('sidebarProductCount').textContent = this.products.length;
+        
+        const offerStatus = document.getElementById('metricOfferStatus');
+        if (offerStatus) {
+          offerStatus.textContent = this.settings.offer_enabled ? `${this.settings.offer_discount_percent}% OFF Active` : 'Inactive';
+          offerStatus.style.color = this.settings.offer_enabled ? 'var(--green-700)' : 'var(--text-light)';
+        }
+
+        const noticeStatus = document.getElementById('metricNoticeStatus');
+        if (noticeStatus) {
+          noticeStatus.textContent = this.settings.announcement_enabled ? 'Active' : 'Disabled';
+          noticeStatus.style.color = this.settings.announcement_enabled ? 'var(--green-700)' : 'var(--text-light)';
+        }
+      }
+
+      /* Render Expandable Cards (Img 7 Fix - Zero Side Scroll) */
+      renderProductCards() {
+        const container = document.getElementById('adminProductCardsContainer');
+        const query = (document.getElementById('adminSearchInput')?.value || '').toLowerCase().trim();
+
+        let list = this.products;
+        if (query) {
+          list = list.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
+        }
+
+        if (list.length === 0) {
+          container.innerHTML = `<div style="text-align:center; padding:40px; background:#FFFFFF; border-radius:14px; color:var(--text-muted);">No products found.</div>`;
+          return;
+        }
+
+        container.innerHTML = list.map(p => {
+          const t1 = p.wholesaleTiers ? p.wholesaleTiers[0].price : Math.round(p.retailPrice * 0.6);
+          const t2 = p.wholesaleTiers ? p.wholesaleTiers[1].price : Math.round(p.retailPrice * 0.55);
+          const t3 = p.wholesaleTiers ? p.wholesaleTiers[2].price : Math.round(p.retailPrice * 0.5);
+
+          return `
+            <div class="expand-product-item" id="item-${p.id}">
+              <!-- Compact summary bar (tap anywhere on this bar to expand) -->
+              <div class="expand-summary-row" onclick="adminApp.toggleExpand('${p.id}')">
+                <img src="${p.images[0]}" alt="${p.name}" class="expand-product-thumb" loading="lazy">
+                <div class="expand-info-col">
+                  <div class="expand-p-name">${p.name}</div>
+                  <div class="expand-p-meta">
+                    <span style="background:var(--green-200); color:var(--green-950); padding:2px 8px; border-radius:10px; font-weight:800; font-size:0.68rem;">${p.category}</span>
+                    <span>${p.size}</span>
+                    ${p.bestseller ? `<span style="color:var(--gold-700); font-weight:800;">★ Best</span>` : ''}
+                  </div>
+                </div>
+
+                <div class="expand-price-col">
+                  <div class="expand-price-retail">₹${p.retailPrice}</div>
+                  <div class="expand-price-wholesale">WS: ₹${t1} (MOQ: ${p.wholesaleMOQ})</div>
+                </div>
+
+                <div class="expand-toggle-arrow">
+                  ▼
+                </div>
+              </div>
+
+              <!-- Expanded Vertical Details (Zero horizontal scroll!) -->
+              <div class="expand-details-panel">
+                <div class="expand-grid-specs">
+                  <div class="spec-box">
+                    <div class="spec-label">Fragrance Type</div>
+                    <div class="spec-value">${p.type}</div>
+                  </div>
+                  <div class="spec-box">
+                    <div class="spec-label">Customer Rating</div>
+                    <div class="spec-value">${p.rating} ★ (${p.reviews} reviews)</div>
+                  </div>
+                  <div class="spec-box">
+                    <div class="spec-label">MRP (Strikethrough)</div>
+                    <div class="spec-value">₹${p.mrp}</div>
+                  </div>
+                </div>
+
+                <div class="spec-box" style="margin-bottom:10px;">
+                  <div class="spec-label">Wholesale Volume Rates</div>
+                  <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:0.82rem; font-weight:700;">
+                    <span>6–11 pcs: ₹${t1}</span>
+                    <span>12–23 pcs: ₹${t2}</span>
+                    <span>24+ pcs: ₹${t3}</span>
+                  </div>
+                </div>
+
+                <div class="spec-box" style="margin-bottom:10px;">
+                  <div class="spec-label">Fragrance Notes Architecture</div>
+                  <div style="font-size:0.8rem; margin-top:4px;">
+                    <div><strong>Top:</strong> ${p.notes.top}</div>
+                    <div><strong>Heart:</strong> ${p.notes.heart}</div>
+                    <div><strong>Base:</strong> ${p.notes.base}</div>
+                  </div>
+                </div>
+
+                <div class="expand-actions-row">
+                  <button type="button" class="btn-action-edit" onclick="adminApp.openEditModal('${p.id}')">Edit Perfume</button>
+                  <button type="button" class="btn-action-delete" onclick="adminApp.deleteProduct('${p.id}')">Delete</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      toggleExpand(id) {
+        const item = document.getElementById(`item-${id}`);
+        if (item) item.classList.toggle('open');
+      }
+
+      openProductModal() {
+        document.getElementById('modalTitle').textContent = 'Add New Perfume';
+        document.getElementById('editProductId').value = '';
+        document.getElementById('pName').value = '';
+        document.getElementById('pCategory').value = 'Luxury';
+        document.getElementById('pType').value = 'Eau de Parfum';
+        document.getElementById('pSize').value = '100ml';
+        document.getElementById('pRetailPrice').value = '';
+        document.getElementById('pMrp').value = '';
+        document.getElementById('pMoq').value = '6';
+        document.getElementById('pTier1').value = '';
+        document.getElementById('pTier2').value = '';
+        document.getElementById('pTier3').value = '';
+        document.getElementById('pNotesTop').value = '';
+        document.getElementById('pNotesHeart').value = '';
+        document.getElementById('pNotesBase').value = '';
+        document.getElementById('pImage').value = '';
+        document.getElementById('pDesc').value = '';
+        document.getElementById('pBestseller').checked = false;
+
+        document.getElementById('productModal').classList.add('active');
+      }
+
+      openEditModal(id) {
+        const p = this.products.find(item => item.id === id);
+        if (!p) return;
+
+        document.getElementById('modalTitle').textContent = `Edit: ${p.name}`;
+        document.getElementById('editProductId').value = p.id;
+        document.getElementById('pName').value = p.name;
+        document.getElementById('pCategory').value = p.category;
+        document.getElementById('pType').value = p.type;
+        document.getElementById('pSize').value = p.size;
+        document.getElementById('pRetailPrice').value = p.retailPrice;
+        document.getElementById('pMrp').value = p.mrp || p.retailPrice;
+        document.getElementById('pMoq').value = p.wholesaleMOQ || 6;
+        document.getElementById('pTier1').value = p.wholesaleTiers ? p.wholesaleTiers[0].price : '';
+        document.getElementById('pTier2').value = p.wholesaleTiers ? p.wholesaleTiers[1].price : '';
+        document.getElementById('pTier3').value = p.wholesaleTiers ? p.wholesaleTiers[2].price : '';
+        document.getElementById('pNotesTop').value = p.notes.top;
+        document.getElementById('pNotesHeart').value = p.notes.heart;
+        document.getElementById('pNotesBase').value = p.notes.base;
+        document.getElementById('pImage').value = p.images[0] || '';
+        document.getElementById('pDesc').value = p.description || '';
+        document.getElementById('pBestseller').checked = !!p.bestseller;
+
+        document.getElementById('productModal').classList.add('active');
+      }
+
+      closeProductModal() {
+        document.getElementById('productModal').classList.remove('active');
+      }
+
+      handleSaveProduct(e) {
+        e.preventDefault();
+        const editId = document.getElementById('editProductId').value;
+        const retail = parseInt(document.getElementById('pRetailPrice').value) || 999;
+        const mrp = parseInt(document.getElementById('pMrp').value) || Math.round(retail * 1.4);
+        const moq = parseInt(document.getElementById('pMoq').value) || 6;
+        const t1 = parseInt(document.getElementById('pTier1').value) || Math.round(retail * 0.6);
+        const t2 = parseInt(document.getElementById('pTier2').value) || Math.round(retail * 0.55);
+        const t3 = parseInt(document.getElementById('pTier3').value) || Math.round(retail * 0.5);
+
+        const newProduct = {
+          id: editId || `p${Date.now()}`,
+          name: document.getElementById('pName').value.trim(),
+          category: document.getElementById('pCategory').value,
+          type: document.getElementById('pType').value.trim(),
+          size: document.getElementById('pSize').value.trim(),
+          rating: 4.9,
+          reviews: 50,
+          retailPrice: retail,
+          mrp: mrp,
+          wholesaleMOQ: moq,
+          wholesaleTiers: [
+            { min: moq, max: moq * 2 - 1, price: t1 },
+            { min: moq * 2, max: moq * 4 - 1, price: t2 },
+            { min: moq * 4, max: 9999, price: t3 }
+          ],
+          notes: {
+            top: document.getElementById('pNotesTop').value.trim(),
+            heart: document.getElementById('pNotesHeart').value.trim(),
+            base: document.getElementById('pNotesBase').value.trim()
+          },
+          description: document.getElementById('pDesc').value.trim() || 'Royal fragrance formulation.',
+          images: [document.getElementById('pImage').value.trim() || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80'],
+          bestseller: document.getElementById('pBestseller').checked
+        };
+
+        if (editId) {
+          const index = this.products.findIndex(p => p.id === editId);
+          if (index > -1) this.products[index] = newProduct;
+        } else {
+          this.products.unshift(newProduct);
+        }
+
+        setStorage('alameen_products', this.products);
+        this.renderProductCards();
+        this.updateOverviewMetrics();
+        this.closeProductModal();
+        alert('Perfume successfully saved to catalog!');
+      }
+
+      deleteProduct(id) {
+        if (!confirm('Are you sure you want to delete this perfume from the catalog?')) return;
+        this.products = this.products.filter(p => p.id !== id);
+        setStorage('alameen_products', this.products);
+        this.renderProductCards();
+        this.updateOverviewMetrics();
+      }
+
+      /* Settings & Offer Batch Management (Prompt Fix) */
+      loadSettingsUI() {
+        const barToggle = document.getElementById('settingAnnouncementToggle');
+        const barLabel = document.getElementById('announcementToggleLabel');
+        const barText = document.getElementById('settingAnnouncementText');
+
+        if (barToggle) barToggle.checked = !!this.settings.announcement_enabled;
+        if (barLabel) barLabel.textContent = this.settings.announcement_enabled ? 'ON' : 'OFF';
+        if (barText) barText.value = this.settings.announcement_text || '';
+
+        const offerToggle = document.getElementById('settingOfferToggle');
+        const offerLabel = document.getElementById('offerToggleLabel');
+        const offerDisc = document.getElementById('settingOfferDiscount');
+        const offerBadge = document.getElementById('settingOfferBadge');
+
+        if (offerToggle) offerToggle.checked = !!this.settings.offer_enabled;
+        if (offerLabel) offerLabel.textContent = this.settings.offer_enabled ? 'ON' : 'OFF';
+        if (offerDisc) offerDisc.value = this.settings.offer_discount_percent || 15;
+        if (offerBadge) offerBadge.value = this.settings.offer_badge || 'Festive Offer';
+
+        this.updateSettingsPreview();
+      }
+
+      updateSettingsPreview() {
+        const barToggle = document.getElementById('settingAnnouncementToggle');
+        const barLabel = document.getElementById('announcementToggleLabel');
+        if (barLabel) barLabel.textContent = barToggle?.checked ? 'ON' : 'OFF';
+
+        const offerToggle = document.getElementById('settingOfferToggle');
+        const offerLabel = document.getElementById('offerToggleLabel');
+        if (offerLabel) offerLabel.textContent = offerToggle?.checked ? 'ON' : 'OFF';
+
+        const disc = parseInt(document.getElementById('settingOfferDiscount')?.value) || 15;
+        const preview = document.getElementById('offerRatePreviewText');
+        if (preview) {
+          const sample = 1499;
+          const discounted = Math.round(sample * (1 - disc / 100));
+          preview.innerHTML = `With <strong>${disc}% discount</strong>, a ₹1,499 fragrance will be discounted to <strong>₹${discounted}</strong> with strikethrough across the store.`;
+        }
+      }
+
+      saveSettings() {
+        this.settings.announcement_enabled = document.getElementById('settingAnnouncementToggle')?.checked || false;
+        this.settings.announcement_text = document.getElementById('settingAnnouncementText')?.value.trim() || 'Free shipping Pan-India · Wholesale rates available';
+        
+        this.settings.offer_enabled = document.getElementById('settingOfferToggle')?.checked || false;
+        this.settings.offer_discount_percent = parseInt(document.getElementById('settingOfferDiscount')?.value) || 15;
+        this.settings.offer_badge = document.getElementById('settingOfferBadge')?.value.trim() || 'Festive Offer';
+
+        setStorage('alameen_settings', this.settings);
+        this.updateOverviewMetrics();
+        alert('Settings saved! Announcement & Offer rates updated across storefront.');
+      }
+    }
+
+    const adminApp = new AdminPortalApp();
+  </script>
+</body>
+</html>

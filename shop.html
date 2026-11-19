@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Shop Fragrances & Attars | AL-AMEEN PERFUMES</title>
+  
+  <!-- Google Fonts: Poppins Firm Geometric Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230B2B20'%3E%3Cpath d='M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z'/%3E%3C/svg%3E">
+
+  <!-- Core Catalog Engine -->
+  <script src="core.js"></script>
+
+  <style>
+    :root {
+      --green-950: #04140E;
+      --green-900: #0A261C;
+      --green-800: #10382B;
+      --green-700: #185340;
+      --green-600: #227B5E;
+      --green-400: #54B08C;
+      --green-200: #A8DDC2;
+      --green-50:  #F4F7F5;
+      
+      --gold-500: #D4AF37;
+      --gold-700: #A88120;
+      --gold-300: #ECD485;
+      
+      --text-dark: #061F17;
+      --text-muted: #3B5448;
+      --text-light: #718D80;
+      
+      --border-card: #E5ECE8;
+      --border-subtle: #DEE8E3;
+      --border-gold: rgba(212, 175, 55, 0.4);
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --radius-pill: 9999px;
+      
+      --shadow-sm: 0 2px 8px rgba(6, 31, 23, 0.05);
+      --shadow-md: 0 10px 28px rgba(6, 31, 23, 0.08);
+      
+      --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --transition: all 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--green-50);
+      color: var(--text-dark);
+      line-height: 1.55;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, .brand-title {
+      font-family: var(--font-main);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Top Announcement Bar */
+    .announcement-bar {
+      background: var(--green-950);
+      color: var(--gold-300);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      text-align: center;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    .announcement-badge {
+      background: rgba(212, 175, 55, 0.18);
+      color: var(--gold-500);
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    /* Navbar */
+    .navbar-sticky {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(10, 38, 28, 0.95);
+      backdrop-filter: blur(14px);
+      color: #FFFFFF;
+      box-shadow: 0 4px 20px rgba(5, 26, 19, 0.25);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .navbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      gap: 16px;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-logo-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--green-700), var(--green-950));
+      border: 1.5px solid var(--gold-500);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold-500);
+    }
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      color: #FFFFFF;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+    .nav-link {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--green-200);
+      padding: 6px 2px;
+      position: relative;
+    }
+    .nav-link:hover, .nav-link.active { color: #FFFFFF; }
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--gold-500);
+      border-radius: 2px;
+    }
+
+    .mode-switch-wrapper {
+      display: flex;
+      align-items: center;
+      background: rgba(5, 26, 19, 0.8);
+      padding: 4px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    .mode-btn {
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--green-200);
+    }
+    .mode-btn.active {
+      background: linear-gradient(135deg, var(--green-600), var(--green-800));
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+    }
+
+    .action-icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      position: relative;
+    }
+    .action-icon-btn .count-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: var(--gold-500);
+      color: var(--green-950);
+      font-size: 0.68rem;
+      font-weight: 800;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Page Header Banner */
+    .shop-header {
+      background: linear-gradient(175deg, var(--green-950) 0%, var(--green-900) 100%);
+      color: #FFFFFF;
+      padding: 40px 0 32px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    }
+    .shop-header-title {
+      font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .shop-header-sub {
+      color: var(--green-200);
+      font-size: 0.95rem;
+      max-width: 600px;
+      margin-bottom: 24px;
+    }
+
+    /* Search & Filter Toolbar */
+    .toolbar-wrap {
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-card);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--green-50);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      padding: 8px 16px;
+      flex: 1;
+      min-width: 260px;
+    }
+    .search-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 0.92rem;
+      color: var(--text-dark);
+      width: 100%;
+    }
+    .sort-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    .sort-select {
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border-subtle);
+      background: #FFFFFF;
+      font-weight: 600;
+      color: var(--green-950);
+      cursor: pointer;
+    }
+
+    /* Category Filter Chips */
+    .category-chips-wrap {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 20px 0;
+      scrollbar-width: none;
+    }
+    .category-chips-wrap::-webkit-scrollbar { display: none; }
+    .filter-chip {
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+    .filter-chip:hover, .filter-chip.active {
+      background: var(--green-900);
+      color: #FFFFFF;
+      border-color: var(--gold-500);
+      box-shadow: 0 4px 12px rgba(10, 38, 28, 0.25);
+    }
+
+    /* Products Grid */
+    .shop-content-section {
+      padding: 10px 0 60px;
+      flex: 1;
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+    }
+    .product-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(212, 175, 55, 0.5);
+    }
+    .card-media {
+      position: relative;
+      height: 220px;
+      background: #F7FAF8;
+      overflow: hidden;
+    }
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .product-card:hover .card-img { transform: scale(1.05); }
+    .card-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(10, 38, 28, 0.88);
+      backdrop-filter: blur(6px);
+      color: #FFFFFF;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .card-badge.offer-badge {
+      background: linear-gradient(135deg, #DC2626, #991B1B);
+      border-color: #FECACA;
+      color: #FFFFFF;
+      font-weight: 800;
+    }
+    .card-wish-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dark);
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+    .card-wish-btn.active { color: #E11D48; background: #FFFFFF; }
+
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .card-category { color: var(--green-600); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+    .card-size { font-size: 0.74rem; color: var(--text-light); font-weight: 600; }
+    .card-title { font-size: 1.02rem; color: var(--green-950); margin-bottom: 6px; }
+    .card-notes-brief {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-rating-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 14px;
+    }
+    .stars { color: var(--gold-500); }
+
+    .card-footer {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .price-row { display: flex; align-items: baseline; gap: 8px; }
+    .price-current { font-size: 1.25rem; font-weight: 800; color: var(--green-950); }
+    .price-mrp { font-size: 0.85rem; color: var(--text-light); text-decoration: line-through; }
+    .wholesale-moq-label { font-size: 0.68rem; color: var(--gold-700); font-weight: 700; text-transform: uppercase; }
+
+    /* Longer Add to Bag Button with Writing (Img 4 Fix) */
+    .card-add-btn {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, var(--green-700) 0%, var(--green-900) 100%);
+      color: #FFFFFF;
+      border-radius: var(--radius-md);
+      font-size: 0.84rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(11, 43, 32, 0.15);
+      transition: var(--transition);
+    }
+    .card-add-btn:hover {
+      background: linear-gradient(135deg, var(--green-600) 0%, var(--green-800) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(11, 43, 32, 0.25);
+    }
+    .card-add-btn svg { width: 18px; height: 18px; }
+
+    /* Product Quickview Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 20, 14, 0.7);
+      backdrop-filter: blur(6px);
+      z-index: 120;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.active { display: flex; }
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 640px;
+      padding: 28px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+      border: 1px solid var(--border-gold);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .pdp-notes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .note-card {
+      background: var(--green-50);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      text-align: center;
+    }
+    .note-card h5 { font-size: 0.72rem; color: var(--green-700); text-transform: uppercase; margin-bottom: 4px; }
+    .note-card p { font-size: 0.78rem; font-weight: 600; color: var(--text-dark); }
+
+    /* Cart Drawer & Footer */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 20, 14, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+    .drawer-backdrop.active { opacity: 1; visibility: visible; }
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 100%;
+      max-width: 420px;
+      height: 100%;
+      background: #FFFFFF;
+      z-index: 101;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    .cart-drawer.active { transform: translateX(0); }
+    .drawer-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--green-900);
+      color: #FFFFFF;
+    }
+    .drawer-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .drawer-items-list { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+    .cart-item-card {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      background: var(--green-50);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-card);
+      align-items: center;
+    }
+    .cart-item-thumb { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+    .drawer-footer { padding: 20px; border-top: 1px solid var(--border-subtle); }
+    .drawer-total-row { display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 800; color: var(--green-950); margin-bottom: 16px; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold-500) 0%, var(--gold-700) 100%);
+      color: var(--green-950);
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding: 13px 26px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Footer */
+    .main-footer {
+      background: #04140E;
+      color: var(--green-200);
+      padding: 60px 0 30px;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr repeat(3, 1fr);
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+    .footer-col h4 { color: #FFFFFF; font-size: 1rem; margin-bottom: 16px; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 0.88rem; }
+    .footer-socials { display: flex; gap: 12px; margin-top: 18px; }
+    .social-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      transition: var(--transition);
+    }
+    .social-btn:hover { background: var(--gold-500); color: var(--green-950); border-color: var(--gold-500); }
+
+    /* STRICTLY HIDE MOBILE TAB BAR ON LAPTOP/DESKTOP */
+    .mobile-tab-bar { display: none !important; }
+
+    @media (max-width: 1024px) {
+      .products-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+    }
+
+    @media (max-width: 768px) {
+      body { padding-bottom: 84px; }
+      .desktop-only { display: none !important; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+
+      .mobile-tab-bar {
+        display: flex !important;
+        position: fixed;
+        bottom: 12px;
+        left: 14px;
+        right: 14px;
+        height: 62px;
+        background: linear-gradient(135deg, rgba(10, 38, 28, 0.96) 0%, rgba(4, 20, 14, 0.98) 100%);
+        backdrop-filter: blur(16px);
+        border-radius: 36px;
+        border: 1.5px solid rgba(212, 175, 55, 0.4);
+        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+        z-index: 95;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 8px;
+      }
+      .tab-bar-item {
+        flex: 1;
+        height: 46px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        color: #E2F0EA !important;
+        border-radius: 20px;
+        position: relative;
+      }
+      .tab-bar-item.active {
+        background: linear-gradient(135deg, rgba(34, 123, 94, 0.85), rgba(16, 56, 43, 0.95));
+        border: 1px solid rgba(212, 175, 55, 0.5);
+        color: var(--gold-300) !important;
+      }
+      .tab-bar-item.active svg { color: var(--gold-500) !important; }
+      .tab-bar-item span { font-size: 0.68rem; font-weight: 700; }
+      .tab-bar-item .count-badge {
+        position: absolute;
+        top: 2px;
+        right: 18px;
+        background: var(--gold-500);
+        color: var(--green-950);
+        font-size: 0.62rem;
+        font-weight: 900;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="announcement-bar" id="announcementBar">
+    <span class="announcement-badge">Notice</span>
+    <span id="announcementText">Free shipping Pan-India · Wholesale rates available</span>
+  </div>
+
+  <!-- Sticky Navbar -->
+  <header class="navbar-sticky">
+    <div class="container navbar-inner">
+      <a href="index.html" class="brand-logo" aria-label="Al-Ameen Perfumes Home">
+        <div class="brand-logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"/></svg>
+        </div>
+        <span class="brand-title">AL-AMEEN PERFUMES</span>
+      </a>
+
+      <!-- Desktop Links -->
+      <nav aria-label="Main Navigation" class="desktop-only">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="shop.html" class="nav-link active">Shop</a></li>
+          <li><a href="about.html" class="nav-link">About Heritage</a></li>
+          <li><a href="contact.html" class="nav-link">Contact & Inquiries</a></li>
+        </ul>
+      </nav>
+
+      <!-- Wholesale Switch -->
+      <div class="mode-switch-wrapper desktop-only" role="radiogroup">
+        <button type="button" class="mode-btn active" id="retailModeBtn" onclick="shopApp.setMode('retail')">Retail</button>
+        <button type="button" class="mode-btn" id="wholesaleModeBtn" onclick="shopApp.setMode('wholesale')">Wholesale</button>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="action-icon-btn" onclick="shopApp.openCartDrawer()" aria-label="Shopping Cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="count-badge" id="navCartCount">0</span>
+        </button>
+        <a href="admin.html" class="action-icon-btn desktop-only" style="color:var(--gold-500);" title="Admin Portal">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Shop Header Banner -->
+  <section class="shop-header">
+    <div class="container">
+      <h1 class="shop-header-title">Fragrance Catalog & Formulations</h1>
+      <p class="shop-header-sub">Curated royal attars, pure essential oils, and luxury French Eau de Parfum. Switch between Retail and Wholesale at any time.</p>
+      
+      <!-- Mobile Mode Switch in Explore / Shop -->
+      <div class="mode-switch-wrapper" style="max-width:280px; margin-bottom:18px;">
+        <button type="button" class="mode-btn active" id="mobileRetailBtn" onclick="shopApp.setMode('retail')" style="flex:1; justify-content:center;">Retail Mode</button>
+        <button type="button" class="mode-btn" id="mobileWholesaleBtn" onclick="shopApp.setMode('wholesale')" style="flex:1; justify-content:center;">Wholesale Mode</button>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar-wrap">
+        <div class="search-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green-700)" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="searchInput" placeholder="Search by name, notes (oud, rose, amber)..." oninput="shopApp.handleSearch(event)">
+        </div>
+
+        <div class="sort-wrap">
+          <span>Sort By:</span>
+          <select class="sort-select" id="sortSelect" onchange="shopApp.handleSort(event)">
+            <option value="popular">Most Popular</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="rating">Customer Rating</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category Filter Chips -->
+      <div class="category-chips-wrap" id="categoryChips">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Catalog Section -->
+  <main class="shop-content-section container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin: 18px 0 24px;">
+      <span style="font-size:0.88rem; font-weight:700; color:var(--text-muted);" id="resultsCount">Showing 12 Fragrances</span>
+      <span style="font-size:0.8rem; color:var(--green-600); font-weight:700;" id="activeModeNotice">Retail Rates (Min Qty: 1)</span>
+    </div>
+
+    <div class="products-grid" id="shopProductsGrid">
+      <!-- Rendered via JS -->
+    </div>
+  </main>
+
+  <!-- Product Detail Modal (Quick View) -->
+  <div class="modal-backdrop" id="pdpBackdrop">
+    <div class="modal-box" id="pdpModalContent">
+      <!-- Populated via JS -->
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div class="drawer-backdrop" id="cartBackdrop" onclick="shopApp.closeCartDrawer()"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="drawer-header">
+      <div>
+        <span class="brand-title" style="font-size:1.1rem;">Your Bag</span>
+        <div style="font-size:0.75rem; color:var(--gold-300);" id="cartModeLabel">Mode: Retail</div>
+      </div>
+      <button class="drawer-close-btn" onclick="shopApp.closeCartDrawer()">✕</button>
+    </div>
+    <div class="drawer-items-list" id="cartItemsList"></div>
+    <div class="drawer-footer">
+      <div class="drawer-total-row">
+        <span>Total:</span>
+        <span id="cartDrawerTotal">₹0</span>
+      </div>
+      <button type="button" class="btn-primary" style="width:100%; justify-content:center; padding:14px;" onclick="shopApp.openOrderModal()">
+        Proceed to WhatsApp Order
+      </button>
+    </div>
+  </aside>
+
+  <!-- Order Modal -->
+  <div class="modal-backdrop" id="orderModalBackdrop">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <h3 style="color:var(--green-950); font-size:1.3rem;">Complete Order via WhatsApp</h3>
+        <button class="drawer-close-btn" style="background:#DEE8E3; color:#061F17;" onclick="shopApp.closeOrderModal()">✕</button>
+      </div>
+      <form onsubmit="shopApp.handleOrderSubmit(event)">
+        <div style="margin-bottom:12px;">
+          <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px;">Full Name *</label>
+          <input type="text" id="orderName" required style="width:100%; padding:10px; border:1.5px solid var(--border-subtle); border-radius:8px;">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px;">10-Digit Mobile No. *</label>
+          <input type="tel" id="orderPhone" pattern="[0-9]{10}" required style="width:100%; padding:10px; border:1.5px solid var(--border-subtle); border-radius:8px;">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px;">Delivery Address *</label>
+          <textarea id="orderAddress" rows="3" required style="width:100%; padding:10px; border:1.5px solid var(--border-subtle); border-radius:8px;"></textarea>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:4px;">Pincode *</label>
+          <input type="text" id="orderPincode" pattern="[0-9]{6}" required style="width:100%; padding:10px; border:1.5px solid var(--border-subtle); border-radius:8px;">
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:14px; margin-top:10px;">
+          Send Order to WhatsApp
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mobile Curved Bottom Floating Dock -->
+  <nav class="mobile-tab-bar" aria-label="Mobile Navigation">
+    <a href="index.html" class="tab-bar-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+      <span>Home</span>
+    </a>
+    <a href="shop.html" class="tab-bar-item active">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <span>Shop</span>
+    </a>
+    <a href="about.html" class="tab-bar-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      <span>About</span>
+    </a>
+    <div class="tab-bar-item" onclick="shopApp.openCartDrawer()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+      <span>Bag</span>
+      <span class="count-badge" id="mobileDockCartCount">0</span>
+    </div>
+  </nav>
+
+  <!-- Footer with Authentic SVG Icons -->
+  <footer class="main-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <span class="brand-title" style="font-size:1.25rem; color:#FFFFFF;">AL-AMEEN PERFUMES</span>
+          <p style="margin: 12px 0 18px; font-size:0.86rem; line-height:1.6;">
+            Royal oriental attars, French Eau de Parfum, and luxury scented formulations. Dedicated to both retail connoisseurs and wholesale partners.
+          </p>
+          <div class="footer-socials">
+            <a href="https://instagram.com" target="_blank" rel="noopener" class="social-btn" aria-label="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noopener" class="social-btn" aria-label="Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noopener" class="social-btn" aria-label="YouTube">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+            </a>
+            <a href="https://wa.me/919876543210" target="_blank" rel="noopener" class="social-btn" aria-label="WhatsApp">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore Shop</h4>
+          <ul class="footer-links">
+            <li><a href="shop.html?category=Men">Men's Fragrances</a></li>
+            <li><a href="shop.html?category=Women">Women's Perfumes</a></li>
+            <li><a href="shop.html?category=Luxury">Pure Oriental Attars</a></li>
+            <li><a href="shop.html?category=Gift Sets">Gift Sets</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="shop.html">Shop Catalog</a></li>
+            <li><a href="about.html">Heritage Story</a></li>
+            <li><a href="contact.html">Contact & Wholesale</a></li>
+            <li><a href="admin.html">Admin Portal</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Direct Support</h4>
+          <p style="font-size:0.86rem;">WhatsApp: +91 98765 43210</p>
+          <p style="font-size:0.86rem; margin-top:8px;">Fast Dispatch Across India.</p>
+        </div>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:20px; text-align:center; font-size:0.8rem;">
+        © 2026 AL-AMEEN PERFUMES. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script -->
+  <script>
+    class ShopApp {
+      constructor() {
+        this.products = getStoredProducts();
+        this.settings = getStoredSettings();
+        this.mode = getStorage('alameen_mode', 'retail');
+        this.cart = getStorage('alameen_cart', []);
+        this.wishlist = getStorage('alameen_wishlist', []);
+        
+        // URL Param check
+        const urlParams = new URLSearchParams(window.location.search);
+        this.activeCategory = urlParams.get('category') || 'All';
+        this.searchQuery = '';
+        this.sortBy = 'popular';
+
+        this.init();
+      }
+
+      init() {
+        const bar = document.getElementById('announcementBar');
+        const text = document.getElementById('announcementText');
+        if (bar && this.settings.announcement_enabled) {
+          bar.style.display = 'flex';
+          text.textContent = this.settings.announcement_text;
+        }
+
+        this.updateModeUI();
+        this.renderCategoryChips();
+        this.renderProducts();
+        this.updateBadges();
+
+        // Check if product modal requested via URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const prodId = urlParams.get('product');
+        if (prodId) {
+          this.openProductModal(prodId);
+        }
+      }
+
+      setMode(newMode) {
+        this.mode = newMode;
+        setStorage('alameen_mode', this.mode);
+        this.updateModeUI();
+        this.renderProducts();
+        this.renderCartItems();
+      }
+
+      updateModeUI() {
+        const retailBtn = document.getElementById('retailModeBtn');
+        const wholesaleBtn = document.getElementById('wholesaleModeBtn');
+        const mobileRetailBtn = document.getElementById('mobileRetailBtn');
+        const mobileWholesaleBtn = document.getElementById('mobileWholesaleBtn');
+        const notice = document.getElementById('activeModeNotice');
+
+        if (this.mode === 'wholesale') {
+          if (retailBtn) retailBtn.classList.remove('active');
+          if (wholesaleBtn) wholesaleBtn.classList.add('active');
+          if (mobileRetailBtn) mobileRetailBtn.classList.remove('active');
+          if (mobileWholesaleBtn) mobileWholesaleBtn.classList.add('active');
+          if (notice) notice.textContent = 'Wholesale Rates (MOQ Applied)';
+        } else {
+          if (retailBtn) retailBtn.classList.add('active');
+          if (wholesaleBtn) wholesaleBtn.classList.remove('active');
+          if (mobileRetailBtn) mobileRetailBtn.classList.add('active');
+          if (mobileWholesaleBtn) mobileWholesaleBtn.classList.remove('active');
+          if (notice) notice.textContent = 'Retail Rates (Min Qty: 1)';
+        }
+      }
+
+      renderCategoryChips() {
+        const container = document.getElementById('categoryChips');
+        if (!container) return;
+        container.innerHTML = CATEGORIES.map(cat => {
+          const count = cat.name === 'All' ? this.products.length : this.products.filter(p => p.category === cat.name).length;
+          const isActive = this.activeCategory === cat.name;
+          return `
+            <button type="button" class="filter-chip ${isActive ? 'active' : ''}" onclick="shopApp.filterByCategory('${cat.name}')">
+              ${cat.name} (${count})
+            </button>
+          `;
+        }).join('');
+      }
+
+      filterByCategory(catName) {
+        this.activeCategory = catName;
+        this.renderCategoryChips();
+        this.renderProducts();
+      }
+
+      handleSearch(e) {
+        this.searchQuery = e.target.value.toLowerCase().trim();
+        this.renderProducts();
+      }
+
+      handleSort(e) {
+        this.sortBy = e.target.value;
+        this.renderProducts();
+      }
+
+      getFilteredProducts() {
+        let list = [...this.products];
+        if (this.activeCategory !== 'All') {
+          list = list.filter(p => p.category === this.activeCategory);
+        }
+        if (this.searchQuery) {
+          list = list.filter(p => 
+            p.name.toLowerCase().includes(this.searchQuery) ||
+            p.category.toLowerCase().includes(this.searchQuery) ||
+            p.notes.top.toLowerCase().includes(this.searchQuery) ||
+            p.notes.heart.toLowerCase().includes(this.searchQuery) ||
+            p.notes.base.toLowerCase().includes(this.searchQuery)
+          );
+        }
+
+        // Sorting
+        if (this.sortBy === 'price-low') {
+          list.sort((a, b) => {
+            const pA = calculateProductPrice(a, this.mode, 1, this.settings).unitPrice;
+            const pB = calculateProductPrice(b, this.mode, 1, this.settings).unitPrice;
+            return pA - pB;
+          });
+        } else if (this.sortBy === 'price-high') {
+          list.sort((a, b) => {
+            const pA = calculateProductPrice(a, this.mode, 1, this.settings).unitPrice;
+            const pB = calculateProductPrice(b, this.mode, 1, this.settings).unitPrice;
+            return pB - pA;
+          });
+        } else if (this.sortBy === 'rating') {
+          list.sort((a, b) => b.rating - a.rating);
+        }
+
+        return list;
+      }
+
+      renderProducts() {
+        const grid = document.getElementById('shopProductsGrid');
+        const countEl = document.getElementById('resultsCount');
+        const list = this.getFilteredProducts();
+
+        if (countEl) countEl.textContent = `Showing ${list.length} Fragrance${list.length === 1 ? '' : 's'}`;
+
+        if (list.length === 0) {
+          grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:60px 20px; background:#FFFFFF; border-radius:18px;">
+            <h3 style="color:var(--green-950); margin-bottom:8px;">No Fragrances Match Your Filter</h3>
+            <p style="color:var(--text-muted); font-size:0.92rem;">Try clearing the search query or selecting another category.</p>
+            <button class="btn-primary" style="margin-top:16px;" onclick="shopApp.resetFilters()">Reset All Filters</button>
+          </div>`;
+          return;
+        }
+
+        grid.innerHTML = list.map(product => {
+          const pricing = calculateProductPrice(product, this.mode, 1, this.settings);
+          const isWish = this.wishlist.includes(product.id);
+
+          return `
+            <div class="product-card" onclick="shopApp.openProductModal('${product.id}')" style="cursor:pointer;">
+              <div class="card-media">
+                <img src="${product.images[0]}" alt="${product.name}" class="card-img" loading="lazy">
+                ${pricing.isOffer ? `<span class="card-badge offer-badge">${this.settings.offer_badge}</span>` : `<span class="card-badge">${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'}</span>`}
+                <button type="button" class="card-wish-btn ${isWish ? 'active' : ''}" onclick="event.stopPropagation(); shopApp.toggleWishlist('${product.id}')" aria-label="Wishlist">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="${isWish ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                </button>
+              </div>
+
+              <div class="card-body">
+                <div class="card-meta">
+                  <span class="card-category">${product.category}</span>
+                  <span class="card-size">${product.size}</span>
+                </div>
+                <h3 class="card-title">${product.name}</h3>
+                <div class="card-notes-brief">Notes: ${product.notes.top}</div>
+
+                <div class="card-rating-row">
+                  <span class="stars">★★★★★</span>
+                  <span>${product.rating} (${product.reviews})</span>
+                </div>
+
+                <div class="card-footer">
+                  <div class="price-row">
+                    <span class="price-current">₹${pricing.unitPrice.toLocaleString('en-IN')}</span>
+                    ${pricing.isOffer ? `<span class="price-mrp">₹${pricing.originalPrice.toLocaleString('en-IN')}</span>` : `<span class="price-mrp">₹${product.mrp.toLocaleString('en-IN')}</span>`}
+                  </div>
+                  ${this.mode === 'wholesale' ? `<span class="wholesale-moq-label">Min Order: ${product.wholesaleMOQ} pcs</span>` : ''}
+
+                  <!-- Longer Button with Writing (Img 4 Fix) -->
+                  <button type="button" class="card-add-btn" onclick="event.stopPropagation(); shopApp.addToCart('${product.id}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span>Add to Bag</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      resetFilters() {
+        this.searchQuery = '';
+        this.activeCategory = 'All';
+        const input = document.getElementById('searchInput');
+        if (input) input.value = '';
+        this.renderCategoryChips();
+        this.renderProducts();
+      }
+
+      openProductModal(productId) {
+        const product = this.products.find(p => p.id === productId);
+        if (!product) return;
+        const pricing = calculateProductPrice(product, this.mode, 1, this.settings);
+        const modal = document.getElementById('pdpModalContent');
+        const minQty = this.mode === 'wholesale' ? product.wholesaleMOQ : 1;
+
+        modal.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+            <div>
+              <span class="card-category">${product.category} · ${product.type}</span>
+              <h2 style="font-size:1.5rem; color:var(--green-950); margin-top:4px;">${product.name}</h2>
+              <div style="font-size:0.85rem; color:var(--text-light); font-weight:600;">Bottle Size: ${product.size}</div>
+            </div>
+            <button class="drawer-close-btn" style="background:#E5ECE8; color:#061F17;" onclick="shopApp.closeProductModal()">✕</button>
+          </div>
+
+          <div style="height:220px; border-radius:14px; overflow:hidden; margin-bottom:16px;">
+            <img src="${product.images[0]}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">
+          </div>
+
+          <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">
+            ${product.description}
+          </p>
+
+          <div class="pdp-notes-grid">
+            <div class="note-card">
+              <h5>Top Notes</h5>
+              <p>${product.notes.top}</p>
+            </div>
+            <div class="note-card">
+              <h5>Heart Notes</h5>
+              <p>${product.notes.heart}</p>
+            </div>
+            <div class="note-card">
+              <h5>Base Notes</h5>
+              <p>${product.notes.base}</p>
+            </div>
+          </div>
+
+          ${this.mode === 'wholesale' ? `
+            <div style="background:#F2F7F4; border:1px solid var(--border-gold); padding:12px; border-radius:10px; margin-bottom:16px;">
+              <span style="font-size:0.75rem; font-weight:800; color:var(--gold-700); text-transform:uppercase;">Wholesale Tier Pricing:</span>
+              <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:0.8rem; font-weight:700;">
+                <span>6–11 pcs: ₹${product.wholesaleTiers[0].price}</span>
+                <span>12–23 pcs: ₹${product.wholesaleTiers[1].price}</span>
+                <span>24+ pcs: ₹${product.wholesaleTiers[2].price}</span>
+              </div>
+            </div>
+          ` : ''}
+
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:20px;">
+            <div>
+              <div style="font-size:1.4rem; font-weight:800; color:var(--green-950);">₹${pricing.unitPrice.toLocaleString('en-IN')}</div>
+              <div style="font-size:0.75rem; color:var(--text-light);">${this.mode === 'wholesale' ? `Wholesale (MOQ: ${product.wholesaleMOQ})` : 'Retail Single Bottle'}</div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div style="display:flex; align-items:center; border:1.5px solid var(--border-subtle); border-radius:8px; overflow:hidden;">
+                <button type="button" style="padding:8px 12px; font-weight:800; background:#F4F7F5;" onclick="shopApp.changeModalQty(-1, ${minQty})">−</button>
+                <input type="number" id="modalQtyInput" value="${minQty}" min="${minQty}" style="width:50px; text-align:center; border:none; font-weight:800;">
+                <button type="button" style="padding:8px 12px; font-weight:800; background:#F4F7F5;" onclick="shopApp.changeModalQty(1, ${minQty})">+</button>
+              </div>
+
+              <button type="button" class="btn-primary" onclick="shopApp.addFromModal('${product.id}')">
+                Add to Bag
+              </button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('pdpBackdrop').classList.add('active');
+      }
+
+      changeModalQty(delta, minQty) {
+        const input = document.getElementById('modalQtyInput');
+        if (!input) return;
+        let val = parseInt(input.value) || minQty;
+        val += delta;
+        if (val < minQty) val = minQty;
+        input.value = val;
+      }
+
+      addFromModal(productId) {
+        const input = document.getElementById('modalQtyInput');
+        const qty = input ? parseInt(input.value) || 1 : 1;
+        this.addToCart(productId, qty);
+        this.closeProductModal();
+      }
+
+      closeProductModal() {
+        document.getElementById('pdpBackdrop').classList.remove('active');
+      }
+
+      addToCart(productId, qtyToAdd = null) {
+        const product = this.products.find(p => p.id === productId);
+        if (!product) return;
+        const defaultQty = (this.mode === 'wholesale') ? product.wholesaleMOQ : 1;
+        const qty = qtyToAdd || defaultQty;
+
+        const existing = this.cart.find(item => item.productId === productId);
+        if (existing) {
+          existing.qty += qty;
+        } else {
+          this.cart.push({ productId, qty });
+        }
+
+        setStorage('alameen_cart', this.cart);
+        this.updateBadges();
+        this.openCartDrawer();
+      }
+
+      toggleWishlist(productId) {
+        const index = this.wishlist.indexOf(productId);
+        if (index > -1) {
+          this.wishlist.splice(index, 1);
+        } else {
+          this.wishlist.push(productId);
+        }
+        setStorage('alameen_wishlist', this.wishlist);
+        this.renderProducts();
+      }
+
+      updateBadges() {
+        const totalItems = this.cart.reduce((sum, item) => sum + item.qty, 0);
+        const navCart = document.getElementById('navCartCount');
+        const mobileDock = document.getElementById('mobileDockCartCount');
+        if (navCart) navCart.textContent = totalItems;
+        if (mobileDock) mobileDock.textContent = totalItems;
+      }
+
+      openCartDrawer() {
+        this.renderCartItems();
+        document.getElementById('cartBackdrop').classList.add('active');
+        document.getElementById('cartDrawer').classList.add('active');
+      }
+
+      closeCartDrawer() {
+        document.getElementById('cartBackdrop').classList.remove('active');
+        document.getElementById('cartDrawer').classList.remove('active');
+      }
+
+      renderCartItems() {
+        const list = document.getElementById('cartItemsList');
+        const totalEl = document.getElementById('cartDrawerTotal');
+        if (!list || !totalEl) return;
+
+        if (this.cart.length === 0) {
+          list.innerHTML = `<div style="text-align:center; padding:40px 10px; color:var(--text-muted);">Your bag is empty.</div>`;
+          totalEl.textContent = '₹0';
+          return;
+        }
+
+        let overallTotal = 0;
+        list.innerHTML = this.cart.map(item => {
+          const product = this.products.find(p => p.id === item.productId);
+          if (!product) return '';
+          const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings);
+          overallTotal += pricing.totalPrice;
+
+          return `
+            <div class="cart-item-card">
+              <img src="${product.images[0]}" alt="${product.name}" class="cart-item-thumb">
+              <div style="flex:1;">
+                <div style="font-size:0.88rem; font-weight:700; color:var(--green-950);">${product.name}</div>
+                <div style="font-size:0.82rem; font-weight:800; color:var(--green-700);">₹${pricing.unitPrice.toLocaleString('en-IN')} × ${item.qty} = ₹${pricing.totalPrice.toLocaleString('en-IN')}</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="shopApp.updateItemQty('${item.productId}', -1)">−</button>
+                <span style="font-size:0.85rem; font-weight:700;">${item.qty}</span>
+                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="shopApp.updateItemQty('${item.productId}', 1)">+</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        totalEl.textContent = `₹${overallTotal.toLocaleString('en-IN')}`;
+      }
+
+      updateItemQty(productId, delta) {
+        const item = this.cart.find(i => i.productId === productId);
+        if (!item) return;
+        const product = this.products.find(p => p.id === productId);
+        const minQty = (this.mode === 'wholesale' && product) ? product.wholesaleMOQ : 1;
+
+        item.qty += delta;
+        if (item.qty < minQty) {
+          this.cart = this.cart.filter(i => i.productId !== productId);
+        }
+        setStorage('alameen_cart', this.cart);
+        this.updateBadges();
+        this.renderCartItems();
+      }
+
+      openOrderModal() {
+        if (this.cart.length === 0) {
+          alert("Your bag is empty! Please add products before placing an order.");
+          return;
+        }
+        this.closeCartDrawer();
+        document.getElementById('orderModalBackdrop').classList.add('active');
+      }
+
+      closeOrderModal() {
+        document.getElementById('orderModalBackdrop').classList.remove('active');
+      }
+
+      handleOrderSubmit(e) {
+        e.preventDefault();
+        const name = document.getElementById('orderName').value.trim();
+        const phone = document.getElementById('orderPhone').value.trim();
+        const address = document.getElementById('orderAddress').value.trim();
+        const pincode = document.getElementById('orderPincode').value.trim();
+
+        let total = 0;
+        let itemsText = "";
+        this.cart.forEach((item, idx) => {
+          const product = this.products.find(p => p.id === item.productId);
+          if (product) {
+            const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings);
+            total += pricing.totalPrice;
+            itemsText += `${idx + 1}. ${product.name} (${product.size}) × ${item.qty} = ₹${pricing.totalPrice.toLocaleString('en-IN')}\n`;
+          }
+        });
+
+        const message = `*New Order – ${CONFIG.STORE_NAME}*\n` +
+          `Order Type: ${this.mode.toUpperCase()}\n` +
+          `-----------------------------------\n` +
+          `${itemsText}` +
+          `*Total: ₹${total.toLocaleString('en-IN')}*\n` +
+          `-----------------------------------\n` +
+          `*Customer Details:*\n` +
+          `Name: ${name}\n` +
+          `Phone: ${phone}\n` +
+          `Address: ${address}\n` +
+          `Pincode: ${pincode}\n` +
+          `Payment: Settle on WhatsApp\n` +
+          `-----------------------------------`;
+
+        const waUrl = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+        window.open(waUrl, '_blank');
+
+        this.cart = [];
+        setStorage('alameen_cart', this.cart);
+        this.updateBadges();
+        this.closeOrderModal();
+        alert("Your order has been initiated on WhatsApp!");
+      }
+    }
+
+    const shopApp = new ShopApp();
+  </script>
+</body>
+</html>

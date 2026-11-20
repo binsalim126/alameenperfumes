@@ -1230,11 +1230,38 @@
 
       /* Mobile Navbar Alignment: Logo Left, Shop Name Centered, Cart + Burger Right */
       .navbar-inner {
-        padding: 0 14px;
+        padding: 0 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
         position: relative;
       }
+      .brand-logo {
+        display: contents !important;
+      }
+      .brand-logo-icon {
+        order: 1 !important;
+        flex: 0 0 38px !important;
+        margin: 0 !important;
+      }
       .brand-title {
-        font-size: 1.05rem;
+        order: 2 !important;
+        flex: 1 !important;
+        text-align: center !important;
+        font-size: 1.05rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.03em !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+      }
+      .nav-actions {
+        order: 3 !important;
+        flex: 0 0 auto !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
       }
       .mobile-menu-btn {
         display: flex !important;
@@ -2091,16 +2118,42 @@
 
         let total = 0;
         let itemsText = "";
+        const orderItems = [];
+
         this.cart.forEach((item, idx) => {
           const product = this.products.find(p => p.id === item.productId);
           if (product) {
             const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings);
             total += pricing.totalPrice;
             itemsText += `${idx + 1}. ${product.name} (${product.size}) × ${item.qty} = ₹${pricing.totalPrice.toLocaleString('en-IN')}\n`;
+            orderItems.push({
+              productId: product.id,
+              name: product.name,
+              size: product.size,
+              qty: item.qty,
+              unitPrice: pricing.unitPrice,
+              lineTotal: pricing.totalPrice
+            });
           }
         });
 
-        const message = `*New Order – ${CONFIG.STORE_NAME}*\n` +
+        // Save order record for Admin Portal BEFORE opening WhatsApp
+        const savedOrder = createStoreOrder({
+          type: this.mode === 'wholesale' ? 'Wholesale' : 'Retail',
+          items: orderItems,
+          subtotal: total,
+          discount: 0,
+          total: total,
+          customer: {
+            name: name,
+            contact: phone,
+            address: address,
+            pincode: pincode,
+            notes: notes
+          }
+        });
+
+        const message = `*New Order [${savedOrder.id}] – ${CONFIG.STORE_NAME}*\n` +
           `Order Type: ${this.mode.toUpperCase()}\n` +
           `-----------------------------------\n` +
           `${itemsText}` +
@@ -2123,7 +2176,7 @@
         setStorage('alameen_cart', this.cart);
         this.updateBadges();
         this.closeOrderModal();
-        alert("Your order has been initiated! WhatsApp has opened to finalize dispatch.");
+        alert(`Your order [${savedOrder.id}] has been saved & initiated! WhatsApp has opened to finalize dispatch.`);
       }
 
       toggleMobileMenu() {

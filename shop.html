@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Shop Fragrances & Attars | AL-AMEEN PERFUMES</title>
   
   <!-- Google Fonts: Poppins Firm Geometric Sans -->
@@ -58,6 +58,14 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       font-family: var(--font-main);
       background-color: var(--green-50);
@@ -66,6 +74,8 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      width: 100%;
+      max-width: 100%;
       overflow-x: hidden;
     }
 
@@ -83,7 +93,7 @@
       width: 100%;
       max-width: 1240px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 16px;
     }
 
     /* Top Announcement Bar */
@@ -629,9 +639,20 @@
 
     /* Phone & Tablet Responsive Layout (<= 1024px) */
     @media (max-width: 1024px) {
-      body { padding-bottom: 84px; }
-      .desktop-only { display: none !important; }
-      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      body {
+        padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+      
+      /* Strictly hide desktop nav links and desktop admin lock button */
+      .desktop-only, a.desktop-only, .nav-actions .action-icon-btn.desktop-only, .nav-actions a[href="admin.html"] {
+        display: none !important;
+      }
+
+      /* Tablet Grid: 3 columns */
+      .products-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 14px !important;
+      }
       .footer-grid { grid-template-columns: 1fr; gap: 24px; }
 
       /* Mobile & Tablet Navbar Alignment: Logo Left, Centered Brand Name, Cart + Burger Right */
@@ -642,6 +663,7 @@
         justify-content: space-between;
         gap: 12px;
         position: relative;
+        width: 100%;
       }
       .brand-logo {
         display: contents !important;
@@ -666,8 +688,15 @@
         order: 3 !important;
         flex: 0 0 auto !important;
         display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
         align-items: center !important;
-        gap: 10px !important;
+        justify-content: flex-end !important;
+        gap: 8px !important;
+      }
+      .action-icon-btn, .mobile-menu-btn {
+        min-width: 44px;
+        min-height: 44px;
       }
       .mobile-menu-btn {
         display: flex !important;
@@ -677,10 +706,11 @@
       .mobile-tab-bar {
         display: flex !important;
         position: fixed;
-        bottom: 12px;
-        left: 16px;
-        right: 16px;
-        max-width: 440px; /* Constrained on tablets, fits smoothly on phones */
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        left: 12px;
+        right: 12px;
+        width: calc(100% - 24px);
+        max-width: 440px;
         margin: 0 auto;
         height: 62px;
         background: linear-gradient(135deg, rgba(10, 38, 28, 0.96) 0%, rgba(4, 20, 14, 0.98) 100%);
@@ -692,7 +722,7 @@
         z-index: 95;
         justify-content: space-around;
         align-items: center;
-        padding: 0 8px;
+        padding: 0 6px;
       }
       .tab-bar-item {
         flex: 1;
@@ -716,8 +746,8 @@
       .tab-bar-item span { font-size: 0.7rem; font-weight: 700; }
       .tab-bar-item .count-badge {
         position: absolute;
-        top: 2px;
-        right: 18px;
+        top: 4px;
+        right: calc(50% - 18px);
         background: var(--gold-500);
         color: var(--green-950);
         font-size: 0.62rem;
@@ -731,12 +761,152 @@
       }
     }
 
-    /* Small Phone Screens (<= 480px) */
-    @media (max-width: 480px) {
-      .products-grid { grid-template-columns: 1fr; }
-      .brand-title { font-size: 1.05rem !important; }
-      .toolbar-wrap { padding: 12px; }
-      .search-box { min-width: 100%; }
+    /* Phone Screens (<= 640px) - Flipkart / Amazon 2-Column Grid & Compact Cards */
+    @media (max-width: 640px) {
+      .shop-header {
+        padding: 24px 0 20px;
+      }
+      .shop-header-title {
+        font-size: clamp(1.6rem, 5vw, 2.1rem);
+      }
+      .shop-header-sub {
+        font-size: 0.86rem;
+        margin-bottom: 16px;
+      }
+
+      /* Compact Toolbar & Horizontal Filter Chips */
+      .toolbar-wrap {
+        padding: 10px 12px;
+        gap: 10px;
+      }
+      .search-box {
+        min-width: 100% !important;
+        width: 100% !important;
+        flex: 1 1 100%;
+      }
+      .sort-wrap {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .sort-select {
+        flex: 1;
+        font-size: 0.82rem;
+        padding: 6px 10px;
+      }
+      .category-chips-wrap {
+        padding: 10px 0 14px;
+        gap: 8px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        max-width: 100%;
+      }
+      .filter-chip {
+        padding: 6px 12px;
+        font-size: 0.76rem;
+      }
+
+      /* Flipkart/Amazon 2-Column Grid */
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+      }
+
+      /* Compact Product Cards on Phone */
+      .product-card {
+        border-radius: 12px;
+      }
+      .card-media {
+        height: auto !important;
+        aspect-ratio: 1 / 1 !important;
+      }
+      .card-badge {
+        top: 6px !important;
+        left: 6px !important;
+        padding: 2px 6px !important;
+        font-size: 0.58rem !important;
+        letter-spacing: 0.04em !important;
+      }
+      .card-wish-btn {
+        top: 6px !important;
+        right: 6px !important;
+        width: 28px !important;
+        height: 28px !important;
+      }
+      .card-wish-btn svg {
+        width: 14px !important;
+        height: 14px !important;
+      }
+      .card-body {
+        padding: 10px !important;
+      }
+      .card-meta {
+        margin-bottom: 4px !important;
+      }
+      .card-category {
+        font-size: 0.65rem !important;
+      }
+      .card-size {
+        font-size: 0.65rem !important;
+      }
+      .card-title {
+        font-size: 0.86rem !important;
+        margin-bottom: 4px !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        min-height: 2.3em;
+        line-height: 1.25 !important;
+      }
+      .card-notes-brief {
+        font-size: 0.7rem !important;
+        margin-bottom: 6px !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 1 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+      }
+      .card-rating-row {
+        font-size: 0.7rem !important;
+        gap: 4px !important;
+        margin-bottom: 8px !important;
+      }
+      .stars svg {
+        width: 11px !important;
+        height: 11px !important;
+      }
+      .card-footer {
+        gap: 6px !important;
+      }
+      .price-row {
+        gap: 6px !important;
+      }
+      .price-current {
+        font-size: 1.05rem !important;
+      }
+      .price-mrp {
+        font-size: 0.74rem !important;
+      }
+      .wholesale-moq-label {
+        font-size: 0.62rem !important;
+      }
+      .card-add-btn {
+        width: 100% !important;
+        min-height: 36px !important;
+        padding: 6px 8px !important;
+        font-size: 0.76rem !important;
+        border-radius: 8px !important;
+        gap: 4px !important;
+        justify-content: center !important;
+      }
+      .card-add-btn svg {
+        width: 14px !important;
+        height: 14px !important;
+      }
+      .brand-title {
+        font-size: 1.05rem !important;
+      }
     }
   </style>
 </head>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Our Heritage & Craft | AL-AMEEN PERFUMES</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,14 +55,24 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       font-family: var(--font-main);
       background-color: var(--green-50);
       color: var(--text-dark);
-      line-height: 1.6;
+      line-height: 1.7;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      width: 100%;
+      max-width: 100%;
       overflow-x: hidden;
     }
 
@@ -80,7 +90,7 @@
       width: 100%;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 16px;
     }
 
     /* Navbar */
@@ -326,11 +336,16 @@
 
     /* Phone & Tablet Responsive Layout (<= 1024px) */
     @media (max-width: 1024px) {
-      body { padding-bottom: 84px; }
-      .desktop-only { display: none !important; }
+      body {
+        padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+      /* Strictly hide desktop nav links and desktop admin lock button */
+      .desktop-only, a.desktop-only, .nav-actions .action-icon-btn.desktop-only, .nav-actions a[href="admin.html"] {
+        display: none !important;
+      }
       .split-grid { grid-template-columns: 1fr; gap: 24px; }
       .split-grid.reverse { direction: ltr !important; }
-      .split-image-card { height: 260px; }
+      .split-image-card { height: 260px; border-radius: 16px; }
       .alchemy-grid { grid-template-columns: 1fr; gap: 14px; }
       .footer-grid { grid-template-columns: 1fr; gap: 24px; }
 
@@ -342,6 +357,7 @@
         justify-content: space-between;
         gap: 12px;
         position: relative;
+        width: 100%;
       }
       .brand-logo {
         display: contents !important;
@@ -366,8 +382,15 @@
         order: 3 !important;
         flex: 0 0 auto !important;
         display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
         align-items: center !important;
-        gap: 10px !important;
+        justify-content: flex-end !important;
+        gap: 8px !important;
+      }
+      .action-icon-btn, .mobile-menu-btn {
+        min-width: 44px;
+        min-height: 44px;
       }
       .mobile-menu-btn {
         display: flex !important;
@@ -377,10 +400,11 @@
       .mobile-tab-bar {
         display: flex !important;
         position: fixed;
-        bottom: 12px;
-        left: 16px;
-        right: 16px;
-        max-width: 440px; /* Constrained on tablets, fits smoothly on phones */
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        left: 12px;
+        right: 12px;
+        width: calc(100% - 24px);
+        max-width: 440px;
         margin: 0 auto;
         height: 62px;
         background: linear-gradient(135deg, rgba(10, 38, 28, 0.96) 0%, rgba(4, 20, 14, 0.98) 100%);
@@ -392,12 +416,51 @@
         z-index: 95;
         justify-content: space-around;
         align-items: center;
-        padding: 0 8px;
+        padding: 0 6px;
       }
       .tab-bar-item {
         flex: 1;
         height: 48px;
         display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        color: #E2F0EA !important;
+        border-radius: 24px;
+        position: relative;
+        cursor: pointer;
+      }
+      .tab-bar-item.active {
+        background: linear-gradient(135deg, rgba(34, 123, 94, 0.85), rgba(16, 56, 43, 0.95));
+        border: 1px solid rgba(212, 175, 55, 0.5);
+        color: var(--gold-300) !important;
+      }
+      .tab-bar-item.active svg { color: var(--gold-500) !important; }
+      .tab-bar-item span { font-size: 0.7rem; font-weight: 700; }
+      .tab-bar-item .count-badge {
+        position: absolute;
+        top: 4px;
+        right: calc(50% - 18px);
+        background: var(--gold-500);
+        color: var(--green-950);
+        font-size: 0.62rem;
+        font-weight: 900;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    /* Small Phone Screens (<= 480px) */
+    @media (max-width: 480px) {
+      .about-hero-title { font-size: 1.85rem !important; }
+      .split-text h2 { font-size: 1.5rem !important; }
+      .brand-title { font-size: 1.05rem !important; }
+    }
         flex-direction: column;
         align-items: center;
         justify-content: center;

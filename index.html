@@ -956,47 +956,122 @@
       color: var(--green-200);
     }
 
-    /* Newsletter */
+    /* ==========================================================================
+       7. NEWSLETTER SECTION (Bug 2 Fix: Responsive Layout, Zero Right Overflow, Valid Feedback)
+       ========================================================================== */
     .newsletter-section {
       background: var(--green-950);
       color: #FFFFFF;
-      padding: 50px 0;
+      padding: 56px 16px; /* 16px side padding so nothing touches screen edge */
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
     }
     .newsletter-wrap {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 32px;
-      flex-wrap: wrap;
+      width: 100%;
+      max-width: var(--container-max);
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+    .newsletter-text-col {
+      flex: 1;
+      min-width: 280px;
+    }
+    .newsletter-title {
+      font-size: clamp(1.25rem, 3.5vw, 1.6rem);
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #FFFFFF;
+      letter-spacing: -0.01em;
+    }
+    .newsletter-subtitle {
+      color: var(--green-200);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .newsletter-form-col {
+      flex: 1;
+      max-width: 480px;
+      width: 100%;
+      box-sizing: border-box;
     }
     .newsletter-form {
       display: flex;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.08);
-      padding: 6px;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      flex-direction: column;
       width: 100%;
-      max-width: 440px;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Tablet/Laptop: One row with pill-shaped input and subscribe button on right with no overflow */
+    .newsletter-input-group {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 5px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      transition: var(--transition);
+    }
+    .newsletter-input-group:focus-within {
+      border-color: var(--gold-500);
+      box-shadow: 0 0 16px rgba(212, 175, 55, 0.25);
     }
     .newsletter-input {
       background: transparent;
       border: none;
-      padding: 10px 18px;
+      outline: none;
+      padding: 12px 18px;
       color: #FFFFFF;
       flex: 1;
-      font-size: 0.9rem;
+      min-width: 0;
+      font-size: 16px; /* Prevents auto-zoom on mobile */
+      font-family: inherit;
+      box-sizing: border-box;
     }
-    .newsletter-input::placeholder { color: var(--green-200); }
+    .newsletter-input::placeholder {
+      color: var(--green-200);
+      opacity: 0.75;
+    }
     .newsletter-btn {
-      background: var(--gold-500);
+      background: linear-gradient(135deg, var(--gold-500) 0%, var(--gold-700) 100%);
       color: var(--green-950);
       font-weight: 700;
-      padding: 10px 22px;
+      padding: 12px 24px;
       border-radius: var(--radius-pill);
-      font-size: 0.85rem;
+      font-size: 0.88rem;
+      border: none;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
+    .newsletter-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+    }
+
+    .newsletter-feedback {
+      font-size: 0.84rem;
+      margin-top: 8px;
+      min-height: 20px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .newsletter-feedback.success { color: #61B795; }
+    .newsletter-feedback.error { color: #FC8181; }
 
     /* ==========================================================================
        8. FOOTER WITH AUTHENTIC SOCIAL SVG ICONS (Img 3 Fix)
@@ -1464,11 +1539,61 @@
       .brand-title {
         font-size: 1.05rem !important;
       }
-    }
+
+      /* Phone Screen (Bug 2 Fix): Stack vertically, full-width input, 48px height rounded gold button */
+      .newsletter-section {
+        padding: 40px 16px !important;
+      }
+      .newsletter-wrap {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 20px !important;
+      }
+      .newsletter-text-col {
+        min-width: auto !important;
+        text-align: left !important;
+      }
+      .newsletter-form-col {
+        max-width: 100% !important;
+      }
+      .newsletter-input-group {
+        flex-direction: column !important;
+        background: transparent !important;
+        padding: 0 !important;
+        border: none !important;
+        gap: 12px !important;
+      }
+      .newsletter-input-group:focus-within {
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .newsletter-input {
+        width: 100% !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(212, 175, 55, 0.35) !important;
+        border-radius: 12px !important;
+        padding: 14px 16px !important;
+        font-size: 16px !important;
+        box-sizing: border-box !important;
+      }
+      .newsletter-input:focus {
+        border-color: var(--gold-500) !important;
+        background: rgba(255, 255, 255, 0.12) !important;
+      }
+      .newsletter-btn {
+        width: 100% !important;
+        height: 48px !important;
+        border-radius: 12px !important;
+        font-size: 0.95rem !important;
+        box-sizing: border-box !important;
+      }
     }
   </style>
 </head>
 <body>
+
+  <!-- Global Top Toast Notification Container (Bug 1 Fix) -->
+  <div class="toast-container" id="toastContainer"></div>
 
   <!-- ==========================================================================
        1. TOP ANNOUNCEMENT BAR (Toggled from Admin Settings)
@@ -1768,17 +1893,24 @@
     </div>
   </section>
 
-  <!-- Newsletter -->
-  <section class="newsletter-section">
+  <!-- ==========================================================================
+       7. NEWSLETTER SECTION (Join the Al-Ameen Fragrance Circle - Bug 2 Fix)
+       ========================================================================== -->
+  <section class="newsletter-section" id="newsletterSection">
     <div class="container newsletter-wrap">
-      <div>
-        <h3 style="font-size:1.4rem; margin-bottom:4px; color:#FFFFFF;">Join the Al-Ameen Fragrance Circle</h3>
-        <p style="color:var(--green-200); font-size:0.88rem;">Receive private invitations to limited harvest batches and wholesale tier catalogs.</p>
+      <div class="newsletter-text-col">
+        <h3 class="newsletter-title">Join the Al-Ameen Fragrance Circle</h3>
+        <p class="newsletter-subtitle">Receive private invitations to limited harvest batches and wholesale tier catalogs.</p>
       </div>
-      <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for joining our fragrance circle!');">
-        <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
-        <button type="submit" class="newsletter-btn">Subscribe</button>
-      </form>
+      <div class="newsletter-form-col">
+        <form class="newsletter-form" id="newsletterForm" onsubmit="app.handleNewsletterSubscribe(event)" novalidate>
+          <div class="newsletter-input-group">
+            <input type="email" class="newsletter-input" id="newsletterEmail" placeholder="Enter your email address" required autocomplete="email">
+            <button type="submit" class="newsletter-btn" id="newsletterSubmitBtn">Subscribe</button>
+          </div>
+          <div class="newsletter-feedback" id="newsletterFeedback" aria-live="polite"></div>
+        </form>
+      </div>
     </div>
   </section>
 
@@ -2351,6 +2483,35 @@
             submitBtn.disabled = false;
             submitBtn.textContent = origText;
           }
+        }
+      }
+
+      handleNewsletterSubscribe(e) {
+        e.preventDefault();
+        const input = document.getElementById('newsletterEmail');
+        const feedback = document.getElementById('newsletterFeedback');
+        const email = (input?.value || '').trim();
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+          if (feedback) {
+            feedback.className = 'newsletter-feedback error';
+            feedback.textContent = 'Please enter a valid email address.';
+          }
+          if (typeof window.showToast === 'function') {
+            window.showToast('Please enter a valid email address.', 'error');
+          }
+          return;
+        }
+
+        if (feedback) {
+          feedback.className = 'newsletter-feedback success';
+          feedback.textContent = '✓ Welcome to the Fragrance Circle! You will receive our harvest release notes.';
+        }
+        if (input) input.value = '';
+
+        if (typeof window.showToast === 'function') {
+          window.showToast('Welcome to the Al-Ameen Fragrance Circle! Private harvest notes on the way.', 'success');
         }
       }
 

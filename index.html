@@ -1207,34 +1207,26 @@
     }
 
     /* ==========================================================================
-       11. RESPONSIVE MEDIA QUERIES (Phone, Tablet, Laptop)
+       11. RESPONSIVE MEDIA QUERIES (Phone & Tablet: <= 1024px)
        ========================================================================== */
-    /* Tablet & Small Laptop (<= 1024px) */
     @media (max-width: 1024px) {
-      .products-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
-      .features-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-      .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
-    }
-
-    /* Phone Screens (<= 768px) */
-    @media (max-width: 768px) {
       :root {
-        --header-height: 62px;
+        --header-height: 64px;
       }
       body {
-        padding-bottom: 84px; /* Space for mobile floating dock */
+        padding-bottom: 84px; /* Space for curved floating dock */
       }
 
-      /* Desktop only elements */
+      /* Strictly hide desktop nav links and buttons */
       .desktop-only { display: none !important; }
 
-      /* Mobile Navbar Alignment: Logo Left, Shop Name Centered, Cart + Burger Right */
+      /* Mobile & Tablet Navbar Alignment: Logo Left, Centered Brand Name, Cart + Burger Right */
       .navbar-inner {
-        padding: 0 12px;
+        padding: 0 16px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 8px;
+        gap: 12px;
         position: relative;
       }
       .brand-logo {
@@ -1249,9 +1241,9 @@
         order: 2 !important;
         flex: 1 !important;
         text-align: center !important;
-        font-size: 1.05rem !important;
+        font-size: 1.15rem !important;
         font-weight: 800 !important;
-        letter-spacing: 0.03em !important;
+        letter-spacing: 0.04em !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
@@ -1261,72 +1253,58 @@
         flex: 0 0 auto !important;
         display: flex !important;
         align-items: center !important;
-        gap: 8px !important;
+        gap: 10px !important;
       }
       .mobile-menu-btn {
         display: flex !important;
       }
 
-      /* FIX IMG 5: Hero Image placed BELOW headline & CTAs on mobile/tablet */
+      /* Hero Section: Text leads first, Perfume Bottle visible as user scrolls */
       .hero-section {
-        padding: 24px 0 36px;
+        padding: 28px 0 40px;
       }
       .hero-grid {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 24px;
       }
       .hero-content {
-        order: 1; /* Headline & actions lead first */
+        order: 1; /* Headline & actions first */
       }
       .hero-visual {
-        order: 2; /* Image visible as you scroll down */
+        order: 2; /* Bottle image below, visible upon scroll */
+        max-width: 480px;
+        margin: 0 auto;
+        width: 100%;
       }
       .hero-title {
-        font-size: 1.85rem;
+        font-size: clamp(1.85rem, 4vw, 2.4rem);
         margin-bottom: 12px;
       }
       .hero-subtitle {
-        font-size: 0.9rem;
-        margin-bottom: 20px;
+        font-size: 0.94rem;
+        margin-bottom: 22px;
       }
       .hero-img {
-        height: 240px;
+        height: 250px;
       }
 
-      /* Horizontal side-scrolling bestsellers on mobile */
-      .bestsellers-scroll-wrap {
-        overflow-x: auto;
-        padding-bottom: 12px;
-        margin: 0 -20px;
-        padding-left: 20px;
-        padding-right: 20px;
-        scrollbar-width: none;
-      }
-      .bestsellers-scroll-wrap::-webkit-scrollbar { display: none; }
-      .products-grid.mobile-horizontal {
-        display: flex !important;
-        flex-wrap: nowrap;
-        gap: 14px;
-        width: max-content;
-      }
-      .products-grid.mobile-horizontal .product-card {
-        width: 220px;
-        flex: 0 0 220px;
-      }
-
-      .promos-grid { grid-template-columns: 1fr; gap: 14px; }
-      .promo-banner-card { padding: 24px; min-height: 220px; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+      .promos-grid { grid-template-columns: 1fr; gap: 16px; }
+      .promo-banner-card { padding: 26px; min-height: 230px; }
       .story-grid { grid-template-columns: 1fr; gap: 24px; }
-      .story-tile-big { height: 220px; }
+      .story-tile-big { height: 240px; }
       .footer-grid { grid-template-columns: 1fr; gap: 24px; }
 
-      /* Curved Floating Bottom Dock for Mobile */
+      /* Curved Floating Bottom Dock for Phone & Tablet (Centered & Proportional) */
       .mobile-tab-bar {
         display: flex !important;
         position: fixed;
         bottom: 12px;
-        left: 14px;
-        right: 14px;
+        left: 16px;
+        right: 16px;
+        max-width: 440px; /* Constrained on tablets, fits smoothly on phones */
+        margin: 0 auto;
         height: 62px;
         background: linear-gradient(135deg, rgba(10, 38, 28, 0.96) 0%, rgba(4, 20, 14, 0.98) 100%);
         backdrop-filter: blur(16px);
@@ -1341,15 +1319,16 @@
       }
       .tab-bar-item {
         flex: 1;
-        height: 46px;
+        height: 48px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 2px;
         color: #E2F0EA !important;
-        border-radius: 20px;
+        border-radius: 24px;
         position: relative;
+        cursor: pointer;
       }
       .tab-bar-item.active {
         background: linear-gradient(135deg, rgba(34, 123, 94, 0.85), rgba(16, 56, 43, 0.95));
@@ -1360,7 +1339,7 @@
         color: var(--gold-500) !important;
       }
       .tab-bar-item span {
-        font-size: 0.68rem;
+        font-size: 0.7rem;
         font-weight: 700;
       }
       .tab-bar-item .count-badge {
@@ -1371,13 +1350,41 @@
         color: var(--green-950);
         font-size: 0.62rem;
         font-weight: 900;
-        width: 16px;
-        height: 16px;
+        width: 17px;
+        height: 17px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
       }
+    }
+
+    /* Small Phone Screens (<= 480px) */
+    @media (max-width: 480px) {
+      .products-grid { grid-template-columns: 1fr; }
+      .bestsellers-scroll-wrap {
+        overflow-x: auto;
+        padding-bottom: 12px;
+        margin: 0 -16px;
+        padding-left: 16px;
+        padding-right: 16px;
+        scrollbar-width: none;
+      }
+      .bestsellers-scroll-wrap::-webkit-scrollbar { display: none; }
+      .products-grid.mobile-horizontal {
+        display: flex !important;
+        flex-wrap: nowrap;
+        gap: 14px;
+        width: max-content;
+      }
+      .products-grid.mobile-horizontal .product-card {
+        width: 230px;
+        flex: 0 0 230px;
+      }
+      .brand-title {
+        font-size: 1.05rem !important;
+      }
+    }
     }
   </style>
 </head>

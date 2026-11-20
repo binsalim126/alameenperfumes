@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230B2B20'%3E%3Cpath d='M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z'/%3E%3C/svg%3E">
+  <!-- Supabase Official JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Core Catalog Engine -->
   <script src="core.js"></script>
 
   <style>
@@ -731,10 +734,12 @@
       if (backdrop) backdrop.classList.remove('active');
     }
 
-    const cart = getStorage('alameen_cart', []);
+    const cart = getClientSession('alameen_cart', []);
     const count = cart.reduce((sum, item) => sum + item.qty, 0);
     const navCart = document.getElementById('navCartCount');
+    const dockCart = document.getElementById('mobileDockCartCount');
     if (navCart) navCart.textContent = count;
+    if (dockCart) dockCart.textContent = count;
   </script>
 </body>
 </html>

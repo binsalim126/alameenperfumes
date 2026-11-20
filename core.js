@@ -1,5 +1,5 @@
 /* ==========================================================================
-   AL-AMEEN PERFUMES - CORE STATE, CATALOG & DATABASE ENGINE
+   AL-AMEEN PERFUMES - CORE STATE, DATABASE & REALTIME ENGINE
    Shared across index.html, shop.html, about.html, contact.html, and admin.html
    ========================================================================== */
 
@@ -13,7 +13,7 @@ const CONFIG = {
 };
 
 // ==========================================================================
-// SUPABASE CLIENT INITIALIZATION & LIVE AUTO-STORE CONFIG
+// 1. SUPABASE CLIENT INITIALIZATION & LIVE CREDENTIALS
 // ==========================================================================
 const SUPABASE_CONFIG = {
   URL: "https://gqezejlrbmmavhixzand.supabase.co",
@@ -27,32 +27,59 @@ try {
     window.supabaseClient = supabaseClient;
   }
 } catch (e) {
-  console.warn('Supabase initialization note:', e);
+  console.warn('[Al-Ameen Database] Supabase client init error:', e);
 }
 
+// --------------------------------------------------------------------------
+// 2. PURGE LEGACY BUSINESS STORAGE (Strict Requirement 1)
+// --------------------------------------------------------------------------
+// Remove all legacy product, order, and store keys from browser localStorage
+(function purgeLegacyStoreData() {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('alameen_products');
+      localStorage.removeItem('alameen_orders');
+      localStorage.removeItem('alameen_settings');
+      localStorage.removeItem('alameen_categories');
+    }
+  } catch (e) {
+    // ignore sandbox storage access errors
+  }
+})();
+
+// Default Site Settings Object (used when DB is booting)
 const DEFAULT_SETTINGS = {
   store_name: "AL-AMEEN PERFUMES",
   tagline: "Discover Your Signature Scent",
   whatsapp_number: "919876543210",
   free_shipping_min: 999,
   low_stock_threshold: 10,
-  announcement_enabled: false, // Default is OFF
+  announcement_enabled: false,
   announcement_text: "Free shipping Pan-India · Wholesale rates available",
   announcement_link: "shop.html",
   announcement_bg: "#04140E",
-  offer_enabled: false,        // Default is OFF
+  offer_enabled: false,
   offer_name: "Festive Season Special",
   offer_badge: "Festive Offer",
   offer_discount_percent: 15,
-  offer_applies_to: "both",     // 'retail', 'wholesale', 'both'
-  offer_scope: "all",          // 'all', 'category', 'product'
+  offer_applies_to: "both",
+  offer_scope: "all",
   offer_coupon_code: "",
   offer_min_order: 0,
   offer_end_date: ""
 };
 
-// Core Authentic Al-Ameen Flagship Catalog
-const DEFAULT_PRODUCTS = [
+// Default Categories for UI Carousel & Filters
+const CATEGORIES = [
+  { name: "All", image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=300&q=80" },
+  { name: "Men", image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=300&q=80" },
+  { name: "Women", image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=300&q=80" },
+  { name: "Unisex", image: "https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?auto=format&fit=crop&w=300&q=80" },
+  { name: "Luxury", image: "https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=300&q=80" }
+];
+
+// 4 Authentic Al-Ameen Flagship Creations for Manual DB Seeding
+const FLAGSHIP_SEED_PRODUCTS = [
   {
     id: "p1",
     name: "Al-Ameen Sultan Attar",
@@ -167,205 +194,464 @@ const DEFAULT_PRODUCTS = [
   }
 ];
 
-const CATEGORIES = [
-  { name: "All", image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=300&q=80" },
-  { name: "Men", image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=300&q=80" },
-  { name: "Women", image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=300&q=80" },
-  { name: "Unisex", image: "https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?auto=format&fit=crop&w=300&q=80" },
-  { name: "Luxury", image: "https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=300&q=80" }
-];
-
 // ==========================================================================
-// STORAGE & DATA HELPERS
+// 3. ROW FORMATTERS (Database snake_case <-> Frontend camelCase)
 // ==========================================================================
 
-function getStorage(key, fallback) {
+function formatProductFromRow(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    name: row.name || 'Unnamed Perfume',
+    category: row.category || 'Luxury',
+    type: row.type || 'Eau de Parfum',
+    size: row.size || '100ml',
+    rating: Number(row.rating) || 5.0,
+    reviews: Number(row.reviews) || 0,
+    retailPrice: Number(row.retail_price) || 0,
+    mrp: Number(row.mrp) || Number(row.retail_price) || 0,
+    stock: typeof row.stock === 'number' ? row.stock : (row.in_stock ? 20 : 0),
+    wholesaleMOQ: Number(row.wholesale_moq) || 6,
+    wholesaleTiers: Array.isArray(row.wholesale_tiers) && row.wholesale_tiers.length > 0 ? row.wholesale_tiers : [
+      { min: 6, max: 11, price: Math.round(Number(row.retail_price) * 0.6) },
+      { min: 12, max: 23, price: Math.round(Number(row.retail_price) * 0.55) },
+      { min: 24, max: 9999, price: Math.round(Number(row.retail_price) * 0.5) }
+    ],
+    notes: row.notes && typeof row.notes === 'object' ? row.notes : { top: '', heart: '', base: '' },
+    description: row.description || '',
+    images: Array.isArray(row.images) && row.images.length > 0 ? row.images : ['https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80'],
+    bestseller: !!row.bestseller,
+    newArrival: !!row.new_arrival,
+    active: row.in_stock !== false,
+    createdAt: row.created_at
+  };
+}
+
+function formatProductToRow(product) {
+  const retail = Number(product.retailPrice) || 0;
+  return {
+    id: product.id,
+    name: product.name,
+    category: product.category,
+    type: product.type || 'Eau de Parfum',
+    size: product.size || '100ml',
+    rating: Number(product.rating) || 5.0,
+    reviews: Number(product.reviews) || 0,
+    retail_price: retail,
+    mrp: Number(product.mrp) || Math.round(retail * 1.4),
+    stock: typeof product.stock === 'number' ? product.stock : 20,
+    wholesale_moq: Number(product.wholesaleMOQ) || 6,
+    wholesale_tiers: Array.isArray(product.wholesaleTiers) ? product.wholesaleTiers : [],
+    notes: product.notes || { top: '', heart: '', base: '' },
+    description: product.description || '',
+    images: Array.isArray(product.images) && product.images.length > 0 ? product.images : [],
+    bestseller: !!product.bestseller,
+    new_arrival: !!product.newArrival,
+    in_stock: (typeof product.stock === 'number') ? product.stock > 0 : (product.active !== false)
+  };
+}
+
+function formatOrderFromRow(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    createdAt: row.created_at,
+    type: row.order_type || 'Retail',
+    items: Array.isArray(row.items) ? row.items : [],
+    subtotal: Number(row.subtotal) || 0,
+    discount: Number(row.discount) || 0,
+    shipping: Number(row.shipping) || 0,
+    total: Number(row.total) || 0,
+    customer: {
+      name: row.customer_name || 'Customer',
+      contact: row.customer_phone || '',
+      address: row.customer_address || '',
+      pincode: row.customer_pincode || '',
+      notes: row.customer_notes || ''
+    },
+    status: row.status || 'New',
+    paymentStatus: row.payment_status || 'Pending',
+    history: Array.isArray(row.history) ? row.history : []
+  };
+}
+
+// ==========================================================================
+// 4. SUPABASE CRUD OPERATIONS (Strict Database Operations, No Fake Local Fallbacks)
+// ==========================================================================
+
+function getSupabase() {
+  if (window.supabaseClient) return window.supabaseClient;
+  if (typeof supabase !== 'undefined' && supabase.createClient) {
+    window.supabaseClient = supabase.createClient(SUPABASE_CONFIG.URL, SUPABASE_CONFIG.ANON_KEY);
+    return window.supabaseClient;
+  }
+  throw new Error("Supabase client library not loaded. Please ensure Supabase CDN script is present and network is active.");
+}
+
+// Fetch products directly from Supabase
+async function dbFetchProducts() {
+  const sb = getSupabase();
+  const { data, error } = await sb
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('[Supabase Fetch Products Error]', error);
+    throw error;
+  }
+
+  return (data || []).map(formatProductFromRow);
+}
+
+// Fetch orders directly from Supabase
+async function dbFetchOrders() {
+  const sb = getSupabase();
+  const { data, error } = await sb
+    .from('orders')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('[Supabase Fetch Orders Error]', error);
+    throw error;
+  }
+
+  return (data || []).map(formatOrderFromRow);
+}
+
+// Fetch settings from Supabase
+async function dbFetchSettings() {
   try {
-    const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : fallback;
-  } catch (e) {
-    return fallback;
-  }
-}
+    const sb = getSupabase();
+    const { data, error } = await sb.from('site_settings').select('*');
+    if (error) {
+      console.warn('[Supabase Settings Fetch Note]', error.message);
+      return { ...DEFAULT_SETTINGS };
+    }
 
-function setStorage(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (e) {}
-}
-
-function getStoredProducts() {
-  const custom = getStorage('alameen_products', null);
-  if (custom && Array.isArray(custom) && custom.length > 0) {
-    return custom;
-  }
-  return [...DEFAULT_PRODUCTS];
-}
-
-function setStoredProducts(products) {
-  setStorage('alameen_products', products);
-}
-
-function getStoredSettings() {
-  const settings = getStorage('alameen_settings', null);
-  return { ...DEFAULT_SETTINGS, ...(settings || {}) };
-}
-
-function setStoredSettings(settings) {
-  setStorage('alameen_settings', settings);
-}
-
-// ==========================================================================
-// AUTO-STORE PRODUCTS IN DATABASE (Supabase + LocalStorage Synchronization)
-// ==========================================================================
-
-async function autoStoreProductInDatabase(product) {
-  // 1. Immediately store in local state
-  let products = getStoredProducts();
-  const idx = products.findIndex(p => p.id === product.id);
-  if (idx > -1) {
-    products[idx] = product;
-  } else {
-    products.unshift(product);
-  }
-  setStoredProducts(products);
-
-  // 2. Auto-sync to Supabase database if connected
-  if (window.supabaseClient) {
-    try {
-      const payload = {
-        id: product.id,
-        name: product.name,
-        category: product.category,
-        type: product.type || 'Eau de Parfum',
-        size: product.size || '100ml',
-        retail_price: Number(product.retailPrice) || 0,
-        mrp: Number(product.mrp) || Number(product.retailPrice) || 0,
-        wholesale_moq: Number(product.wholesaleMOQ) || 6,
-        wholesale_tiers: product.wholesaleTiers || [],
-        notes: product.notes || {},
-        description: product.description || '',
-        images: Array.isArray(product.images) && product.images.length > 0 ? product.images : [],
-        bestseller: !!product.bestseller,
-        in_stock: (typeof product.stock === 'number') ? product.stock > 0 : true
-      };
-
-      const { data, error } = await window.supabaseClient.from('products').upsert([payload]);
-      if (error) {
-        console.warn('Supabase sync notice:', error.message);
-        return { success: true, localOnly: true, note: error.message };
+    const merged = { ...DEFAULT_SETTINGS };
+    (data || []).forEach(row => {
+      if (row.key === 'general' && row.value && typeof row.value === 'object') {
+        Object.assign(merged, row.value);
       }
-      return { success: true, localOnly: false, data };
-    } catch (err) {
-      console.warn('Supabase sync exception:', err.message);
-      return { success: true, localOnly: true, note: err.message };
-    }
+    });
+    return merged;
+  } catch (err) {
+    console.warn('[Supabase Settings Catch]', err);
+    return { ...DEFAULT_SETTINGS };
   }
-
-  return { success: true, localOnly: true };
 }
 
-async function deleteProductFromDatabase(productId) {
-  let products = getStoredProducts();
-  products = products.filter(p => p.id !== productId);
-  setStoredProducts(products);
+// Create a new product in Supabase
+async function dbCreateProduct(product) {
+  const sb = getSupabase();
+  const payload = formatProductToRow(product);
 
-  if (window.supabaseClient) {
-    try {
-      await window.supabaseClient.from('products').delete().eq('id', productId);
-    } catch (e) {
-      console.warn('Supabase delete notice:', e.message);
+  const { data, error } = await sb
+    .from('products')
+    .insert([payload])
+    .select();
+
+  if (error) {
+    console.error('[Supabase Insert Product Error]', error);
+    throw new Error(`Database insert failed: ${error.message} (Code: ${error.code})`);
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error("Database insert affected 0 rows. Please verify Supabase RLS INSERT policy.");
+  }
+
+  return formatProductFromRow(data[0]);
+}
+
+// Update an existing product in Supabase
+async function dbUpdateProduct(product) {
+  const sb = getSupabase();
+  const payload = formatProductToRow(product);
+
+  const { data, error } = await sb
+    .from('products')
+    .update(payload)
+    .eq('id', product.id)
+    .select();
+
+  if (error) {
+    console.error('[Supabase Update Product Error]', error);
+    throw new Error(`Database update failed: ${error.message} (Code: ${error.code})`);
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error(`Product ${product.id} was not found in Supabase or update affected 0 rows.`);
+  }
+
+  return formatProductFromRow(data[0]);
+}
+
+// Delete a product in Supabase
+async function dbDeleteProduct(productId) {
+  const sb = getSupabase();
+  const { data, error } = await sb
+    .from('products')
+    .delete()
+    .eq('id', productId)
+    .select();
+
+  if (error) {
+    console.error('[Supabase Delete Product Error]', error);
+    throw new Error(`Database delete failed: ${error.message} (Code: ${error.code})`);
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error(`Product ${productId} was not found in database or delete affected 0 rows. Please check Supabase RLS DELETE policy.`);
+  }
+
+  return true;
+}
+
+// Create an order in Supabase
+async function dbCreateOrder(orderData) {
+  const sb = getSupabase();
+  const orderId = `ORD-${Date.now().toString().slice(-4)}`;
+  const now = new Date().toISOString();
+
+  const fullOrder = {
+    id: orderId,
+    createdAt: now,
+    type: orderData.type || "Retail",
+    items: orderData.items || [],
+    subtotal: Number(orderData.subtotal) || Number(orderData.total) || 0,
+    discount: Number(orderData.discount) || 0,
+    total: Number(orderData.total) || 0,
+    customer: {
+      name: orderData.customer?.name || "Customer",
+      contact: orderData.customer?.contact || "",
+      address: orderData.customer?.address || "",
+      pincode: orderData.customer?.pincode || "",
+      notes: orderData.customer?.notes || ""
+    },
+    status: "New",
+    paymentStatus: "Pending",
+    history: [
+      { status: "New", at: now, note: "Order placed via Storefront Checkout" }
+    ]
+  };
+
+  const row = {
+    id: fullOrder.id,
+    created_at: fullOrder.createdAt,
+    order_type: fullOrder.type,
+    customer_name: fullOrder.customer.name,
+    customer_phone: fullOrder.customer.contact,
+    customer_address: fullOrder.customer.address,
+    customer_pincode: fullOrder.customer.pincode,
+    customer_notes: fullOrder.customer.notes,
+    items: fullOrder.items,
+    subtotal: fullOrder.subtotal,
+    discount: fullOrder.discount,
+    shipping: 0,
+    total: fullOrder.total,
+    status: fullOrder.status,
+    payment_status: fullOrder.paymentStatus,
+    history: fullOrder.history
+  };
+
+  const { data, error } = await sb
+    .from('orders')
+    .insert([row])
+    .select();
+
+  if (error) {
+    console.error('[Supabase Insert Order Error]', error);
+    throw new Error(`Failed to save order to database: ${error.message}`);
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error("Order creation affected 0 rows. Check Supabase orders RLS policy.");
+  }
+
+  return fullOrder;
+}
+
+// Update order status in Supabase
+async function dbUpdateOrderStatus(orderId, newStatus, currentOrder = null) {
+  const sb = getSupabase();
+  const now = new Date().toISOString();
+
+  let history = (currentOrder && Array.isArray(currentOrder.history)) ? [...currentOrder.history] : [];
+  history.unshift({ status: newStatus, at: now, note: `Status updated to ${newStatus}` });
+
+  const { data, error } = await sb
+    .from('orders')
+    .update({ status: newStatus, history: history })
+    .eq('id', orderId)
+    .select();
+
+  if (error) {
+    console.error('[Supabase Update Order Status Error]', error);
+    throw new Error(`Failed to update order status: ${error.message}`);
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error(`Order ${orderId} was not found or affected 0 rows.`);
+  }
+
+  return true;
+}
+
+// Update payment status in Supabase
+async function dbUpdateOrderPayment(orderId, paymentStatus) {
+  const sb = getSupabase();
+  const { data, error } = await sb
+    .from('orders')
+    .update({ payment_status: paymentStatus })
+    .eq('id', orderId)
+    .select();
+
+  if (error) throw error;
+  return true;
+}
+
+// Delete an order in Supabase
+async function dbDeleteOrder(orderId) {
+  const sb = getSupabase();
+  const { data, error } = await sb
+    .from('orders')
+    .delete()
+    .eq('id', orderId)
+    .select();
+
+  if (error) throw error;
+  return true;
+}
+
+// Save site settings to Supabase
+async function dbSaveSettings(settingsObj) {
+  const sb = getSupabase();
+  const { data, error } = await sb
+    .from('site_settings')
+    .upsert([
+      { key: 'general', value: settingsObj, updated_at: new Date().toISOString() }
+    ])
+    .select();
+
+  if (error) {
+    console.error('[Supabase Save Settings Error]', error);
+    throw new Error(`Failed to save settings to database: ${error.message}`);
+  }
+
+  return true;
+}
+
+// Get admin password from Supabase
+async function dbGetAdminPassword() {
+  try {
+    const sb = getSupabase();
+    const { data, error } = await sb
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'admin_auth')
+      .maybeSingle();
+
+    if (!error && data && data.value && data.value.password) {
+      return data.value.password;
     }
+  } catch (e) {}
+  return "Alameen@786";
+}
+
+// Save admin password to Supabase
+async function dbSaveAdminPassword(newPassword) {
+  const sb = getSupabase();
+  const { data, error } = await sb
+    .from('site_settings')
+    .upsert([
+      {
+        key: 'admin_auth',
+        value: { admin_id: "AlameenPerfumes", password: newPassword, updated_at: new Date().toISOString() },
+        updated_at: new Date().toISOString()
+      }
+    ])
+    .select();
+
+  if (error) {
+    throw new Error(`Failed to save password to Supabase: ${error.message}`);
   }
   return true;
 }
 
-// Pulls latest products from Supabase database if available
-async function syncProductsFromSupabase() {
-  if (!window.supabaseClient) return false;
-  try {
-    const { data, error } = await window.supabaseClient.from('products').select('*');
-    if (!error && Array.isArray(data) && data.length > 0) {
-      const mapped = data.map(row => ({
-        id: row.id,
-        name: row.name,
-        category: row.category,
-        type: row.type || 'Eau de Parfum',
-        size: row.size || '100ml',
-        rating: Number(row.rating) || 5.0,
-        reviews: Number(row.reviews) || 0,
-        retailPrice: Number(row.retail_price) || 0,
-        mrp: Number(row.mrp) || Number(row.retail_price) || 0,
-        stock: 25,
-        wholesaleMOQ: Number(row.wholesale_moq) || 6,
-        wholesaleTiers: row.wholesale_tiers || [],
-        notes: row.notes || { top: '', heart: '', base: '' },
-        description: row.description || '',
-        images: Array.isArray(row.images) && row.images.length > 0 ? row.images : ['https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80'],
-        bestseller: !!row.bestseller,
-        newArrival: false,
-        active: true
-      }));
-      setStoredProducts(mapped);
-      return mapped;
-    }
-  } catch (e) {
-    console.warn('Supabase query note:', e.message);
-  }
-  return false;
-}
+// Seed 4 authentic flagship creations directly to Supabase
+async function dbSeedFlagshipProductsToSupabase() {
+  const sb = getSupabase();
+  const rows = FLAGSHIP_SEED_PRODUCTS.map(formatProductToRow);
 
-// Pushes all local products to Supabase in one batch
-async function syncAllProductsToSupabase() {
-  const products = getStoredProducts();
-  if (!window.supabaseClient) {
-    return { success: true, count: products.length, note: 'Saved locally (Supabase client not loaded)' };
-  }
-  try {
-    const payloads = products.map(product => ({
-      id: product.id,
-      name: product.name,
-      category: product.category,
-      type: product.type || 'Eau de Parfum',
-      size: product.size || '100ml',
-      retail_price: Number(product.retailPrice) || 0,
-      mrp: Number(product.mrp) || Number(product.retailPrice) || 0,
-      wholesale_moq: Number(product.wholesaleMOQ) || 6,
-      wholesale_tiers: product.wholesaleTiers || [],
-      notes: product.notes || {},
-      description: product.description || '',
-      images: Array.isArray(product.images) && product.images.length > 0 ? product.images : [],
-      bestseller: !!product.bestseller,
-      in_stock: (typeof product.stock === 'number') ? product.stock > 0 : true
-    }));
+  const { data, error } = await sb
+    .from('products')
+    .upsert(rows)
+    .select();
 
-    const { data, error } = await window.supabaseClient.from('products').upsert(payloads);
-    if (error) {
-      return { success: false, error: error.message };
-    }
-    return { success: true, count: products.length, data };
-  } catch (err) {
-    return { success: false, error: err.message };
+  if (error) {
+    console.error('[Supabase Seed Error]', error);
+    throw new Error(`Seeding failed: ${error.message}`);
   }
-}
 
-// Auto-run non-blocking Supabase sync on page load
-if (typeof window !== 'undefined') {
-  window.addEventListener('DOMContentLoaded', () => {
-    syncProductsFromSupabase().catch(() => {});
-  });
+  return (data || []).map(formatProductFromRow);
 }
 
 // ==========================================================================
-// PRICE CALCULATION (With Wholesale Tiers & Festive Offer Batch)
+// 5. SUPABASE REALTIME SUBSCRIPTION ENGINE (Requirement 4)
+// ==========================================================================
+
+function initSupabaseRealtime(tableName, callback) {
+  try {
+    const sb = getSupabase();
+    const channelName = `realtime_${tableName}_${Math.random().toString(36).slice(2, 8)}`;
+    
+    const channel = sb
+      .channel(channelName)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: tableName },
+        (payload) => {
+          console.log(`[Supabase Realtime Sync] Table "${tableName}" event:`, payload.eventType, payload);
+          if (typeof callback === 'function') {
+            callback(payload);
+          }
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log(`[Supabase Realtime] Subscribed to "${tableName}" changes.`);
+        }
+      });
+
+    return channel;
+  } catch (err) {
+    console.warn(`[Supabase Realtime] Could not subscribe to ${tableName}:`, err.message);
+    return null;
+  }
+}
+
+function removeSupabaseRealtime(channel) {
+  try {
+    if (channel && window.supabaseClient) {
+      window.supabaseClient.removeChannel(channel);
+      console.log('[Supabase Realtime] Unsubscribed channel successfully.');
+    }
+  } catch (e) {
+    console.warn('[Supabase Realtime Unsubscribe Exception]', e);
+  }
+}
+
+// ==========================================================================
+// 6. PRICE CALCULATION (Dynamic with Wholesale Tiers & Offers)
 // ==========================================================================
 
 function calculateProductPrice(product, mode = 'retail', qty = 1, settings = null) {
-  if (!settings) settings = getStoredSettings();
+  if (!settings) settings = DEFAULT_SETTINGS;
   
   let isOfferActive = settings.offer_enabled && settings.offer_discount_percent > 0;
   
-  // Check scope & audience
   if (isOfferActive && settings.offer_applies_to) {
     if (settings.offer_applies_to === 'retail' && mode !== 'retail') isOfferActive = false;
     if (settings.offer_applies_to === 'wholesale' && mode !== 'wholesale') isOfferActive = false;
@@ -374,7 +660,7 @@ function calculateProductPrice(product, mode = 'retail', qty = 1, settings = nul
   const discountRate = isOfferActive ? (1 - settings.offer_discount_percent / 100) : 1;
 
   if (mode === 'retail') {
-    const originalPrice = product.retailPrice;
+    const originalPrice = product.retailPrice || 0;
     const effectiveUnitPrice = isOfferActive ? Math.round(originalPrice * discountRate) : originalPrice;
     return {
       unitPrice: effectiveUnitPrice,
@@ -384,7 +670,10 @@ function calculateProductPrice(product, mode = 'retail', qty = 1, settings = nul
       totalPrice: effectiveUnitPrice * qty
     };
   } else {
-    let matchedTier = product.wholesaleTiers ? product.wholesaleTiers[0] : { price: Math.round(product.retailPrice * 0.6) };
+    let matchedTier = (product.wholesaleTiers && product.wholesaleTiers.length > 0)
+      ? product.wholesaleTiers[0]
+      : { price: Math.round((product.retailPrice || 0) * 0.6) };
+
     if (product.wholesaleTiers && Array.isArray(product.wholesaleTiers)) {
       for (const tier of product.wholesaleTiers) {
         if (qty >= tier.min) matchedTier = tier;
@@ -403,244 +692,39 @@ function calculateProductPrice(product, mode = 'retail', qty = 1, settings = nul
   }
 }
 
-// ==========================================================================
-// ORDERS MANAGEMENT & STOREFRONT CHECKOUT RECORD ENGINE
-// ==========================================================================
-
-// Returns clean stored orders list (defaults to [] if empty - NO auto-seeded demo junk)
-function getStoredOrders() {
-  const orders = getStorage('alameen_orders', null);
-  if (orders && Array.isArray(orders)) {
-    return orders;
+// UI Cart & Wishlist Storage (Isolated client-side session only)
+function getClientSession(key, fallback) {
+  try {
+    const val = localStorage.getItem(key);
+    return val ? JSON.parse(val) : fallback;
+  } catch (e) {
+    return fallback;
   }
-  return []; // Clean empty state by default!
 }
 
-function setStoredOrders(orders) {
-  setStorage('alameen_orders', orders);
+function setClientSession(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {}
 }
 
-function generateNextOrderId() {
-  const orders = getStoredOrders();
-  let maxNum = 100;
-  orders.forEach(o => {
-    if (o.id && o.id.startsWith('ORD-')) {
-      const num = parseInt(o.id.replace('ORD-', ''), 10);
-      if (!isNaN(num) && num > maxNum) maxNum = num;
-    }
-  });
-  const next = maxNum + 1;
-  return `ORD-${String(next).padStart(4, '0')}`;
-}
-
-// Called by Storefront Checkout BEFORE opening WhatsApp
-function createStoreOrder(orderData) {
-  const orders = getStoredOrders();
-  const nextId = generateNextOrderId();
-  const now = new Date().toISOString();
-
-  const newOrder = {
-    id: nextId,
-    createdAt: now,
-    type: orderData.type || "Retail", // "Retail" or "Wholesale"
-    items: orderData.items || [],
-    subtotal: orderData.subtotal || orderData.total || 0,
-    discount: orderData.discount || 0,
-    total: orderData.total || 0,
-    customer: {
-      name: orderData.customer?.name || "Customer",
-      contact: orderData.customer?.contact || "",
-      address: orderData.customer?.address || "",
-      pincode: orderData.customer?.pincode || "",
-      notes: orderData.customer?.notes || ""
-    },
-    status: "New", // New -> Confirmed -> Packed -> Shipped -> Delivered, or Cancelled
-    paymentStatus: "Pending", // Pending, Paid, Partial
-    history: [
-      { status: "New", at: now, note: "Order placed via Storefront Checkout" }
-    ]
-  };
-
-  orders.unshift(newOrder);
-  setStoredOrders(orders);
-
-  // Background sync to Supabase if client is ready
-  if (window.supabaseClient) {
-    try {
-      window.supabaseClient.from('orders').insert([{
-        id: newOrder.id,
-        created_at: newOrder.createdAt,
-        order_type: newOrder.type,
-        customer_name: newOrder.customer.name,
-        customer_phone: newOrder.customer.contact,
-        customer_address: newOrder.customer.address,
-        total_amount: newOrder.total,
-        status: newOrder.status,
-        order_details: newOrder
-      }]).then(() => {}).catch(() => {});
-    } catch (e) {}
-  }
-
-  return newOrder;
-}
-
-// Update status with inventory deduction / restoration
-function updateOrderStatus(orderId, newStatus, note = "") {
-  const orders = getStoredOrders();
-  const order = orders.find(o => o.id === orderId);
-  if (!order) return false;
-
-  const previousStatus = order.status;
-  if (previousStatus === newStatus) return true;
-
-  order.status = newStatus;
-  const now = new Date().toISOString();
-  if (!order.history) order.history = [];
-  order.history.unshift({ status: newStatus, at: now, note: note || `Status changed to ${newStatus}` });
-
-  // Stock Management:
-  // If transitioning to "Confirmed", reduce stock
-  // If transitioning to "Cancelled" from an active state, restore stock
-  const products = getStoredProducts();
-  let productsChanged = false;
-
-  if (newStatus === "Confirmed" && previousStatus === "New") {
-    order.items.forEach(item => {
-      const prod = products.find(p => p.id === item.productId);
-      if (prod && typeof prod.stock === 'number') {
-        prod.stock = Math.max(0, prod.stock - (item.qty || 1));
-        productsChanged = true;
-      }
-    });
-  } else if (newStatus === "Cancelled" && ["Confirmed", "Packed", "Shipped"].includes(previousStatus)) {
-    order.items.forEach(item => {
-      const prod = products.find(p => p.id === item.productId);
-      if (prod && typeof prod.stock === 'number') {
-        prod.stock += (item.qty || 1);
-        productsChanged = true;
-      }
-    });
-  }
-
-  if (productsChanged) {
-    setStoredProducts(products);
-  }
-
-  setStoredOrders(orders);
-  return true;
-}
-
-function updateOrderPaymentStatus(orderId, newPaymentStatus) {
-  const orders = getStoredOrders();
-  const order = orders.find(o => o.id === orderId);
-  if (!order) return false;
-
-  order.paymentStatus = newPaymentStatus;
-  setStoredOrders(orders);
-  return true;
-}
-
-function deleteStoredOrder(orderId) {
-  let orders = getStoredOrders();
-  orders = orders.filter(o => o.id !== orderId);
-  setStoredOrders(orders);
-  return true;
-}
-
-// Build customer database dynamically from order history
-function getCustomersFromOrders() {
-  const orders = getStoredOrders();
-  const customerMap = {};
-
-  orders.forEach(order => {
-    const phone = (order.customer?.contact || "").replace(/\D/g, '');
-    const key = phone || order.customer?.name || order.id;
-    if (!customerMap[key]) {
-      customerMap[key] = {
-        name: order.customer?.name || "Customer",
-        phone: order.customer?.contact || "—",
-        address: order.customer?.address || "—",
-        pincode: order.customer?.pincode || "—",
-        totalOrders: 0,
-        totalSpent: 0,
-        lastOrderDate: order.createdAt,
-        type: order.type || "Retail",
-        orders: []
-      };
-    }
-
-    const c = customerMap[key];
-    c.totalOrders += 1;
-    if (order.status !== "Cancelled") {
-      c.totalSpent += (order.total || 0);
-    }
-    if (new Date(order.createdAt) > new Date(c.lastOrderDate)) {
-      c.lastOrderDate = order.createdAt;
-      c.type = order.type || c.type;
-      c.name = order.customer?.name || c.name;
-    }
-    c.orders.push(order);
-  });
-
-  return Object.values(customerMap);
-}
-
-// ==========================================================================
-// CLEANUP & DEMO DATA MANAGEMENT HELPERS
-// ==========================================================================
-
-// Clears all demo customers and demo orders (sets orders to [])
-function clearAllDemoCustomersAndOrders() {
-  setStoredOrders([]);
-  return true;
-}
-
-// Resets products to the 4 authentic Al-Ameen creations
-function resetProductsToFlagship() {
-  setStoredProducts([...DEFAULT_PRODUCTS]);
-  return [...DEFAULT_PRODUCTS];
-}
-
-// Clears all products (leaves catalog empty for fresh manual entry)
-function clearAllProducts() {
-  setStoredProducts([]);
-  return [];
-}
-
-// Optional: seed sample orders only if explicitly requested
-function seedSampleOrders(force = false) {
-  const now = new Date();
-  const sampleData = [
-    {
-      id: "ORD-0115",
-      createdAt: new Date(now.getTime() - 0.1 * 86400000).toISOString(),
-      type: "Retail",
-      customer: { name: "Zubair Hashmi", contact: "9820145678", address: "Flat 402, Al-Madina Heights, Mohammed Ali Road, Mumbai", pincode: "400003", notes: "Please gift wrap with gold ribbon" },
-      status: "New",
-      paymentStatus: "Pending",
-      items: [
-        { productId: "p1", name: "Al-Ameen Sultan Attar", size: "12ml", qty: 2, unitPrice: 1499, lineTotal: 2998 },
-        { productId: "p3", name: "Noor-E-Gulab (Rose Elixir)", size: "50ml", qty: 1, unitPrice: 1899, lineTotal: 1899 }
-      ],
-      subtotal: 4897, discount: 0, total: 4897,
-      history: [{ status: "New", at: new Date().toISOString(), note: "Order placed" }]
-    },
-    {
-      id: "ORD-0114",
-      createdAt: new Date(now.getTime() - 0.3 * 86400000).toISOString(),
-      type: "Wholesale",
-      customer: { name: "Al-Burooj Perfume Boutique", contact: "9845233119", address: "Shop 12, Commercial Street, Bangalore", pincode: "560001", notes: "Urgent wholesale dispatch for bridal exhibition" },
-      status: "New",
-      paymentStatus: "Pending",
-      items: [
-        { productId: "p1", name: "Al-Ameen Sultan Attar", size: "12ml", qty: 12, unitPrice: 710, lineTotal: 8520 },
-        { productId: "p2", name: "Royal Oud Intense", size: "100ml", qty: 6, unitPrice: 1350, lineTotal: 8100 }
-      ],
-      subtotal: 16620, discount: 0, total: 16620,
-      history: [{ status: "New", at: new Date().toISOString(), note: "Wholesale order placed" }]
-    }
-  ];
-
-  setStoredOrders(sampleData);
-  return sampleData;
-}
+// Global Exports
+window.dbFetchProducts = dbFetchProducts;
+window.dbFetchOrders = dbFetchOrders;
+window.dbFetchSettings = dbFetchSettings;
+window.dbCreateProduct = dbCreateProduct;
+window.dbUpdateProduct = dbUpdateProduct;
+window.dbDeleteProduct = dbDeleteProduct;
+window.dbCreateOrder = dbCreateOrder;
+window.dbUpdateOrderStatus = dbUpdateOrderStatus;
+window.dbUpdateOrderPayment = dbUpdateOrderPayment;
+window.dbDeleteOrder = dbDeleteOrder;
+window.dbSaveSettings = dbSaveSettings;
+window.dbGetAdminPassword = dbGetAdminPassword;
+window.dbSaveAdminPassword = dbSaveAdminPassword;
+window.dbSeedFlagshipProductsToSupabase = dbSeedFlagshipProductsToSupabase;
+window.initSupabaseRealtime = initSupabaseRealtime;
+window.removeSupabaseRealtime = removeSupabaseRealtime;
+window.calculateProductPrice = calculateProductPrice;
+window.getClientSession = getClientSession;
+window.setClientSession = setClientSession;

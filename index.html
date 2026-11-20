@@ -13,11 +13,11 @@
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230B2B20'%3E%3Cpath d='M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z'/%3E%3C/svg%3E">
 
-  <!-- Core Catalog Engine -->
-  <script src="core.js"></script>
-
   <!-- Supabase Official JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Core Catalog Engine -->
+  <script src="core.js"></script>
 
   <style>
     /* ==========================================================================
@@ -1944,16 +1944,16 @@
   </nav>
 
   <!-- ==========================================================================
-       11. JAVASCRIPT APPLICATION LOGIC
+       11. JAVASCRIPT APPLICATION LOGIC (Live Supabase & Realtime Sync)
        ========================================================================== -->
   <script>
     class StorefrontApp {
       constructor() {
-        this.products = getStoredProducts();
-        this.settings = getStoredSettings();
-        this.mode = getStorage('alameen_mode', 'retail');
-        this.cart = getStorage('alameen_cart', []);
-        this.wishlist = getStorage('alameen_wishlist', []);
+        this.products = [];
+        this.settings = { ...DEFAULT_SETTINGS };
+        this.mode = getClientSession('alameen_mode', 'retail');
+        this.cart = getClientSession('alameen_cart', []);
+        this.wishlist = getClientSession('alameen_wishlist', []);
         
         this.testimonials = [
           { quote: "The Sultan Attar is on another level. I apply two dabs in the morning and can still smell the Taif rose and oud at night. Truly royal quality.", name: "Zayd Merchant", loc: "Boutique Owner · Hyderabad" },
@@ -1961,19 +1961,90 @@
           { quote: "Noor-E-Gulab has become my signature daily fragrance. So velvety, luxurious, and completely non-irritating to sensitive skin.", name: "Ayesha Siddiqui", loc: "Fragrance Enthusiast · Mumbai" }
         ];
         this.testimonialIndex = 0;
+        this.realtimeChannels = [];
 
         this.init();
       }
 
-      init() {
-        this.applySettings();
+      async init() {
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
         this.updateModeUI();
         this.renderCategoryCircles();
-        this.renderBestsellers();
         this.updateBadges();
 
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        // 1. Initial async load directly from Supabase
+        await this.loadDataFromDatabase();
+
+        // 2. Setup Realtime Sync for live cross-device catalog & settings updates
+        this.setupRealtimeSync();
+
         setInterval(() => this.rotateTestimonial(), 6000);
+      }
+
+      async loadDataFromDatabase() {
+        const grid = document.getElementById('bestsellersGrid');
+        if (grid && (!this.products || this.products.length === 0)) {
+          grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--text-muted);">
+              <div style="width: 36px; height: 36px; border: 3px solid var(--green-200); border-top-color: var(--green-700); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px;"></div>
+              <p style="font-weight: 600;">Connecting to Al-Ameen Live Catalog...</p>
+            </div>
+          `;
+        }
+
+        try {
+          const [productsData, settingsData] = await Promise.all([
+            dbFetchProducts(),
+            dbFetchSettings()
+          ]);
+
+          this.products = productsData || [];
+          this.settings = settingsData || { ...DEFAULT_SETTINGS };
+
+          this.applySettings();
+          this.renderBestsellers();
+        } catch (err) {
+          console.error('[Storefront DB Load Error]', err);
+          if (grid) {
+            grid.innerHTML = `
+              <div style="grid-column: 1 / -1; text-align: center; padding: 36px 16px; background: #FFF5F5; border-radius: 14px; border: 1px solid #FED7D7; color: #9B2C2C;">
+                <p style="font-weight: 700; margin-bottom: 6px;">Live Database Sync Pending</p>
+                <p style="font-size: 0.85rem; color: #742A2A;">Please run the schema script in your Supabase SQL Editor to activate live products.</p>
+              </div>
+            `;
+          }
+        }
+      }
+
+      setupRealtimeSync() {
+        const prodChannel = initSupabaseRealtime('products', async (payload) => {
+          console.log('[Storefront Realtime] Products update detected:', payload.eventType);
+          try {
+            this.products = await dbFetchProducts();
+            this.renderBestsellers();
+            this.renderCartItems();
+          } catch (e) {
+            console.warn('[Realtime product reload error]', e);
+          }
+        });
+        if (prodChannel) this.realtimeChannels.push(prodChannel);
+
+        const setChannel = initSupabaseRealtime('site_settings', async (payload) => {
+          console.log('[Storefront Realtime] Settings update detected:', payload.eventType);
+          try {
+            this.settings = await dbFetchSettings();
+            this.applySettings();
+            this.renderBestsellers();
+            this.renderCartItems();
+          } catch (e) {
+            console.warn('[Realtime settings reload error]', e);
+          }
+        });
+        if (setChannel) this.realtimeChannels.push(setChannel);
+
+        window.addEventListener('beforeunload', () => {
+          this.realtimeChannels.forEach(ch => removeSupabaseRealtime(ch));
+        });
       }
 
       applySettings() {
@@ -2195,8 +2266,15 @@
         document.getElementById('orderModalBackdrop').classList.remove('active');
       }
 
-      handleOrderSubmit(e) {
+      async handleOrderSubmit(e) {
         e.preventDefault();
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const origText = submitBtn ? submitBtn.textContent : 'Send Order to WhatsApp';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Saving order to database...';
+        }
+
         const name = document.getElementById('orderName').value.trim();
         const phone = document.getElementById('orderPhone').value.trim();
         const address = document.getElementById('orderAddress').value.trim();
@@ -2224,46 +2302,56 @@
           }
         });
 
-        // Save order record for Admin Portal BEFORE opening WhatsApp
-        const savedOrder = createStoreOrder({
-          type: this.mode === 'wholesale' ? 'Wholesale' : 'Retail',
-          items: orderItems,
-          subtotal: total,
-          discount: 0,
-          total: total,
-          customer: {
-            name: name,
-            contact: phone,
-            address: address,
-            pincode: pincode,
-            notes: notes
+        try {
+          // Save order directly to Supabase
+          const savedOrder = await dbCreateOrder({
+            type: this.mode === 'wholesale' ? 'Wholesale' : 'Retail',
+            items: orderItems,
+            subtotal: total,
+            discount: 0,
+            total: total,
+            customer: {
+              name: name,
+              contact: phone,
+              address: address,
+              pincode: pincode,
+              notes: notes
+            }
+          });
+
+          const message = `*New Order [${savedOrder.id}] – ${CONFIG.STORE_NAME}*\n` +
+            `Order Type: ${this.mode.toUpperCase()}\n` +
+            `-----------------------------------\n` +
+            `${itemsText}` +
+            `*Total: ₹${total.toLocaleString('en-IN')}*\n` +
+            `-----------------------------------\n` +
+            `*Customer Details:*\n` +
+            `Name: ${name}\n` +
+            `Phone: ${phone}\n` +
+            `Address: ${address}\n` +
+            `Pincode: ${pincode}\n` +
+            (notes ? `Notes: ${notes}\n` : '') +
+            `Payment: Settle on WhatsApp\n` +
+            `-----------------------------------`;
+
+          const waUrl = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+          window.open(waUrl, '_blank');
+
+          // Clear cart on successful order
+          this.cart = [];
+          setClientSession('alameen_cart', this.cart);
+          this.updateBadges();
+          this.closeOrderModal();
+          alert(`Your order [${savedOrder.id}] has been saved & initiated! WhatsApp has opened to finalize dispatch.`);
+        } catch (err) {
+          console.error('[Order Save Error]', err);
+          alert(`Unable to save order to database: ${err.message}. Please check your connection.`);
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = origText;
           }
-        });
-
-        const message = `*New Order [${savedOrder.id}] – ${CONFIG.STORE_NAME}*\n` +
-          `Order Type: ${this.mode.toUpperCase()}\n` +
-          `-----------------------------------\n` +
-          `${itemsText}` +
-          `*Total: ₹${total.toLocaleString('en-IN')}*\n` +
-          `-----------------------------------\n` +
-          `*Customer Details:*\n` +
-          `Name: ${name}\n` +
-          `Phone: ${phone}\n` +
-          `Address: ${address}\n` +
-          `Pincode: ${pincode}\n` +
-          (notes ? `Notes: ${notes}\n` : '') +
-          `Payment: Settle on WhatsApp\n` +
-          `-----------------------------------`;
-
-        const waUrl = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-        window.open(waUrl, '_blank');
-
-        // Clear cart
-        this.cart = [];
-        setStorage('alameen_cart', this.cart);
-        this.updateBadges();
-        this.closeOrderModal();
-        alert(`Your order [${savedOrder.id}] has been saved & initiated! WhatsApp has opened to finalize dispatch.`);
+        }
       }
 
       toggleMobileMenu() {

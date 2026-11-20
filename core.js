@@ -728,3 +728,188 @@ window.removeSupabaseRealtime = removeSupabaseRealtime;
 window.calculateProductPrice = calculateProductPrice;
 window.getClientSession = getClientSession;
 window.setClientSession = setClientSession;
+
+// ==========================================================================
+// 6. GLOBAL LUXURY TOP-STACKED TOAST NOTIFICATION SYSTEM (BUG 1 FIX)
+// ==========================================================================
+(function injectGlobalToastStyles() {
+  if (typeof document === 'undefined') return;
+  const styleId = 'alameen-global-toast-styles';
+  if (document.getElementById(styleId)) return;
+
+  const styleEl = document.createElement('style');
+  styleEl.id = styleId;
+  styleEl.textContent = `
+    .toast-container,
+    .toast-container-top {
+      position: fixed !important;
+      top: calc(env(safe-area-inset-top, 0px) + 12px) !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: calc(100% - 24px) !important;
+      max-width: 480px !important;
+      z-index: 9999 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 8px !important;
+      align-items: center !important;
+      pointer-events: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      bottom: auto !important;
+      right: auto !important;
+    }
+
+    .toast-box,
+    .alameen-toast-box {
+      pointer-events: auto !important;
+      cursor: pointer !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      padding: 12px 16px !important;
+      background: rgba(10, 38, 28, 0.96) !important;
+      color: #FFFFFF !important;
+      border-radius: 14px !important;
+      border: 1px solid rgba(212, 175, 55, 0.35) !important;
+      border-left: 4px solid #D4AF37 !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 16px rgba(212, 175, 55, 0.15) !important;
+      backdrop-filter: blur(14px) !important;
+      -webkit-backdrop-filter: blur(14px) !important;
+      animation: toastSlideDown 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+      user-select: none !important;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
+
+    .toast-box.success,
+    .alameen-toast-box.success {
+      border-left-color: #2E9D74 !important;
+    }
+
+    .toast-box.error,
+    .alameen-toast-box.error {
+      border-left-color: #DC2626 !important;
+    }
+
+    .toast-box.info,
+    .alameen-toast-box.info {
+      border-left-color: #D4AF37 !important;
+    }
+
+    .toast-box.toast-exit,
+    .alameen-toast-box.toast-exit {
+      animation: toastSlideUp 0.24s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+    }
+
+    .toast-icon-wrap {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+    }
+
+    .toast-msg-text {
+      flex: 1;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      line-height: 1.4 !important;
+      color: #FFFFFF !important;
+      word-break: break-word !important;
+    }
+
+    .toast-close-x {
+      flex-shrink: 0;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    .toast-close-x:hover {
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    @keyframes toastSlideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes toastSlideUp {
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-16px) scale(0.96);
+      }
+    }
+  `;
+  document.head.appendChild(styleEl);
+})();
+
+function getOrCreateToastContainer() {
+  if (typeof document === 'undefined') return null;
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container-top';
+    document.body.appendChild(container);
+  }
+  return container;
+}
+
+window.showToast = function(msg, type = 'info') {
+  const container = getOrCreateToastContainer();
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `alameen-toast-box ${type}`;
+  toast.setAttribute('role', 'alert');
+  toast.setAttribute('aria-live', 'assertive');
+
+  const iconSvg = (type === 'success')
+    ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E9D74" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`
+    : (type === 'error')
+    ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`
+    : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+
+  toast.innerHTML = `
+    <div class="toast-icon-wrap">${iconSvg}</div>
+    <div class="toast-msg-text">${msg}</div>
+    <div class="toast-close-x" aria-label="Dismiss">✕</div>
+  `;
+
+  let isDismissing = false;
+  const dismiss = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (isDismissing) return;
+    isDismissing = true;
+    toast.classList.add('toast-exit');
+    setTimeout(() => {
+      try { toast.remove(); } catch (err) {}
+    }, 240);
+  };
+
+  // Tap to dismiss
+  toast.addEventListener('click', dismiss);
+
+  container.appendChild(toast);
+
+  // Auto-hide after 3 seconds
+  setTimeout(dismiss, 3000);
+};
+
+window.showAlameenToast = window.showToast;

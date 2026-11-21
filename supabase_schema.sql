@@ -107,7 +107,15 @@ create table if not exists public.reviews (
 );
 
 -- --------------------------------------------------------------------------
--- 6. ENABLE ROW LEVEL SECURITY (RLS)
+-- 6. GRANT TABLE & SCHEMA PRIVILEGES TO ANON AND AUTHENTICATED ROLES
+-- --------------------------------------------------------------------------
+grant usage on schema public to anon, authenticated, service_role;
+grant all on all tables in schema public to anon, authenticated, service_role;
+grant all on all sequences in schema public to anon, authenticated, service_role;
+grant all on all routines in schema public to anon, authenticated, service_role;
+
+-- --------------------------------------------------------------------------
+-- 7. ENABLE ROW LEVEL SECURITY (RLS)
 -- --------------------------------------------------------------------------
 alter table public.products enable row level security;
 alter table public.categories enable row level security;
@@ -116,7 +124,7 @@ alter table public.site_settings enable row level security;
 alter table public.reviews enable row level security;
 
 -- --------------------------------------------------------------------------
--- 7. RLS POLICIES (Full CRUD access for anonymous public store & admin client)
+-- 8. RLS POLICIES (Full CRUD access for anonymous public store & admin client)
 -- --------------------------------------------------------------------------
 -- PRODUCTS
 drop policy if exists "Allow public read products" on public.products;
@@ -295,3 +303,8 @@ values
   ('general', '{"store_name": "AL-AMEEN PERFUMES", "tagline": "Discover Your Signature Scent", "whatsapp_number": "919876543210", "free_shipping_min": 999, "low_stock_threshold": 10, "announcement_enabled": false, "announcement_text": "Free shipping Pan-India · Wholesale rates available", "offer_enabled": false, "offer_name": "Festive Season Special", "offer_badge": "Festive Offer", "offer_discount_percent": 15, "offer_applies_to": "both"}'::jsonb),
   ('admin_auth', '{"admin_id": "AlameenPerfumes", "password_hash": "Alameen@786"}'::jsonb)
 on conflict (key) do nothing;
+
+-- --------------------------------------------------------------------------
+-- 11. RELOAD POSTGREST SCHEMA CACHE (Ensures columns like bottle_sizes are immediately recognized)
+-- --------------------------------------------------------------------------
+notify pgrst, 'reload schema';

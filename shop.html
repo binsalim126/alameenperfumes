@@ -1404,11 +1404,13 @@
         }
 
         grid.innerHTML = list.map(product => {
-          const pricing = calculateProductPrice(product, this.mode, 1, this.settings);
+          const availableSizes = getProductSizes(product);
+          const defaultSize = availableSizes[availableSizes.length - 1]?.size || product.size || '12ml';
+          const pricing = calculateProductPrice(product, this.mode, 1, this.settings, defaultSize);
           const isWish = this.wishlist.includes(product.id);
 
           return `
-            <div class="product-card" onclick="shopApp.openProductModal('${product.id}')" style="cursor:pointer;">
+            <div class="product-card" id="shop-card-${product.id}" onclick="shopApp.openProductModal('${product.id}')" style="cursor:pointer;">
               <div class="card-media">
                 <img src="${product.images[0]}" alt="${product.name}" class="card-img" loading="lazy">
                 ${pricing.isOffer ? `<span class="card-badge offer-badge">${this.settings.offer_badge}</span>` : `<span class="card-badge">${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'}</span>`}
@@ -1420,10 +1422,21 @@
               <div class="card-body">
                 <div class="card-meta">
                   <span class="card-category">${product.category}</span>
-                  <span class="card-size">${product.size}</span>
+                  <span class="card-size" id="shop-card-size-label-${product.id}">${defaultSize}</span>
                 </div>
                 <h3 class="card-title">${product.name}</h3>
                 <div class="card-notes-brief">Notes: ${product.notes.top}</div>
+
+                <!-- Bottle Size Selection Pills -->
+                <div class="card-sizes-row" style="display:flex; gap:6px; margin:8px 0 10px; flex-wrap:wrap;">
+                  ${availableSizes.map((s, idx) => `
+                    <button type="button" class="card-size-pill ${s.size === defaultSize ? 'active' : ''}" 
+                      onclick="event.stopPropagation(); shopApp.selectCardSize('${product.id}', '${s.size}', this)"
+                      style="padding:3px 9px; font-size:0.74rem; font-weight:700; border-radius:12px; border:1.5px solid ${s.size === defaultSize ? 'var(--gold-500)' : 'var(--green-200)'}; background:${s.size === defaultSize ? 'var(--gold-100)' : 'transparent'}; color:var(--green-950); cursor:pointer;">
+                      ${s.size}
+                    </button>
+                  `).join('')}
+                </div>
 
                 <div class="card-rating-row">
                   <span class="stars">★★★★★</span>
@@ -1431,14 +1444,14 @@
                 </div>
 
                 <div class="card-footer">
-                  <div class="price-row">
+                  <div class="price-row" id="shop-price-box-${product.id}">
                     <span class="price-current">₹${pricing.unitPrice.toLocaleString('en-IN')}</span>
-                    ${pricing.isOffer ? `<span class="price-mrp">₹${pricing.originalPrice.toLocaleString('en-IN')}</span>` : `<span class="price-mrp">₹${product.mrp.toLocaleString('en-IN')}</span>`}
+                    ${pricing.isOffer ? `<span class="price-mrp">₹${pricing.originalPrice.toLocaleString('en-IN')}</span>` : `<span class="price-mrp">₹${pricing.mrp.toLocaleString('en-IN')}</span>`}
                   </div>
                   ${this.mode === 'wholesale' ? `<span class="wholesale-moq-label">Min Order: ${product.wholesaleMOQ} pcs</span>` : ''}
 
                   <!-- Longer Button with Writing (Img 4 Fix) -->
-                  <button type="button" class="card-add-btn" onclick="event.stopPropagation(); shopApp.addToCart('${product.id}')">
+                  <button type="button" class="card-add-btn" id="shop-addbtn-${product.id}" data-size="${defaultSize}" onclick="event.stopPropagation(); shopApp.addToCart('${product.id}', null, this.getAttribute('data-size'))">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                     <span>Add to Bag</span>
                   </button>
@@ -1447,6 +1460,36 @@
             </div>
           `;
         }).join('');
+      }
+
+      selectCardSize(productId, sizeName, btnEl) {
+        const product = this.products.find(p => p.id === productId);
+        if (!product) return;
+
+        const parent = btnEl.parentElement;
+        if (parent) {
+          parent.querySelectorAll('button').forEach(btn => {
+            btn.style.borderColor = 'var(--green-200)';
+            btn.style.background = 'transparent';
+          });
+          btnEl.style.borderColor = 'var(--gold-500)';
+          btnEl.style.background = 'var(--gold-100)';
+        }
+
+        const sizeLabel = document.getElementById(`shop-card-size-label-${productId}`);
+        if (sizeLabel) sizeLabel.textContent = sizeName;
+
+        const pricing = calculateProductPrice(product, this.mode, 1, this.settings, sizeName);
+        const priceBox = document.getElementById(`shop-price-box-${productId}`);
+        if (priceBox) {
+          priceBox.innerHTML = `
+            <span class="price-current">₹${pricing.unitPrice.toLocaleString('en-IN')}</span>
+            ${pricing.isOffer ? `<span class="price-mrp">₹${pricing.originalPrice.toLocaleString('en-IN')}</span>` : `<span class="price-mrp">₹${pricing.mrp.toLocaleString('en-IN')}</span>`}
+          `;
+        }
+
+        const addBtn = document.getElementById(`shop-addbtn-${productId}`);
+        if (addBtn) addBtn.setAttribute('data-size', sizeName);
       }
 
       resetFilters() {
@@ -1461,7 +1504,10 @@
       openProductModal(productId) {
         const product = this.products.find(p => p.id === productId);
         if (!product) return;
-        const pricing = calculateProductPrice(product, this.mode, 1, this.settings);
+        const availableSizes = getProductSizes(product);
+        const defaultSize = availableSizes[availableSizes.length - 1]?.size || product.size || '12ml';
+        this.modalSelectedSize = defaultSize;
+        const pricing = calculateProductPrice(product, this.mode, 1, this.settings, defaultSize);
         const modal = document.getElementById('pdpModalContent');
         const minQty = this.mode === 'wholesale' ? product.wholesaleMOQ : 1;
 
@@ -1470,13 +1516,27 @@
             <div>
               <span class="card-category">${product.category} · ${product.type}</span>
               <h2 style="font-size:1.5rem; color:var(--green-950); margin-top:4px;">${product.name}</h2>
-              <div style="font-size:0.85rem; color:var(--text-light); font-weight:600;">Bottle Size: ${product.size}</div>
             </div>
             <button class="drawer-close-btn" style="background:#E5ECE8; color:#061F17;" onclick="shopApp.closeProductModal()">✕</button>
           </div>
 
           <div style="height:220px; border-radius:14px; overflow:hidden; margin-bottom:16px;">
             <img src="${product.images[0]}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">
+          </div>
+
+          <!-- Bottle Size Selector in QuickView -->
+          <div style="margin-bottom:16px;">
+            <label style="font-size:0.75rem; font-weight:800; color:var(--green-950); text-transform:uppercase; letter-spacing:0.04em; display:block; margin-bottom:6px;">Select Flacon Size:</label>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              ${availableSizes.map(s => `
+                <button type="button" class="modal-size-pill ${s.size === defaultSize ? 'active' : ''}" 
+                  id="modal-size-${s.size}"
+                  onclick="shopApp.selectModalSize('${product.id}', '${s.size}')"
+                  style="padding:6px 14px; font-size:0.82rem; font-weight:700; border-radius:10px; border:1.5px solid ${s.size === defaultSize ? 'var(--gold-500)' : 'var(--green-200)'}; background:${s.size === defaultSize ? 'var(--gold-100)' : '#FFFFFF'}; color:var(--green-950); cursor:pointer;">
+                  ${s.size}
+                </button>
+              `).join('')}
+            </div>
           </div>
 
           <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">
@@ -1511,8 +1571,8 @@
 
           <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:20px;">
             <div>
-              <div style="font-size:1.4rem; font-weight:800; color:var(--green-950);">₹${pricing.unitPrice.toLocaleString('en-IN')}</div>
-              <div style="font-size:0.75rem; color:var(--text-light);">${this.mode === 'wholesale' ? `Wholesale (MOQ: ${product.wholesaleMOQ})` : 'Retail Single Bottle'}</div>
+              <div style="font-size:1.4rem; font-weight:800; color:var(--green-950);" id="modalPriceLabel">₹${pricing.unitPrice.toLocaleString('en-IN')}</div>
+              <div style="font-size:0.75rem; color:var(--text-light);">${this.mode === 'wholesale' ? `Wholesale (MOQ: ${product.wholesaleMOQ})` : 'Retail Selected Bottle'}</div>
             </div>
 
             <div style="display:flex; align-items:center; gap:8px;">
@@ -1532,6 +1592,30 @@
         document.getElementById('pdpBackdrop').classList.add('active');
       }
 
+      selectModalSize(productId, sizeName) {
+        const product = this.products.find(p => p.id === productId);
+        if (!product) return;
+        this.modalSelectedSize = sizeName;
+
+        // Highlight pills
+        document.querySelectorAll('.modal-size-pill').forEach(btn => {
+          btn.style.borderColor = 'var(--green-200)';
+          btn.style.background = '#FFFFFF';
+        });
+        const activeBtn = document.getElementById(`modal-size-${sizeName}`);
+        if (activeBtn) {
+          activeBtn.style.borderColor = 'var(--gold-500)';
+          activeBtn.style.background = 'var(--gold-100)';
+        }
+
+        // Recalculate price
+        const pricing = calculateProductPrice(product, this.mode, 1, this.settings, sizeName);
+        const priceLabel = document.getElementById('modalPriceLabel');
+        if (priceLabel) {
+          priceLabel.textContent = `₹${pricing.unitPrice.toLocaleString('en-IN')}`;
+        }
+      }
+
       changeModalQty(delta, minQty) {
         const input = document.getElementById('modalQtyInput');
         if (!input) return;
@@ -1544,7 +1628,8 @@
       addFromModal(productId) {
         const input = document.getElementById('modalQtyInput');
         const qty = input ? parseInt(input.value) || 1 : 1;
-        this.addToCart(productId, qty);
+        const size = this.modalSelectedSize || null;
+        this.addToCart(productId, qty, size);
         this.closeProductModal();
       }
 
@@ -1552,22 +1637,27 @@
         document.getElementById('pdpBackdrop').classList.remove('active');
       }
 
-      addToCart(productId, qtyToAdd = null) {
+      addToCart(productId, qtyToAdd = null, sizeToAdd = null) {
         const product = this.products.find(p => p.id === productId);
         if (!product) return;
         const defaultQty = (this.mode === 'wholesale') ? product.wholesaleMOQ : 1;
         const qty = qtyToAdd || defaultQty;
+        const availableSizes = getProductSizes(product);
+        const chosenSize = sizeToAdd || (availableSizes[availableSizes.length - 1]?.size || product.size || '12ml');
 
-        const existing = this.cart.find(item => item.productId === productId);
+        const existing = this.cart.find(item => item.productId === productId && (item.selectedSize || product.size || '12ml') === chosenSize);
         if (existing) {
           existing.qty += qty;
         } else {
-          this.cart.push({ productId, qty });
+          this.cart.push({ productId, qty, selectedSize: chosenSize });
         }
 
         setStorage('alameen_cart', this.cart);
         this.updateBadges();
         this.openCartDrawer();
+        if (typeof showToast === 'function') {
+          showToast(`Added ${product.name} [${chosenSize}] to your Bag`, 'success');
+        }
       }
 
       toggleWishlist(productId) {
@@ -1635,7 +1725,9 @@
         list.innerHTML = this.cart.map(item => {
           const product = this.products.find(p => p.id === item.productId);
           if (!product) return '';
-          const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings);
+          const availableSizes = getProductSizes(product);
+          const currentSize = item.selectedSize || product.size || (availableSizes[availableSizes.length - 1]?.size || '12ml');
+          const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings, currentSize);
           overallTotal += pricing.totalPrice;
 
           return `
@@ -1643,12 +1735,26 @@
               <img src="${product.images[0]}" alt="${product.name}" class="cart-item-thumb">
               <div style="flex:1;">
                 <div style="font-size:0.88rem; font-weight:700; color:var(--green-950);">${product.name}</div>
+                
+                <!-- Bottle Size Selector in Bag (Dynamic Rate) -->
+                <div style="margin: 4px 0 6px; display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:0.72rem; color:var(--text-light); font-weight:700; text-transform:uppercase;">Size:</span>
+                  <select class="cart-size-select" 
+                    style="padding:3px 8px; font-size:0.76rem; font-weight:700; border-radius:6px; border:1.5px solid var(--green-200); background:#FFFFFF; color:var(--green-950); cursor:pointer;"
+                    onchange="shopApp.updateItemSize('${item.productId}', '${currentSize}', this.value)">
+                    ${availableSizes.map(s => {
+                      const sPricing = calculateProductPrice(product, this.mode, 1, this.settings, s.size);
+                      return `<option value="${s.size}" ${s.size === currentSize ? 'selected' : ''}>${s.size} – ₹${sPricing.unitPrice.toLocaleString('en-IN')}</option>`;
+                    }).join('')}
+                  </select>
+                </div>
+
                 <div style="font-size:0.82rem; font-weight:800; color:var(--green-700);">₹${pricing.unitPrice.toLocaleString('en-IN')} × ${item.qty} = ₹${pricing.totalPrice.toLocaleString('en-IN')}</div>
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
-                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="shopApp.updateItemQty('${item.productId}', -1)">−</button>
+                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="shopApp.updateItemQty('${item.productId}', '${currentSize}', -1)">−</button>
                 <span style="font-size:0.85rem; font-weight:700;">${item.qty}</span>
-                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="shopApp.updateItemQty('${item.productId}', 1)">+</button>
+                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="shopApp.updateItemQty('${item.productId}', '${currentSize}', 1)">+</button>
               </div>
             </div>
           `;
@@ -1657,15 +1763,36 @@
         totalEl.textContent = `₹${overallTotal.toLocaleString('en-IN')}`;
       }
 
-      updateItemQty(productId, delta) {
-        const item = this.cart.find(i => i.productId === productId);
+      updateItemSize(productId, oldSize, newSize) {
+        const itemIndex = this.cart.findIndex(i => i.productId === productId && (i.selectedSize || '12ml') === oldSize);
+        if (itemIndex === -1) return;
+        const product = this.products.find(p => p.id === productId);
+
+        const targetIndex = this.cart.findIndex((i, idx) => idx !== itemIndex && i.productId === productId && (i.selectedSize || '12ml') === newSize);
+        if (targetIndex > -1) {
+          this.cart[targetIndex].qty += this.cart[itemIndex].qty;
+          this.cart.splice(itemIndex, 1);
+        } else {
+          this.cart[itemIndex].selectedSize = newSize;
+        }
+
+        setStorage('alameen_cart', this.cart);
+        this.renderCartItems();
+        this.updateBadges();
+        if (typeof showToast === 'function') {
+          showToast(`Updated ${product ? product.name : 'Perfume'} size to ${newSize}`, 'success');
+        }
+      }
+
+      updateItemQty(productId, sizeName, delta) {
+        const item = this.cart.find(i => i.productId === productId && (i.selectedSize || '12ml') === sizeName);
         if (!item) return;
         const product = this.products.find(p => p.id === productId);
         const minQty = (this.mode === 'wholesale' && product) ? product.wholesaleMOQ : 1;
 
         item.qty += delta;
         if (item.qty < minQty) {
-          this.cart = this.cart.filter(i => i.productId !== productId);
+          this.cart = this.cart.filter(i => !(i.productId === productId && (i.selectedSize || '12ml') === sizeName));
         }
         setStorage('alameen_cart', this.cart);
         this.updateBadges();
@@ -1706,13 +1833,14 @@
         this.cart.forEach((item, idx) => {
           const product = this.products.find(p => p.id === item.productId);
           if (product) {
-            const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings);
+            const chosenSize = item.selectedSize || product.size || '12ml';
+            const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings, chosenSize);
             total += pricing.totalPrice;
-            itemsText += `${idx + 1}. ${product.name} (${product.size}) × ${item.qty} = ₹${pricing.totalPrice.toLocaleString('en-IN')}\n`;
+            itemsText += `${idx + 1}. ${product.name} [${chosenSize}] × ${item.qty} = ₹${pricing.totalPrice.toLocaleString('en-IN')}\n`;
             orderItems.push({
               productId: product.id,
               name: product.name,
-              size: product.size,
+              size: chosenSize,
               qty: item.qty,
               unitPrice: pricing.unitPrice,
               lineTotal: pricing.totalPrice

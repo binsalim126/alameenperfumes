@@ -475,13 +475,28 @@ async function dbCreateProduct(product) {
     window.hasBottleSizesColumn = false;
     const fallbackPayload = { ...payload };
     delete fallbackPayload.bottle_sizes;
-    const retry = await sb.from('products').insert([fallbackPayload]).select();
+    
+    // Explicitly select only universal columns to prevent PostgREST from failing on stale column cache
+    const retry = await sb.from('products')
+      .insert([fallbackPayload])
+      .select('id, name, category, type, size, retail_price, mrp, stock, wholesale_moq, wholesale_tiers, notes, description, images, bestseller, new_arrival, in_stock');
+      
     if (retry.data && retry.data.length > 0) {
       data = [{ ...fallbackPayload, ...retry.data[0] }];
       error = null;
+    } else if (!retry.error) {
+      data = [fallbackPayload];
+      error = null;
     } else {
-      data = retry.data;
-      error = retry.error;
+      // Last-resort fallback: insert without select representation
+      const blindInsert = await sb.from('products').insert([fallbackPayload]);
+      if (!blindInsert.error) {
+        data = [fallbackPayload];
+        error = null;
+      } else {
+        data = retry.data;
+        error = blindInsert.error || retry.error;
+      }
     }
   }
 
@@ -514,13 +529,28 @@ async function dbUpdateProduct(product) {
     window.hasBottleSizesColumn = false;
     const fallbackPayload = { ...payload };
     delete fallbackPayload.bottle_sizes;
-    const retry = await sb.from('products').update(fallbackPayload).eq('id', product.id).select();
+    
+    // Explicitly select only universal columns
+    const retry = await sb.from('products')
+      .update(fallbackPayload)
+      .eq('id', product.id)
+      .select('id, name, category, type, size, retail_price, mrp, stock, wholesale_moq, wholesale_tiers, notes, description, images, bestseller, new_arrival, in_stock');
+      
     if (retry.data && retry.data.length > 0) {
       data = [{ ...fallbackPayload, ...retry.data[0] }];
       error = null;
+    } else if (!retry.error) {
+      data = [fallbackPayload];
+      error = null;
     } else {
-      data = retry.data;
-      error = retry.error;
+      const blindUpdate = await sb.from('products').update(fallbackPayload).eq('id', product.id);
+      if (!blindUpdate.error) {
+        data = [fallbackPayload];
+        error = null;
+      } else {
+        data = retry.data;
+        error = blindUpdate.error || retry.error;
+      }
     }
   }
 

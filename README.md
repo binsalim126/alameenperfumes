@@ -33,3 +33,5 @@ A luxury, responsive perfume e-commerce system with **Retail & Wholesale** dual-
 6. **Mobile Hero Layout:** Hero perfume visual is placed below the headline & CTAs on mobile/tablet so the brand message leads first.
 7. **Admin Expandable Cards:** Eliminated horizontal table scrolling on mobile/tablet; clicking any product or its arrow expands all wholesale tiers, notes, and controls downwards smoothly.
 8. **Offer Batch & Festive Discount:** Admin can toggle festive offer discounts ON/OFF, set custom discount %, and see prices automatically adjust across the storefront with strikethrough.
+9. **Retail Bottle Sizes & Bag Dynamic Pricing:** Support for 3ml, 6ml, 12ml (Attars) and 50ml, 100ml (Sprays). Customers can select their desired bottle size on cards, modals, or directly within the Bag Drawer, with dynamic price recalculation and WhatsApp checkout sync.
+10. **Wholesale Volume Tiers Manager:** Configurable wholesale volume tiers in Admin Settings (MOQ, Tier 1 %, Tier 2 %, Tier 3 %) with an interactive live rate simulator and one-click bulk application to all Supabase catalog products.

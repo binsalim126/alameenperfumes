@@ -2239,11 +2239,13 @@
         const bestsellers = this.products.filter(p => p.bestseller).slice(0, 5);
 
         grid.innerHTML = bestsellers.map(product => {
-          const pricing = calculateProductPrice(product, this.mode, 1, this.settings);
+          const availableSizes = getProductSizes(product);
+          const defaultSize = availableSizes[availableSizes.length - 1]?.size || product.size || '12ml';
+          const pricing = calculateProductPrice(product, this.mode, 1, this.settings, defaultSize);
           const isWish = this.wishlist.includes(product.id);
 
           return `
-            <div class="product-card" onclick="window.location.href='shop.html?product=${product.id}'" style="cursor:pointer;">
+            <div class="product-card" id="card-${product.id}" onclick="window.location.href='shop.html?product=${product.id}'" style="cursor:pointer;">
               <div class="card-media">
                 <img src="${product.images[0]}" alt="${product.name}" class="card-img" loading="lazy">
                 ${pricing.isOffer ? `<span class="card-badge offer-badge">${this.settings.offer_badge}</span>` : `<span class="card-badge">${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'}</span>`}
@@ -2255,10 +2257,22 @@
               <div class="card-body">
                 <div class="card-meta">
                   <span class="card-category">${product.category}</span>
-                  <span class="card-size">${product.size}</span>
+                  <span class="card-size" id="card-size-label-${product.id}">${defaultSize}</span>
                 </div>
                 <h3 class="card-title">${product.name}</h3>
                 <div class="card-notes-brief">Notes: ${product.notes.top}</div>
+
+                <!-- Bottle Size Selection Pills (Attar 3ml, 6ml, 12ml / Spray 50ml, 100ml) -->
+                <div class="card-sizes-row" style="display:flex; gap:6px; margin:8px 0 10px; flex-wrap:wrap;">
+                  ${availableSizes.map((s, idx) => `
+                    <button type="button" class="card-size-pill ${s.size === defaultSize ? 'active' : ''}" 
+                      id="pill-${product.id}-${s.size}"
+                      onclick="event.stopPropagation(); app.selectCardSize('${product.id}', '${s.size}', this)"
+                      style="padding:3px 9px; font-size:0.74rem; font-weight:700; border-radius:12px; border:1.5px solid ${s.size === defaultSize ? 'var(--gold-500)' : 'var(--green-200)'}; background:${s.size === defaultSize ? 'var(--gold-100)' : 'transparent'}; color:var(--green-950); cursor:pointer;">
+                      ${s.size}
+                    </button>
+                  `).join('')}
+                </div>
 
                 <div class="card-rating-row">
                   <span class="stars">★★★★★</span>
@@ -2266,14 +2280,14 @@
                 </div>
 
                 <div class="card-footer">
-                  <div class="price-row">
+                  <div class="price-row" id="price-box-${product.id}">
                     <span class="price-current">₹${pricing.unitPrice.toLocaleString('en-IN')}</span>
-                    ${pricing.isOffer ? `<span class="price-mrp">₹${pricing.originalPrice.toLocaleString('en-IN')}</span>` : `<span class="price-mrp">₹${product.mrp.toLocaleString('en-IN')}</span>`}
+                    ${pricing.isOffer ? `<span class="price-mrp">₹${pricing.originalPrice.toLocaleString('en-IN')}</span>` : `<span class="price-mrp">₹${pricing.mrp.toLocaleString('en-IN')}</span>`}
                   </div>
                   ${this.mode === 'wholesale' ? `<span class="wholesale-moq-label">Min Order: ${product.wholesaleMOQ} pcs</span>` : ''}
 
                   <!-- Longer Button with Text (Img 4 Fix) -->
-                  <button type="button" class="card-add-btn" onclick="event.stopPropagation(); app.addToCart('${product.id}')">
+                  <button type="button" class="card-add-btn" id="addbtn-${product.id}" data-size="${defaultSize}" onclick="event.stopPropagation(); app.addToCart('${product.id}', null, this.getAttribute('data-size'))">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                     <span>Add to Bag</span>
                   </button>
@@ -2284,23 +2298,64 @@
         }).join('');
       }
 
-      addToCart(productId, qtyToAdd = null) {
+      selectCardSize(productId, sizeName, btnEl) {
+        const product = this.products.find(p => p.id === productId);
+        if (!product) return;
+
+        // Highlight active pill
+        const parent = btnEl.parentElement;
+        if (parent) {
+          parent.querySelectorAll('.card-size-pill').forEach(btn => {
+            btn.style.borderColor = 'var(--green-200)';
+            btn.style.background = 'transparent';
+            btn.classList.remove('active');
+          });
+          btnEl.style.borderColor = 'var(--gold-500)';
+          btnEl.style.background = 'var(--gold-100)';
+          btnEl.classList.add('active');
+        }
+
+        // Update card size badge
+        const sizeLabel = document.getElementById(`card-size-label-${productId}`);
+        if (sizeLabel) sizeLabel.textContent = sizeName;
+
+        // Recalculate price for selected size
+        const pricing = calculateProductPrice(product, this.mode, 1, this.settings, sizeName);
+        const priceBox = document.getElementById(`price-box-${productId}`);
+        if (priceBox) {
+          priceBox.innerHTML = `
+            <span class="price-current">₹${pricing.unitPrice.toLocaleString('en-IN')}</span>
+            ${pricing.isOffer ? `<span class="price-mrp">₹${pricing.originalPrice.toLocaleString('en-IN')}</span>` : `<span class="price-mrp">₹${pricing.mrp.toLocaleString('en-IN')}</span>`}
+          `;
+        }
+
+        // Update add-to-bag button data attribute
+        const addBtn = document.getElementById(`addbtn-${productId}`);
+        if (addBtn) addBtn.setAttribute('data-size', sizeName);
+      }
+
+      addToCart(productId, qtyToAdd = null, sizeToAdd = null) {
         const product = this.products.find(p => p.id === productId);
         if (!product) return;
 
         const defaultQty = (this.mode === 'wholesale') ? product.wholesaleMOQ : 1;
         const qty = qtyToAdd || defaultQty;
+        const sizes = getProductSizes(product);
+        const chosenSize = sizeToAdd || (sizes[sizes.length - 1]?.size || product.size || '12ml');
 
-        const existing = this.cart.find(item => item.productId === productId);
+        const existing = this.cart.find(item => item.productId === productId && (item.selectedSize || product.size || '12ml') === chosenSize);
         if (existing) {
           existing.qty += qty;
         } else {
-          this.cart.push({ productId, qty });
+          this.cart.push({ productId, qty, selectedSize: chosenSize });
         }
 
         setStorage('alameen_cart', this.cart);
         this.updateBadges();
         this.openCartDrawer();
+        if (typeof showToast === 'function') {
+          showToast(`Added ${product.name} [${chosenSize}] to your Bag`, 'success');
+        }
       }
 
       toggleWishlist(productId) {
@@ -2348,7 +2403,9 @@
         list.innerHTML = this.cart.map(item => {
           const product = this.products.find(p => p.id === item.productId);
           if (!product) return '';
-          const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings);
+          const availableSizes = getProductSizes(product);
+          const currentSize = item.selectedSize || product.size || (availableSizes[availableSizes.length - 1]?.size || '12ml');
+          const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings, currentSize);
           overallTotal += pricing.totalPrice;
 
           return `
@@ -2356,12 +2413,26 @@
               <img src="${product.images[0]}" alt="${product.name}" class="cart-item-thumb">
               <div class="cart-item-info">
                 <div class="cart-item-title">${product.name}</div>
+                
+                <!-- Bottle Size Selector in Bag (Attar 3ml, 6ml, 12ml / Spray 50ml, 100ml) -->
+                <div style="margin: 4px 0 6px; display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:0.72rem; color:var(--text-light); font-weight:700; text-transform:uppercase;">Size:</span>
+                  <select class="cart-size-select" 
+                    style="padding:3px 8px; font-size:0.76rem; font-weight:700; border-radius:6px; border:1.5px solid var(--green-200); background:#FFFFFF; color:var(--green-950); cursor:pointer;"
+                    onchange="app.updateItemSize('${item.productId}', '${currentSize}', this.value)">
+                    ${availableSizes.map(s => {
+                      const sPricing = calculateProductPrice(product, this.mode, 1, this.settings, s.size);
+                      return `<option value="${s.size}" ${s.size === currentSize ? 'selected' : ''}>${s.size} – ₹${sPricing.unitPrice.toLocaleString('en-IN')}</option>`;
+                    }).join('')}
+                  </select>
+                </div>
+
                 <div class="cart-item-price">₹${pricing.unitPrice.toLocaleString('en-IN')} × ${item.qty} = ₹${pricing.totalPrice.toLocaleString('en-IN')}</div>
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
-                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="app.updateItemQty('${item.productId}', -1)">−</button>
+                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="app.updateItemQty('${item.productId}', '${currentSize}', -1)">−</button>
                 <span style="font-size:0.85rem; font-weight:700;">${item.qty}</span>
-                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="app.updateItemQty('${item.productId}', 1)">+</button>
+                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="app.updateItemQty('${item.productId}', '${currentSize}', 1)">+</button>
               </div>
             </div>
           `;
@@ -2370,15 +2441,37 @@
         totalEl.textContent = `₹${overallTotal.toLocaleString('en-IN')}`;
       }
 
-      updateItemQty(productId, delta) {
-        const item = this.cart.find(i => i.productId === productId);
+      updateItemSize(productId, oldSize, newSize) {
+        const itemIndex = this.cart.findIndex(i => i.productId === productId && (i.selectedSize || '12ml') === oldSize);
+        if (itemIndex === -1) return;
+        const product = this.products.find(p => p.id === productId);
+
+        // Check if target size already exists in cart; if so, merge quantities
+        const targetIndex = this.cart.findIndex((i, idx) => idx !== itemIndex && i.productId === productId && (i.selectedSize || '12ml') === newSize);
+        if (targetIndex > -1) {
+          this.cart[targetIndex].qty += this.cart[itemIndex].qty;
+          this.cart.splice(itemIndex, 1);
+        } else {
+          this.cart[itemIndex].selectedSize = newSize;
+        }
+
+        setStorage('alameen_cart', this.cart);
+        this.renderCartItems();
+        this.updateBadges();
+        if (typeof showToast === 'function') {
+          showToast(`Updated ${product ? product.name : 'Perfume'} size to ${newSize}`, 'success');
+        }
+      }
+
+      updateItemQty(productId, sizeName, delta) {
+        const item = this.cart.find(i => i.productId === productId && (i.selectedSize || '12ml') === sizeName);
         if (!item) return;
         const product = this.products.find(p => p.id === productId);
         const minQty = (this.mode === 'wholesale' && product) ? product.wholesaleMOQ : 1;
 
         item.qty += delta;
         if (item.qty < minQty) {
-          this.cart = this.cart.filter(i => i.productId !== productId);
+          this.cart = this.cart.filter(i => !(i.productId === productId && (i.selectedSize || '12ml') === sizeName));
         }
         setStorage('alameen_cart', this.cart);
         this.updateBadges();
@@ -2420,13 +2513,14 @@
         this.cart.forEach((item, idx) => {
           const product = this.products.find(p => p.id === item.productId);
           if (product) {
-            const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings);
+            const chosenSize = item.selectedSize || product.size || '12ml';
+            const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings, chosenSize);
             total += pricing.totalPrice;
-            itemsText += `${idx + 1}. ${product.name} (${product.size}) × ${item.qty} = ₹${pricing.totalPrice.toLocaleString('en-IN')}\n`;
+            itemsText += `${idx + 1}. ${product.name} [${chosenSize}] × ${item.qty} = ₹${pricing.totalPrice.toLocaleString('en-IN')}\n`;
             orderItems.push({
               productId: product.id,
               name: product.name,
-              size: product.size,
+              size: chosenSize,
               qty: item.qty,
               unitPrice: pricing.unitPrice,
               lineTotal: pricing.totalPrice

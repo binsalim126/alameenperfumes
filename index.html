@@ -301,14 +301,14 @@
       flex-shrink: 0 !important;
     }
     .action-icon-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
+      width: 40px !important;
+      height: 40px !important;
+      border-radius: 50% !important;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
       color: #FFFFFF;
       position: relative;
       flex-shrink: 0 !important;
@@ -2284,7 +2284,6 @@
                   <span class="card-size" id="card-size-label-${product.id}">${defaultSize}</span>
                 </div>
                 <h3 class="card-title">${product.name}</h3>
-                <div class="card-notes-brief">Notes: ${product.notes.top}</div>
 
                 <!-- Bottle Size Selection Pills (Attar 3ml, 6ml, 12ml / Spray 50ml, 100ml) -->
                 <div class="card-sizes-row" style="display:flex; gap:6px; margin:8px 0 10px; flex-wrap:wrap;">

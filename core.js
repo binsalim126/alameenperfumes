@@ -74,7 +74,9 @@ const DEFAULT_SETTINGS = {
   wholesale_tier2_min: 12,
   wholesale_tier2_discount: 48,
   wholesale_tier3_min: 24,
-  wholesale_tier3_discount: 55
+  wholesale_tier3_discount: 55,
+  attar_sizes: ["3ml", "6ml", "12ml"],
+  spray_sizes: ["50ml", "100ml"]
 };
 
 // Default Categories for UI Carousel & Filters
@@ -233,8 +235,8 @@ if (typeof window.hasBottleSizesColumn === 'undefined') {
   window.hasBottleSizesColumn = false;
 }
 
-// Dynamic bottle size generation based on product category & concentration
-function getProductSizes(product) {
+// Dynamic bottle size generation based on product category, concentration & admin configured settings
+function getProductSizes(product, customSettings = null) {
   if (!product) return [];
   if (Array.isArray(product.bottleSizes) && product.bottleSizes.length > 0) {
     return product.bottleSizes;
@@ -243,33 +245,45 @@ function getProductSizes(product) {
     return product.bottle_sizes;
   }
 
+  const settings = customSettings || window.currentSettings || DEFAULT_SETTINGS;
   const basePrice = Number(product.retailPrice || product.retail_price) || 999;
   const baseMrp = Number(product.mrp) || Math.round(basePrice * 1.4);
   const typeStr = ((product.type || '') + ' ' + (product.category || '')).toLowerCase();
 
-  // Attar / Concentrated Oil: 3ml, 6ml, 12ml
-  if (typeStr.includes('attar') || typeStr.includes('oil') || typeStr.includes('concentrated') || typeStr.includes('pure') || (product.size && product.size.toLowerCase().includes('12ml')) || !typeStr.includes('spray')) {
-    const p3 = Math.max(199, Math.round((basePrice * 0.40) / 10) * 10 - 1);
-    const p6 = Math.max(349, Math.round((basePrice * 0.65) / 10) * 10 - 1);
-    const mrp3 = Math.round(p3 * 1.45);
-    const mrp6 = Math.round(p6 * 1.4);
+  const attarSizes = (settings && Array.isArray(settings.attar_sizes) && settings.attar_sizes.length > 0)
+    ? settings.attar_sizes
+    : ['3ml', '6ml', '12ml'];
 
-    return [
-      { size: '3ml', price: p3, mrp: mrp3, label: '3ml Flacon (Pocket Edition)' },
-      { size: '6ml', price: p6, mrp: mrp6, label: '6ml Flacon (Standard Edition)' },
-      { size: '12ml', price: basePrice, mrp: baseMrp, label: '12ml Flacon (Royal Flacon)' }
-    ];
+  const spraySizes = (settings && Array.isArray(settings.spray_sizes) && settings.spray_sizes.length > 0)
+    ? settings.spray_sizes
+    : ['50ml', '100ml'];
+
+  // Attar / Concentrated Oil: configured ml sizes
+  if (typeStr.includes('attar') || typeStr.includes('oil') || typeStr.includes('concentrated') || typeStr.includes('pure') || (product.size && product.size.toLowerCase().includes('12ml')) || !typeStr.includes('spray')) {
+    const parsed = attarSizes.map(s => ({ size: s, ml: parseFloat(s) || 12 }));
+    const maxMl = Math.max(...parsed.map(p => p.ml));
+
+    return attarSizes.map(sz => {
+      const ml = parseFloat(sz) || 12;
+      const price = (ml === maxMl) ? basePrice : Math.max(149, Math.round((basePrice * Math.pow(ml / maxMl, 0.75)) / 10) * 10 - 1);
+      const mrp = Math.round(price * 1.4);
+      const label = `${sz} Flacon (${sz === '3ml' ? 'Pocket Edition' : sz === '12ml' ? 'Royal Flacon' : 'Standard Edition'})`;
+      return { size: sz, price: price, mrp: mrp, label: label };
+    });
   }
 
-  // Spray / Eau de Parfum: 50ml, 100ml
+  // Spray / Eau de Parfum: configured ml sizes
   if (typeStr.includes('spray') || typeStr.includes('edp') || typeStr.includes('eau de parfum') || typeStr.includes('parfum')) {
-    const p50 = Math.max(499, Math.round((basePrice * 0.72) / 50) * 50 - 1);
-    const mrp50 = Math.round(p50 * 1.35);
+    const parsed = spraySizes.map(s => ({ size: s, ml: parseFloat(s) || 100 }));
+    const maxMl = Math.max(...parsed.map(p => p.ml));
 
-    return [
-      { size: '50ml', price: p50, mrp: mrp50, label: '50ml Spray Flacon' },
-      { size: '100ml', price: basePrice, mrp: baseMrp, label: '100ml Luxury Vaporisateur' }
-    ];
+    return spraySizes.map(sz => {
+      const ml = parseFloat(sz) || 100;
+      const price = (ml === maxMl) ? basePrice : Math.max(499, Math.round((basePrice * Math.pow(ml / maxMl, 0.75)) / 50) * 50 - 1);
+      const mrp = Math.round(price * 1.35);
+      const label = `${sz} Spray (${sz === '100ml' ? 'Luxury Vaporisateur' : 'Spray Flacon'})`;
+      return { size: sz, price: price, mrp: mrp, label: label };
+    });
   }
 
   // Fallback
@@ -466,6 +480,7 @@ async function dbFetchSettings() {
         Object.assign(merged, row.value);
       }
     });
+    window.currentSettings = merged;
     return merged;
   } catch (err) {
     console.warn('[Supabase Settings Catch]', err);

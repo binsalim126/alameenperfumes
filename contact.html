@@ -159,17 +159,28 @@
       background: var(--gold-500);
     }
 
+    .nav-actions {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      gap: 10px !important;
+      flex-shrink: 0 !important;
+    }
+
     .action-icon-btn {
       width: 40px;
       height: 40px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       color: #FFFFFF;
       position: relative;
+      flex-shrink: 0 !important;
     }
     .action-icon-btn .count-badge {
       position: absolute;

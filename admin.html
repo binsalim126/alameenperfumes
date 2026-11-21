@@ -1211,6 +1211,38 @@
       grid-template-columns: 1fr 1fr;
       gap: 14px;
     }
+    .size-tag-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #FFFFFF;
+      border: 1.5px solid var(--gold-500);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--green-950);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      transition: var(--transition);
+    }
+    .size-tag-badge:hover {
+      border-color: var(--green-800);
+      background: var(--gold-50);
+    }
+    .size-tag-badge button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #DC2626;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 0 0 0 4px;
+      font-weight: 800;
+      transition: transform 0.15s ease;
+    }
+    .size-tag-badge button:hover {
+      transform: scale(1.3);
+    }
 
     /* Intelligence & Operations Sheet Card Grid */
     .intel-cards-grid {
@@ -2308,40 +2340,100 @@
           </div>
 
           <div class="settings-grid">
-            <!-- General Store Parameters -->
-            <div class="chart-panel">
-              <h3 class="chart-title" style="margin-bottom:16px;">General Store Parameters</h3>
-              
-              <div class="form-group">
-                <label class="form-label">Store Brand Name</label>
-                <input type="text" id="settingStoreName" class="form-input" value="AL-AMEEN PERFUMES">
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Brand Tagline</label>
-                <input type="text" id="settingTagline" class="form-input" value="Discover Your Signature Scent">
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">WhatsApp Order Mobile Number (with country code)</label>
-                <input type="text" id="settingWhatsAppNumber" class="form-input" value="919876543210">
-              </div>
-
-              <div class="settings-two-col">
+            <!-- Left Column: Store Parameters & Bottle Sizes -->
+            <div style="display:flex; flex-direction:column; gap:20px;">
+              <!-- General Store Parameters -->
+              <div class="chart-panel">
+                <h3 class="chart-title" style="margin-bottom:16px;">General Store Parameters</h3>
+                
                 <div class="form-group">
-                  <label class="form-label">Free Shipping Minimum (₹)</label>
-                  <input type="number" id="settingFreeShipping" class="form-input" value="999">
+                  <label class="form-label">Store Brand Name</label>
+                  <input type="text" id="settingStoreName" class="form-input" value="AL-AMEEN PERFUMES">
                 </div>
+
                 <div class="form-group">
-                  <label class="form-label">Low Stock Threshold</label>
-                  <input type="number" id="settingLowStockThreshold" class="form-input" value="10">
+                  <label class="form-label">Brand Tagline</label>
+                  <input type="text" id="settingTagline" class="form-input" value="Discover Your Signature Scent">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">WhatsApp Order Mobile Number (with country code)</label>
+                  <input type="text" id="settingWhatsAppNumber" class="form-input" value="919876543210">
+                </div>
+
+                <div class="settings-two-col">
+                  <div class="form-group">
+                    <label class="form-label">Free Shipping Minimum (₹)</label>
+                    <input type="number" id="settingFreeShipping" class="form-input" value="999">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Low Stock Threshold</label>
+                    <input type="number" id="settingLowStockThreshold" class="form-input" value="10">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Wholesale Minimum Order Quantity (MOQ) (pcs)</label>
+                  <input type="number" id="settingTierMoq" class="form-input" value="6" min="1">
+                  <span style="font-size:0.72rem; color:var(--text-light);">Default minimum bottles customer must purchase to unlock wholesale rate</span>
                 </div>
               </div>
 
-              <div class="form-group">
-                <label class="form-label">Wholesale Minimum Order Quantity (MOQ) (pcs)</label>
-                <input type="number" id="settingTierMoq" class="form-input" value="6" min="1">
-                <span style="font-size:0.72rem; color:var(--text-light);">Default minimum bottles customer must purchase to unlock wholesale rate</span>
+              <!-- Manage Available Bottle Sizes (Attar & Spray) -->
+              <div class="chart-panel">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+                  <div>
+                    <h3 class="chart-title" style="margin-bottom:4px;">Manage Bottle Sizes (Attar & Spray)</h3>
+                    <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">
+                      Configure available ml volumes for Attars and Sprays across your store, catalog adding, and shopping bag.
+                    </p>
+                  </div>
+                  <button type="button" class="btn-action-gold" style="padding:6px 14px; font-size:0.82rem; min-height:36px;" onclick="adminApp.saveGeneralSettings()">
+                    Save Sizes
+                  </button>
+                </div>
+
+                <!-- Attar Sizes Config Box -->
+                <div style="background:var(--green-50); border:1.5px solid var(--border-gold); padding:16px; border-radius:12px; margin-bottom:18px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                    <strong style="font-size:0.88rem; color:var(--green-950); display:flex; align-items:center; gap:6px;">
+                      <span>Attar / Concentrated Oil Sizes (ml)</span>
+                    </strong>
+                    <button type="button" class="btn-action-secondary" style="font-size:0.75rem; padding:4px 10px; min-height:30px;" onclick="adminApp.resetAttarSizesDefault()">
+                      ↺ Reset Default (3ml, 6ml, 12ml)
+                    </button>
+                  </div>
+                  <div id="attarSizesTagsContainer" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+                    <!-- Dynamically rendered size badges with remove button -->
+                  </div>
+                  <div style="display:flex; gap:8px; align-items:center; max-width:380px;">
+                    <input type="text" id="newAttarSizeInput" class="form-input" style="padding:7px 12px; font-size:0.85rem;" placeholder="Add ml (e.g. 24ml, 10ml)" onkeydown="if(event.key==='Enter'){event.preventDefault();adminApp.addAttarSize();}">
+                    <button type="button" class="btn-action-secondary" style="white-space:nowrap; padding:7px 14px; font-size:0.82rem; min-height:38px;" onclick="adminApp.addAttarSize()">
+                      + Add Size
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Spray Sizes Config Box -->
+                <div style="background:var(--green-50); border:1.5px solid var(--border-gold); padding:16px; border-radius:12px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                    <strong style="font-size:0.88rem; color:var(--green-950); display:flex; align-items:center; gap:6px;">
+                      <span>Spray / Eau de Parfum Sizes (ml)</span>
+                    </strong>
+                    <button type="button" class="btn-action-secondary" style="font-size:0.75rem; padding:4px 10px; min-height:30px;" onclick="adminApp.resetSpraySizesDefault()">
+                      ↺ Reset Default (50ml, 100ml)
+                    </button>
+                  </div>
+                  <div id="spraySizesTagsContainer" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+                    <!-- Dynamically rendered size badges with remove button -->
+                  </div>
+                  <div style="display:flex; gap:8px; align-items:center; max-width:380px;">
+                    <input type="text" id="newSpraySizeInput" class="form-input" style="padding:7px 12px; font-size:0.85rem;" placeholder="Add ml (e.g. 30ml, 150ml)" onkeydown="if(event.key==='Enter'){event.preventDefault();adminApp.addSpraySize();}">
+                    <button type="button" class="btn-action-secondary" style="white-space:nowrap; padding:7px 14px; font-size:0.82rem; min-height:38px;" onclick="adminApp.addSpraySize()">
+                      + Add Size
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -2687,6 +2779,7 @@
           this.products = productsData || [];
           this.orders = ordersData || [];
           this.settings = settingsData || { ...DEFAULT_SETTINGS };
+          window.currentSettings = this.settings;
 
           const badge = document.getElementById('dbStatusBadge');
           const dot = document.getElementById('dbStatusDot');
@@ -3780,12 +3873,15 @@
 
         const pType = document.getElementById('pType');
         const pSize = document.getElementById('pSize');
+        const attarSizes = (this.settings.attar_sizes && this.settings.attar_sizes.length > 0) ? this.settings.attar_sizes : ['3ml', '6ml', '12ml'];
+        const spraySizes = (this.settings.spray_sizes && this.settings.spray_sizes.length > 0) ? this.settings.spray_sizes : ['50ml', '100ml'];
+
         if (type === 'attar') {
           if (pType) pType.value = 'Pure Concentrated Oil';
-          if (pSize) pSize.value = '12ml';
+          if (pSize) pSize.value = attarSizes[attarSizes.length - 1] || '12ml';
         } else if (type === 'spray') {
           if (pType) pType.value = 'Eau de Parfum';
-          if (pSize) pSize.value = '100ml';
+          if (pSize) pSize.value = spraySizes[spraySizes.length - 1] || '100ml';
         } else {
           if (pType) pType.value = 'Custom Formulation';
           if (pSize) pSize.value = 'Standard';
@@ -3801,102 +3897,71 @@
         if (!box) return;
 
         if (type === 'attar') {
-          const s3 = existingSizes?.find(s => s.size === '3ml') || { size: '3ml', price: '', mrp: '' };
-          const s6 = existingSizes?.find(s => s.size === '6ml') || { size: '6ml', price: '', mrp: '' };
-          const s12 = existingSizes?.find(s => s.size === '12ml') || { size: '12ml', price: '', mrp: '' };
+          const sizesList = (this.settings.attar_sizes && this.settings.attar_sizes.length > 0)
+            ? this.settings.attar_sizes
+            : ['3ml', '6ml', '12ml'];
 
           box.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
               <span style="font-size:0.76rem; font-weight:800; color:var(--green-900); text-transform:uppercase; letter-spacing:0.04em;">
-                Attar Bottle Sizes & Rates (3ml, 6ml, 12ml):
+                Attar Bottle Sizes & Rates (${sizesList.join(', ')}):
               </span>
               <button type="button" class="btn-action-secondary" style="padding:6px 12px; font-size:0.78rem; min-height:36px;" onclick="adminApp.autoFillBottleSizesFromRetail()">Auto-Calculate from Base</button>
             </div>
 
-            <div class="bottle-sizes-grid">
-              <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
-                <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">3ml Flacon (Pocket)</strong>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-                  <div>
-                    <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
-                    <input type="number" id="pSizePrice_3ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="499" value="${s3.price}">
+            <div class="bottle-sizes-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;">
+              ${sizesList.map(sz => {
+                const found = existingSizes?.find(s => s.size.toLowerCase() === sz.toLowerCase()) || { size: sz, price: '', mrp: '' };
+                return `
+                  <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
+                    <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">${sz} Flacon</strong>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                      <div>
+                        <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
+                        <input type="number" id="pSizePrice_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="Rate" value="${found.price !== undefined ? found.price : ''}">
+                      </div>
+                      <div>
+                        <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
+                        <input type="number" id="pSizeMrp_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="MRP" value="${found.mrp !== undefined ? found.mrp : ''}">
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
-                    <input type="number" id="pSizeMrp_3ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="799" value="${s3.mrp}">
-                  </div>
-                </div>
-              </div>
-
-              <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
-                <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">6ml Flacon (Standard)</strong>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-                  <div>
-                    <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
-                    <input type="number" id="pSizePrice_6ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="899" value="${s6.price}">
-                  </div>
-                  <div>
-                    <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
-                    <input type="number" id="pSizeMrp_6ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="1399" value="${s6.mrp}">
-                  </div>
-                </div>
-              </div>
-
-              <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
-                <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">12ml Flacon (Royal / Base)</strong>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-                  <div>
-                    <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
-                    <input type="number" id="pSizePrice_12ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="1499" value="${s12.price}">
-                  </div>
-                  <div>
-                    <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
-                    <input type="number" id="pSizeMrp_12ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="2199" value="${s12.mrp}">
-                  </div>
-                </div>
-              </div>
+                `;
+              }).join('')}
             </div>
           `;
         } else if (type === 'spray') {
-          const s50 = existingSizes?.find(s => s.size === '50ml') || { size: '50ml', price: '', mrp: '' };
-          const s100 = existingSizes?.find(s => s.size === '100ml') || { size: '100ml', price: '', mrp: '' };
+          const sizesList = (this.settings.spray_sizes && this.settings.spray_sizes.length > 0)
+            ? this.settings.spray_sizes
+            : ['50ml', '100ml'];
 
           box.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
               <span style="font-size:0.76rem; font-weight:800; color:var(--green-900); text-transform:uppercase; letter-spacing:0.04em;">
-                Spray Vaporisateur Sizes & Rates (50ml, 100ml):
+                Spray Vaporisateur Sizes & Rates (${sizesList.join(', ')}):
               </span>
               <button type="button" class="btn-action-secondary" style="padding:6px 12px; font-size:0.78rem; min-height:36px;" onclick="adminApp.autoFillBottleSizesFromRetail()">Auto-Calculate from Base</button>
             </div>
 
-            <div class="bottle-sizes-grid">
-              <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
-                <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">50ml Spray Flacon</strong>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-                  <div>
-                    <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
-                    <input type="number" id="pSizePrice_50ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="1799" value="${s50.price}">
+            <div class="bottle-sizes-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;">
+              ${sizesList.map(sz => {
+                const found = existingSizes?.find(s => s.size.toLowerCase() === sz.toLowerCase()) || { size: sz, price: '', mrp: '' };
+                return `
+                  <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
+                    <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">${sz} Spray</strong>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                      <div>
+                        <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
+                        <input type="number" id="pSizePrice_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="Rate" value="${found.price !== undefined ? found.price : ''}">
+                      </div>
+                      <div>
+                        <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
+                        <input type="number" id="pSizeMrp_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="MRP" value="${found.mrp !== undefined ? found.mrp : ''}">
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
-                    <input type="number" id="pSizeMrp_50ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="2499" value="${s50.mrp}">
-                  </div>
-                </div>
-              </div>
-
-              <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
-                <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">100ml Luxury Vaporisateur (Base)</strong>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-                  <div>
-                    <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
-                    <input type="number" id="pSizePrice_100ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="2499" value="${s100.price}">
-                  </div>
-                  <div>
-                    <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
-                    <input type="number" id="pSizeMrp_100ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="3499" value="${s100.mrp}">
-                  </div>
-                </div>
-              </div>
+                `;
+              }).join('')}
             </div>
           `;
         } else {
@@ -3930,40 +3995,51 @@
 
         const type = this.currentProductFormType || 'attar';
         if (type === 'attar') {
-          const p12 = document.getElementById('pSizePrice_12ml');
-          const mrp12 = document.getElementById('pSizeMrp_12ml');
-          const p6 = document.getElementById('pSizePrice_6ml');
-          const mrp6 = document.getElementById('pSizeMrp_6ml');
-          const p3 = document.getElementById('pSizePrice_3ml');
-          const mrp3 = document.getElementById('pSizeMrp_3ml');
+          const sizesList = (this.settings.attar_sizes && this.settings.attar_sizes.length > 0) ? this.settings.attar_sizes : ['3ml', '6ml', '12ml'];
+          const parsed = sizesList.map(s => ({ size: s, ml: parseFloat(s) || 12 }));
+          const maxMl = Math.max(...parsed.map(p => p.ml));
 
-          if (p12 && (!p12.value || p12.value == retail)) p12.value = retail;
-          if (mrp12 && (!mrp12.value || mrp12.value == mrp)) mrp12.value = mrp;
+          sizesList.forEach(sz => {
+            const ml = parseFloat(sz) || 12;
+            const pInput = document.getElementById(`pSizePrice_${sz}`);
+            const mrpInput = document.getElementById(`pSizeMrp_${sz}`);
 
-          const calc6 = Math.max(349, Math.round((retail * 0.65) / 10) * 10 - 1);
-          const calc3 = Math.max(199, Math.round((retail * 0.40) / 10) * 10 - 1);
-          if (p6 && !p6.value) p6.value = calc6;
-          if (mrp6 && !mrp6.value) mrp6.value = Math.round(calc6 * 1.4);
-          if (p3 && !p3.value) p3.value = calc3;
-          if (mrp3 && !mrp3.value) mrp3.value = Math.round(calc3 * 1.45);
+            const calcPrice = (ml === maxMl) ? retail : Math.max(149, Math.round((retail * Math.pow(ml / maxMl, 0.75)) / 10) * 10 - 1);
+            const calcMrp = (ml === maxMl) ? mrp : Math.round(calcPrice * 1.4);
+
+            if (pInput && (!pInput.value || pInput.value == retail || ml === maxMl)) pInput.value = calcPrice;
+            if (mrpInput && (!mrpInput.value || mrpInput.value == mrp || ml === maxMl)) mrpInput.value = calcMrp;
+          });
         } else if (type === 'spray') {
-          const p100 = document.getElementById('pSizePrice_100ml');
-          const mrp100 = document.getElementById('pSizeMrp_100ml');
-          const p50 = document.getElementById('pSizePrice_50ml');
-          const mrp50 = document.getElementById('pSizeMrp_50ml');
+          const sizesList = (this.settings.spray_sizes && this.settings.spray_sizes.length > 0) ? this.settings.spray_sizes : ['50ml', '100ml'];
+          const parsed = sizesList.map(s => ({ size: s, ml: parseFloat(s) || 100 }));
+          const maxMl = Math.max(...parsed.map(p => p.ml));
 
-          if (p100 && (!p100.value || p100.value == retail)) p100.value = retail;
-          if (mrp100 && (!mrp100.value || mrp100.value == mrp)) mrp100.value = mrp;
+          sizesList.forEach(sz => {
+            const ml = parseFloat(sz) || 100;
+            const pInput = document.getElementById(`pSizePrice_${sz}`);
+            const mrpInput = document.getElementById(`pSizeMrp_${sz}`);
 
-          const calc50 = Math.max(499, Math.round((retail * 0.72) / 50) * 50 - 1);
-          if (p50 && !p50.value) p50.value = calc50;
-          if (mrp50 && !mrp50.value) mrp50.value = Math.round(calc50 * 1.35);
+            const calcPrice = (ml === maxMl) ? retail : Math.max(499, Math.round((retail * Math.pow(ml / maxMl, 0.75)) / 50) * 50 - 1);
+            const calcMrp = (ml === maxMl) ? mrp : Math.round(calcPrice * 1.35);
+
+            if (pInput && (!pInput.value || pInput.value == retail || ml === maxMl)) pInput.value = calcPrice;
+            if (mrpInput && (!mrpInput.value || mrpInput.value == mrp || ml === maxMl)) mrpInput.value = calcMrp;
+          });
         }
       }
 
       openProductModal(productId = null) {
         const title = document.getElementById('productModalTitle');
         const editId = document.getElementById('pEditId');
+
+        const attarSizes = (this.settings.attar_sizes && this.settings.attar_sizes.length > 0) ? this.settings.attar_sizes : ['3ml', '6ml', '12ml'];
+        const spraySizes = (this.settings.spray_sizes && this.settings.spray_sizes.length > 0) ? this.settings.spray_sizes : ['50ml', '100ml'];
+
+        const btnAttar = document.getElementById('btnTypeAttar');
+        const btnSpray = document.getElementById('btnTypeSpray');
+        if (btnAttar) btnAttar.textContent = `Attar / Concentrated Oil (${attarSizes.join(', ')})`;
+        if (btnSpray) btnSpray.textContent = `Spray / Eau de Parfum (${spraySizes.join(', ')})`;
 
         if (productId) {
           const p = this.products.find(item => item.id === productId);
@@ -3988,7 +4064,7 @@
 
           this.currentProductFormType = detectedType;
           this.setProductFormType(detectedType);
-          this.renderProductSizeInputs(detectedType, p.bottleSizes || getProductSizes(p));
+          this.renderProductSizeInputs(detectedType, p.bottleSizes || getProductSizes(p, this.settings));
 
           document.getElementById('pImage').value = p.images?.[0] || '';
           document.getElementById('pDesc').value = p.description || '';
@@ -4045,30 +4121,51 @@
         let primarySize = '12ml';
 
         if (type === 'attar') {
-          const p3 = parseInt(document.getElementById('pSizePrice_3ml')?.value, 10) || Math.round(retail * 0.4);
-          const mrp3 = parseInt(document.getElementById('pSizeMrp_3ml')?.value, 10) || Math.round(p3 * 1.45);
-          const p6 = parseInt(document.getElementById('pSizePrice_6ml')?.value, 10) || Math.round(retail * 0.65);
-          const mrp6 = parseInt(document.getElementById('pSizeMrp_6ml')?.value, 10) || Math.round(p6 * 1.4);
-          const p12 = parseInt(document.getElementById('pSizePrice_12ml')?.value, 10) || retail;
-          const mrp12 = parseInt(document.getElementById('pSizeMrp_12ml')?.value, 10) || mrp;
+          const sizesList = (this.settings.attar_sizes && this.settings.attar_sizes.length > 0)
+            ? this.settings.attar_sizes
+            : ['3ml', '6ml', '12ml'];
 
-          bottleSizes = [
-            { size: '3ml', price: p3, mrp: mrp3, label: '3ml Flacon (Pocket Edition)' },
-            { size: '6ml', price: p6, mrp: mrp6, label: '6ml Flacon (Standard Edition)' },
-            { size: '12ml', price: p12, mrp: mrp12, label: '12ml Flacon (Royal Flacon)' }
-          ];
-          primarySize = '12ml';
+          const parsed = sizesList.map(s => ({ size: s, ml: parseFloat(s) || 12 }));
+          const maxMl = Math.max(...parsed.map(p => p.ml));
+
+          bottleSizes = sizesList.map(sz => {
+            const ml = parseFloat(sz) || 12;
+            const defaultPrice = (ml === maxMl) ? retail : Math.max(149, Math.round((retail * Math.pow(ml / maxMl, 0.75)) / 10) * 10 - 1);
+            const defaultMrp = (ml === maxMl) ? mrp : Math.round(defaultPrice * 1.4);
+
+            const p = parseInt(document.getElementById(`pSizePrice_${sz}`)?.value, 10) || defaultPrice;
+            const m = parseInt(document.getElementById(`pSizeMrp_${sz}`)?.value, 10) || defaultMrp;
+            return {
+              size: sz,
+              price: p,
+              mrp: m,
+              label: `${sz} Flacon (${sz === '3ml' ? 'Pocket Edition' : sz === '12ml' ? 'Royal Flacon' : 'Standard Edition'})`
+            };
+          });
+          primarySize = sizesList[sizesList.length - 1] || '12ml';
         } else if (type === 'spray') {
-          const p50 = parseInt(document.getElementById('pSizePrice_50ml')?.value, 10) || Math.round(retail * 0.72);
-          const mrp50 = parseInt(document.getElementById('pSizeMrp_50ml')?.value, 10) || Math.round(p50 * 1.35);
-          const p100 = parseInt(document.getElementById('pSizePrice_100ml')?.value, 10) || retail;
-          const mrp100 = parseInt(document.getElementById('pSizeMrp_100ml')?.value, 10) || mrp;
+          const sizesList = (this.settings.spray_sizes && this.settings.spray_sizes.length > 0)
+            ? this.settings.spray_sizes
+            : ['50ml', '100ml'];
 
-          bottleSizes = [
-            { size: '50ml', price: p50, mrp: mrp50, label: '50ml Spray Flacon' },
-            { size: '100ml', price: p100, mrp: mrp100, label: '100ml Luxury Vaporisateur' }
-          ];
-          primarySize = '100ml';
+          const parsed = sizesList.map(s => ({ size: s, ml: parseFloat(s) || 100 }));
+          const maxMl = Math.max(...parsed.map(p => p.ml));
+
+          bottleSizes = sizesList.map(sz => {
+            const ml = parseFloat(sz) || 100;
+            const defaultPrice = (ml === maxMl) ? retail : Math.max(499, Math.round((retail * Math.pow(ml / maxMl, 0.75)) / 50) * 50 - 1);
+            const defaultMrp = (ml === maxMl) ? mrp : Math.round(defaultPrice * 1.35);
+
+            const p = parseInt(document.getElementById(`pSizePrice_${sz}`)?.value, 10) || defaultPrice;
+            const m = parseInt(document.getElementById(`pSizeMrp_${sz}`)?.value, 10) || defaultMrp;
+            return {
+              size: sz,
+              price: p,
+              mrp: m,
+              label: `${sz} Spray (${sz === '100ml' ? 'Luxury Vaporisateur' : 'Spray Flacon'})`
+            };
+          });
+          primarySize = sizesList[sizesList.length - 1] || '100ml';
         } else {
           const customSize = document.getElementById('pCustomSizeName')?.value.trim() || 'Standard';
           const customPrice = parseInt(document.getElementById('pCustomPrice')?.value, 10) || retail;
@@ -4450,6 +4547,118 @@
         if (low) low.value = this.settings.low_stock_threshold || CONFIG.LOW_STOCK_THRESHOLD;
         const tierMoq = document.getElementById('settingTierMoq');
         if (tierMoq) tierMoq.value = this.settings.wholesale_default_moq || this.settings.wholesale_tier1_min || 6;
+
+        this.renderSettingsSizesUI();
+      }
+
+      renderSettingsSizesUI() {
+        const attarContainer = document.getElementById('attarSizesTagsContainer');
+        const sprayContainer = document.getElementById('spraySizesTagsContainer');
+
+        if (!Array.isArray(this.settings.attar_sizes) || this.settings.attar_sizes.length === 0) {
+          this.settings.attar_sizes = ['3ml', '6ml', '12ml'];
+        }
+        if (!Array.isArray(this.settings.spray_sizes) || this.settings.spray_sizes.length === 0) {
+          this.settings.spray_sizes = ['50ml', '100ml'];
+        }
+
+        if (attarContainer) {
+          attarContainer.innerHTML = this.settings.attar_sizes.map((sz, idx) => `
+            <span class="size-tag-badge">
+              <span>${sz}</span>
+              <button type="button" onclick="adminApp.removeAttarSize(${idx})" title="Remove ${sz}">✕</button>
+            </span>
+          `).join('');
+        }
+
+        if (sprayContainer) {
+          sprayContainer.innerHTML = this.settings.spray_sizes.map((sz, idx) => `
+            <span class="size-tag-badge">
+              <span>${sz}</span>
+              <button type="button" onclick="adminApp.removeSpraySize(${idx})" title="Remove ${sz}">✕</button>
+            </span>
+          `).join('');
+        }
+      }
+
+      addAttarSize() {
+        const input = document.getElementById('newAttarSizeInput');
+        if (!input) return;
+        let val = input.value.trim().toLowerCase().replace(/\s+/g, '');
+        if (!val) return;
+        if (/^\d+$/.test(val)) val = val + 'ml';
+        if (!val.endsWith('ml')) val = val + 'ml';
+
+        if (!Array.isArray(this.settings.attar_sizes)) {
+          this.settings.attar_sizes = ['3ml', '6ml', '12ml'];
+        }
+        if (this.settings.attar_sizes.includes(val)) {
+          this.showToast(`Attar size "${val}" already exists.`, 'error');
+          return;
+        }
+
+        this.settings.attar_sizes.push(val);
+        this.settings.attar_sizes.sort((a, b) => (parseFloat(a) || 0) - (parseFloat(b) || 0));
+        input.value = '';
+        this.renderSettingsSizesUI();
+        this.showToast(`Added ${val} to Attar sizes. Click "Save Sizes" or "Save Settings" to persist.`, 'success');
+      }
+
+      removeAttarSize(idx) {
+        if (!Array.isArray(this.settings.attar_sizes)) return;
+        if (this.settings.attar_sizes.length <= 1) {
+          this.showToast('You must keep at least one Attar bottle size.', 'error');
+          return;
+        }
+        const removed = this.settings.attar_sizes.splice(idx, 1);
+        this.renderSettingsSizesUI();
+        this.showToast(`Removed ${removed[0]} from Attar sizes.`, 'success');
+      }
+
+      resetAttarSizesDefault() {
+        this.settings.attar_sizes = ['3ml', '6ml', '12ml'];
+        this.renderSettingsSizesUI();
+        this.showToast('Reset Attar sizes to default (3ml, 6ml, 12ml).', 'success');
+      }
+
+      addSpraySize() {
+        const input = document.getElementById('newSpraySizeInput');
+        if (!input) return;
+        let val = input.value.trim().toLowerCase().replace(/\s+/g, '');
+        if (!val) return;
+        if (/^\d+$/.test(val)) val = val + 'ml';
+        if (!val.endsWith('ml')) val = val + 'ml';
+
+        if (!Array.isArray(this.settings.spray_sizes)) {
+          this.settings.spray_sizes = ['50ml', '100ml'];
+        }
+        if (this.settings.spray_sizes.includes(val)) {
+          this.showToast(`Spray size "${val}" already exists.`, 'error');
+          return;
+        }
+
+        this.settings.spray_sizes.push(val);
+        this.settings.spray_sizes.sort((a, b) => (parseFloat(a) || 0) - (parseFloat(b) || 0));
+        input.value = '';
+        this.renderSettingsSizesUI();
+        this.showToast(`Added ${val} to Spray sizes. Click "Save Sizes" or "Save Settings" to persist.`, 'success');
+      }
+
+      removeSpraySize(idx) {
+        if (!Array.isArray(this.settings.spray_sizes)) return;
+        if (this.settings.spray_sizes.length <= 1) {
+          this.showToast('You must keep at least one Spray bottle size.', 'error');
+          return;
+        }
+        const removed = this.settings.spray_sizes.splice(idx, 1);
+        this.renderSettingsSizesUI();
+        this.showToast(`Removed ${removed[0]} from Spray sizes.`, 'success');
+      }
+
+      resetSpraySizesDefault() {
+        this.settings.spray_sizes = ['50ml', '100ml'];
+        this.renderSettingsSizesUI();
+        this.showToast('Reset Spray sizes to default (50ml, 100ml).', 'success');
       }
 
       async saveGeneralSettings() {
@@ -4461,10 +4670,25 @@
         this.settings.wholesale_default_moq = parseInt(document.getElementById('settingTierMoq')?.value, 10) || 6;
         this.settings.wholesale_tier1_min = this.settings.wholesale_default_moq;
 
+        if (!Array.isArray(this.settings.attar_sizes) || this.settings.attar_sizes.length === 0) {
+          this.settings.attar_sizes = ['3ml', '6ml', '12ml'];
+        }
+        if (!Array.isArray(this.settings.spray_sizes) || this.settings.spray_sizes.length === 0) {
+          this.settings.spray_sizes = ['50ml', '100ml'];
+        }
+
         try {
           await dbSaveSettings(this.settings);
-          this.showToast('General settings saved directly to Supabase database!', 'success');
+          window.currentSettings = this.settings;
+          this.showToast('General settings and bottle sizes saved directly to Supabase database!', 'success');
           this.renderOverview();
+          this.renderSettingsSizesUI();
+
+          // Refresh Product Modal formulation button labels if visible
+          const btnAttar = document.getElementById('btnTypeAttar');
+          const btnSpray = document.getElementById('btnTypeSpray');
+          if (btnAttar) btnAttar.textContent = `Attar / Concentrated Oil (${this.settings.attar_sizes.join(', ')})`;
+          if (btnSpray) btnSpray.textContent = `Spray / Eau de Parfum (${this.settings.spray_sizes.join(', ')})`;
         } catch (err) {
           console.error('[Save General Settings Error]', err);
           this.showToast(`Failed to save settings: ${err.message}`, 'error');

@@ -28,6 +28,7 @@ create table if not exists public.products (
   stock integer default 20,
   wholesale_moq integer default 6,
   wholesale_tiers jsonb default '[]'::jsonb,
+  bottle_sizes jsonb default '[]'::jsonb,
   notes jsonb default '{"top": "", "heart": "", "base": ""}'::jsonb,
   description text,
   images text[] default array[]::text[],
@@ -42,6 +43,7 @@ alter table public.products add column if not exists stock integer default 20;
 alter table public.products add column if not exists new_arrival boolean default false;
 alter table public.products add column if not exists in_stock boolean default true;
 alter table public.products add column if not exists wholesale_tiers jsonb default '[]'::jsonb;
+alter table public.products add column if not exists bottle_sizes jsonb default '[]'::jsonb;
 alter table public.products add column if not exists notes jsonb default '{"top": "", "heart": "", "base": ""}'::jsonb;
 
 -- --------------------------------------------------------------------------

@@ -541,6 +541,50 @@ async function dbCreateProduct(product) {
   return formatProductFromRow(data[0]);
 }
 
+// Batch create or upsert products in Supabase
+async function dbBatchCreateProducts(products) {
+  if (!Array.isArray(products) || products.length === 0) return [];
+  const sb = getSupabase();
+  const rows = products.map(formatProductToRow);
+
+  let { data, error } = await sb
+    .from('products')
+    .upsert(rows)
+    .select();
+
+  // Graceful fallback if 'bottle_sizes' column does not exist or schema cache is stale (PGRST204)
+  if (error && (error.code === 'PGRST204' || (error.message && error.message.toLowerCase().includes('bottle_sizes')))) {
+    console.warn('[Supabase Fallback] "bottle_sizes" column missing in Supabase schema cache during batch upsert. Retrying without column...');
+    window.hasBottleSizesColumn = false;
+    const stripped = rows.map(r => {
+      const copy = { ...r };
+      delete copy.bottle_sizes;
+      return copy;
+    });
+
+    const retry = await sb.from('products').upsert(stripped).select();
+    if (!retry.error) {
+      data = retry.data || stripped;
+      error = null;
+    } else {
+      const blind = await sb.from('products').upsert(stripped);
+      if (!blind.error) {
+        data = stripped;
+        error = null;
+      } else {
+        error = blind.error || retry.error;
+      }
+    }
+  }
+
+  if (error) {
+    console.error('[Supabase Batch Insert Error]', error);
+    throw new Error(`Batch insert failed: ${error.message} (Code: ${error.code})`);
+  }
+
+  return (data || rows).map(formatProductFromRow);
+}
+
 // Update an existing product in Supabase
 async function dbUpdateProduct(product) {
   const sb = getSupabase();
@@ -969,6 +1013,7 @@ window.dbFetchProducts = dbFetchProducts;
 window.dbFetchOrders = dbFetchOrders;
 window.dbFetchSettings = dbFetchSettings;
 window.dbCreateProduct = dbCreateProduct;
+window.dbBatchCreateProducts = dbBatchCreateProducts;
 window.dbUpdateProduct = dbUpdateProduct;
 window.dbDeleteProduct = dbDeleteProduct;
 window.dbCreateOrder = dbCreateOrder;

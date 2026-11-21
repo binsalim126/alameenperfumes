@@ -2149,6 +2149,62 @@
                 </div>
               </div>
             </div>
+
+            <!-- Wholesale Volume Pricing Tiers Section (Prompt 10 Requirement) -->
+            <div class="chart-panel" style="grid-column: 1 / -1; margin-top: 10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                <div>
+                  <h3 class="chart-title">Wholesale Volume Pricing Tiers</h3>
+                  <p style="font-size:0.82rem; color:var(--text-light); margin-top:2px;">Configure default minimum order quantities (MOQ) and wholesale margin percentages for B2B buyers</p>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                  <button type="button" class="btn-action-secondary" onclick="adminApp.applyWholesaleTiersToAllProducts()" style="font-size:0.8rem; padding:8px 14px;">
+                    ⚡ Apply Tiers to All Products
+                  </button>
+                  <button type="button" class="btn-action-gold" onclick="adminApp.saveWholesaleTierSettings()" style="font-size:0.8rem; padding:8px 16px;">
+                    💾 Save Tier Rules
+                  </button>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:18px;">
+                <div class="form-group">
+                  <label class="form-label">Default MOQ (pcs)</label>
+                  <input type="number" id="settingTierMoq" class="form-input" value="6" min="1" oninput="adminApp.updateTierSimulator()">
+                  <span style="font-size:0.72rem; color:var(--text-light);">Standard wholesale minimum</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tier 1 Discount %</label>
+                  <input type="number" id="settingTier1Discount" class="form-input" value="40" min="5" max="80" oninput="adminApp.updateTierSimulator()">
+                  <span style="font-size:0.72rem; color:var(--text-light);" id="tier1DescLabel">6–11 pcs: 40% off retail</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tier 2 Discount %</label>
+                  <input type="number" id="settingTier2Discount" class="form-input" value="48" min="10" max="85" oninput="adminApp.updateTierSimulator()">
+                  <span style="font-size:0.72rem; color:var(--text-light);" id="tier2DescLabel">12–23 pcs: 48% off retail</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tier 3 Discount %</label>
+                  <input type="number" id="settingTier3Discount" class="form-input" value="55" min="15" max="90" oninput="adminApp.updateTierSimulator()">
+                  <span style="font-size:0.72rem; color:var(--text-light);" id="tier3DescLabel">24+ pcs: 55% off retail</span>
+                </div>
+              </div>
+
+              <!-- Interactive Simulator Box -->
+              <div style="background:var(--green-50); border:1px solid var(--border); border-radius:12px; padding:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                  <span style="font-size:0.78rem; font-weight:800; color:var(--green-950); text-transform:uppercase; letter-spacing:0.04em;">Tier Rate Simulator:</span>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:0.76rem; color:var(--text-light); font-weight:600;">Sample Retail: ₹</span>
+                    <input type="number" id="tierSimSamplePrice" value="1499" style="width:85px; padding:4px 8px; font-weight:700; border-radius:6px; border:1px solid var(--green-200);" oninput="adminApp.updateTierSimulator()">
+                  </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px;" id="tierSimulatorResultGrid">
+                  <!-- Populated via adminApp.updateTierSimulator() -->
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -2309,24 +2365,31 @@
           </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
-          <div class="form-group">
-            <label class="form-label">Type / Concentration *</label>
-            <input type="text" id="pType" class="form-input" required placeholder="e.g. Pure Concentrated Oil / Eau de Parfum">
+        <!-- Formulation Type & Bottle Sizes Selector -->
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label">Formulation Type & Available Bottle Sizes *</label>
+          <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+            <button type="button" class="btn-type-toggle active" id="btnTypeAttar" onclick="adminApp.setProductFormType('attar')" style="padding:7px 14px; font-size:0.8rem; font-weight:700; border-radius:8px; border:1.5px solid var(--gold-500); background:var(--gold-100); color:var(--green-950); cursor:pointer;">
+              Attar / Concentrated Oil (3ml, 6ml, 12ml)
+            </button>
+            <button type="button" class="btn-type-toggle" id="btnTypeSpray" onclick="adminApp.setProductFormType('spray')" style="padding:7px 14px; font-size:0.8rem; font-weight:700; border-radius:8px; border:1.5px solid var(--border); background:#FFFFFF; color:var(--text); cursor:pointer;">
+              Spray / Eau de Parfum (50ml, 100ml)
+            </button>
+            <button type="button" class="btn-type-toggle" id="btnTypeCustom" onclick="adminApp.setProductFormType('custom')" style="padding:7px 14px; font-size:0.8rem; font-weight:700; border-radius:8px; border:1.5px solid var(--border); background:#FFFFFF; color:var(--text); cursor:pointer;">
+              Custom / Single Size
+            </button>
           </div>
-          <div class="form-group">
-            <label class="form-label">Bottle Size *</label>
-            <input type="text" id="pSize" class="form-input" required placeholder="e.g. 12ml / 100ml">
-          </div>
+          <input type="hidden" id="pType" value="Pure Concentrated Oil">
+          <input type="hidden" id="pSize" value="12ml">
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; margin-bottom:14px;">
           <div class="form-group">
-            <label class="form-label">Retail (₹) *</label>
-            <input type="number" id="pRetailPrice" class="form-input" required placeholder="1499">
+            <label class="form-label">Primary Retail (₹) *</label>
+            <input type="number" id="pRetailPrice" class="form-input" required placeholder="1499" oninput="adminApp.autoFillBottleSizesFromRetail()">
           </div>
           <div class="form-group">
-            <label class="form-label">MRP (₹)</label>
+            <label class="form-label">Primary MRP (₹)</label>
             <input type="number" id="pMrp" class="form-input" placeholder="2199">
           </div>
           <div class="form-group">
@@ -2335,24 +2398,32 @@
           </div>
           <div class="form-group">
             <label class="form-label">MOQ *</label>
-            <input type="number" id="pMoq" class="form-input" required placeholder="6" value="6">
+            <input type="number" id="pMoq" class="form-input" required placeholder="6" value="6" oninput="adminApp.autoFillTiersFromRetail()">
           </div>
+        </div>
+
+        <!-- Dynamic Bottle Sizes Pricing Configuration Table -->
+        <div id="bottleSizesConfigBox" style="background:var(--green-50); border:1.5px solid var(--gold-500); padding:14px; border-radius:12px; margin-bottom:16px;">
+          <!-- Dynamically populated via adminApp.renderProductSizeInputs() -->
         </div>
 
         <!-- Wholesale Tiers -->
         <div style="background:var(--green-50); border:1px solid var(--border); padding:14px; border-radius:12px; margin-bottom:16px;">
-          <span style="font-size:0.75rem; font-weight:800; color:var(--gold-500); text-transform:uppercase;">Wholesale Volume Tiers (₹ / Unit):</span>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:0.75rem; font-weight:800; color:var(--gold-500); text-transform:uppercase;">Wholesale Volume Tiers (₹ / Unit):</span>
+            <button type="button" class="btn-action-secondary" style="padding:2px 8px; font-size:0.7rem;" onclick="adminApp.autoFillTiersFromRetail()">Auto-Fill from Rates</button>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
             <div>
-              <span style="font-size:0.72rem; color:var(--text-light);">Tier 1 (6-11 pcs):</span>
+              <span style="font-size:0.72rem; color:var(--text-light);" id="labelTier1">Tier 1 (6-11 pcs):</span>
               <input type="number" id="pTier1" class="form-input" placeholder="780" required>
             </div>
             <div>
-              <span style="font-size:0.72rem; color:var(--text-light);">Tier 2 (12-23 pcs):</span>
+              <span style="font-size:0.72rem; color:var(--text-light);" id="labelTier2">Tier 2 (12-23 pcs):</span>
               <input type="number" id="pTier2" class="form-input" placeholder="710" required>
             </div>
             <div>
-              <span style="font-size:0.72rem; color:var(--text-light);">Tier 3 (24+ pcs):</span>
+              <span style="font-size:0.72rem; color:var(--text-light);" id="labelTier3">Tier 3 (24+ pcs):</span>
               <input type="number" id="pTier3" class="form-input" placeholder="640" required>
             </div>
           </div>
@@ -3521,6 +3592,231 @@
         }
       }
 
+      setProductFormType(type) {
+        document.querySelectorAll('.btn-type-toggle').forEach(btn => {
+          btn.style.borderColor = 'var(--border)';
+          btn.style.background = '#FFFFFF';
+          btn.style.color = 'var(--text)';
+          btn.classList.remove('active');
+        });
+
+        const activeBtn = document.getElementById(type === 'attar' ? 'btnTypeAttar' : (type === 'spray' ? 'btnTypeSpray' : 'btnTypeCustom'));
+        if (activeBtn) {
+          activeBtn.style.borderColor = 'var(--gold-500)';
+          activeBtn.style.background = 'var(--gold-100)';
+          activeBtn.style.color = 'var(--green-950)';
+          activeBtn.classList.add('active');
+        }
+
+        const pType = document.getElementById('pType');
+        const pSize = document.getElementById('pSize');
+        if (type === 'attar') {
+          if (pType) pType.value = 'Pure Concentrated Oil';
+          if (pSize) pSize.value = '12ml';
+        } else if (type === 'spray') {
+          if (pType) pType.value = 'Eau de Parfum';
+          if (pSize) pSize.value = '100ml';
+        } else {
+          if (pType) pType.value = 'Custom Formulation';
+          if (pSize) pSize.value = 'Standard';
+        }
+
+        this.currentProductFormType = type;
+        this.renderProductSizeInputs(type);
+        this.autoFillBottleSizesFromRetail();
+      }
+
+      renderProductSizeInputs(type, existingSizes = null) {
+        const box = document.getElementById('bottleSizesConfigBox');
+        if (!box) return;
+
+        if (type === 'attar') {
+          const s3 = existingSizes?.find(s => s.size === '3ml') || { size: '3ml', price: '', mrp: '' };
+          const s6 = existingSizes?.find(s => s.size === '6ml') || { size: '6ml', price: '', mrp: '' };
+          const s12 = existingSizes?.find(s => s.size === '12ml') || { size: '12ml', price: '', mrp: '' };
+
+          box.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span style="font-size:0.76rem; font-weight:800; color:var(--green-900); text-transform:uppercase; letter-spacing:0.04em;">
+                Attar Bottle Sizes & Rates (3ml, 6ml, 12ml):
+              </span>
+              <button type="button" class="btn-action-secondary" style="padding:2px 8px; font-size:0.7rem;" onclick="adminApp.autoFillBottleSizesFromRetail()">Auto-Calculate from Base</button>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+              <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
+                <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">3ml Flacon (Pocket)</strong>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                  <div>
+                    <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
+                    <input type="number" id="pSizePrice_3ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="499" value="${s3.price}">
+                  </div>
+                  <div>
+                    <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
+                    <input type="number" id="pSizeMrp_3ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="799" value="${s3.mrp}">
+                  </div>
+                </div>
+              </div>
+
+              <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
+                <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">6ml Flacon (Standard)</strong>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                  <div>
+                    <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
+                    <input type="number" id="pSizePrice_6ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="899" value="${s6.price}">
+                  </div>
+                  <div>
+                    <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
+                    <input type="number" id="pSizeMrp_6ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="1399" value="${s6.mrp}">
+                  </div>
+                </div>
+              </div>
+
+              <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
+                <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">12ml Flacon (Royal / Base)</strong>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                  <div>
+                    <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
+                    <input type="number" id="pSizePrice_12ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="1499" value="${s12.price}">
+                  </div>
+                  <div>
+                    <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
+                    <input type="number" id="pSizeMrp_12ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="2199" value="${s12.mrp}">
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        } else if (type === 'spray') {
+          const s50 = existingSizes?.find(s => s.size === '50ml') || { size: '50ml', price: '', mrp: '' };
+          const s100 = existingSizes?.find(s => s.size === '100ml') || { size: '100ml', price: '', mrp: '' };
+
+          box.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span style="font-size:0.76rem; font-weight:800; color:var(--green-900); text-transform:uppercase; letter-spacing:0.04em;">
+                Spray Vaporisateur Sizes & Rates (50ml, 100ml):
+              </span>
+              <button type="button" class="btn-action-secondary" style="padding:2px 8px; font-size:0.7rem;" onclick="adminApp.autoFillBottleSizesFromRetail()">Auto-Calculate from Base</button>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+              <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
+                <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">50ml Spray Flacon</strong>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                  <div>
+                    <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
+                    <input type="number" id="pSizePrice_50ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="1799" value="${s50.price}">
+                  </div>
+                  <div>
+                    <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
+                    <input type="number" id="pSizeMrp_50ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="2499" value="${s50.mrp}">
+                  </div>
+                </div>
+              </div>
+
+              <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
+                <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">100ml Luxury Vaporisateur (Base)</strong>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                  <div>
+                    <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
+                    <input type="number" id="pSizePrice_100ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="2499" value="${s100.price}">
+                  </div>
+                  <div>
+                    <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
+                    <input type="number" id="pSizeMrp_100ml" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="3499" value="${s100.mrp}">
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        } else {
+          const sCustom = existingSizes?.[0] || { size: 'Standard', price: '', mrp: '' };
+          box.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:0.76rem; font-weight:800; color:var(--green-900); text-transform:uppercase;">Custom Single Edition:</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+              <div>
+                <span style="font-size:0.7rem; color:var(--text-light);">Edition Label</span>
+                <input type="text" id="pCustomSizeName" class="form-input" style="padding:4px 6px;" placeholder="e.g. Gift Chest / 250g" value="${sCustom.size}">
+              </div>
+              <div>
+                <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
+                <input type="number" id="pCustomPrice" class="form-input" style="padding:4px 6px;" placeholder="1499" value="${sCustom.price}">
+              </div>
+              <div>
+                <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
+                <input type="number" id="pCustomMrp" class="form-input" style="padding:4px 6px;" placeholder="2199" value="${sCustom.mrp}">
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      autoFillBottleSizesFromRetail() {
+        const retail = parseInt(document.getElementById('pRetailPrice')?.value, 10);
+        if (!retail) return;
+        const mrp = parseInt(document.getElementById('pMrp')?.value, 10) || Math.round(retail * 1.4);
+
+        const type = this.currentProductFormType || 'attar';
+        if (type === 'attar') {
+          const p12 = document.getElementById('pSizePrice_12ml');
+          const mrp12 = document.getElementById('pSizeMrp_12ml');
+          const p6 = document.getElementById('pSizePrice_6ml');
+          const mrp6 = document.getElementById('pSizeMrp_6ml');
+          const p3 = document.getElementById('pSizePrice_3ml');
+          const mrp3 = document.getElementById('pSizeMrp_3ml');
+
+          if (p12 && (!p12.value || p12.value == retail)) p12.value = retail;
+          if (mrp12 && (!mrp12.value || mrp12.value == mrp)) mrp12.value = mrp;
+
+          const calc6 = Math.max(349, Math.round((retail * 0.65) / 10) * 10 - 1);
+          const calc3 = Math.max(199, Math.round((retail * 0.40) / 10) * 10 - 1);
+          if (p6 && !p6.value) p6.value = calc6;
+          if (mrp6 && !mrp6.value) mrp6.value = Math.round(calc6 * 1.4);
+          if (p3 && !p3.value) p3.value = calc3;
+          if (mrp3 && !mrp3.value) mrp3.value = Math.round(calc3 * 1.45);
+        } else if (type === 'spray') {
+          const p100 = document.getElementById('pSizePrice_100ml');
+          const mrp100 = document.getElementById('pSizeMrp_100ml');
+          const p50 = document.getElementById('pSizePrice_50ml');
+          const mrp50 = document.getElementById('pSizeMrp_50ml');
+
+          if (p100 && (!p100.value || p100.value == retail)) p100.value = retail;
+          if (mrp100 && (!mrp100.value || mrp100.value == mrp)) mrp100.value = mrp;
+
+          const calc50 = Math.max(499, Math.round((retail * 0.72) / 50) * 50 - 1);
+          if (p50 && !p50.value) p50.value = calc50;
+          if (mrp50 && !mrp50.value) mrp50.value = Math.round(calc50 * 1.35);
+        }
+
+        this.autoFillTiersFromRetail();
+      }
+
+      autoFillTiersFromRetail() {
+        const retail = parseInt(document.getElementById('pRetailPrice')?.value, 10);
+        if (!retail) return;
+        const moq = parseInt(document.getElementById('pMoq')?.value, 10) || 6;
+        const d1 = this.settings.wholesale_tier1_discount || 40;
+        const d2 = this.settings.wholesale_tier2_discount || 48;
+        const d3 = this.settings.wholesale_tier3_discount || 55;
+
+        const t1 = document.getElementById('pTier1');
+        const t2 = document.getElementById('pTier2');
+        const t3 = document.getElementById('pTier3');
+        const l1 = document.getElementById('labelTier1');
+        const l2 = document.getElementById('labelTier2');
+        const l3 = document.getElementById('labelTier3');
+
+        if (l1) l1.textContent = `Tier 1 (${moq}-${moq * 2 - 1} pcs):`;
+        if (l2) l2.textContent = `Tier 2 (${moq * 2}-${moq * 4 - 1} pcs):`;
+        if (l3) l3.textContent = `Tier 3 (${moq * 4}+ pcs):`;
+
+        if (t1) t1.value = Math.round(retail * (1 - d1 / 100));
+        if (t2) t2.value = Math.round(retail * (1 - d2 / 100));
+        if (t3) t3.value = Math.round(retail * (1 - d3 / 100));
+      }
+
       openProductModal(productId = null) {
         const title = document.getElementById('productModalTitle');
         const editId = document.getElementById('pEditId');
@@ -3533,12 +3829,22 @@
           editId.value = p.id;
           document.getElementById('pName').value = p.name;
           document.getElementById('pCategory').value = p.category;
-          document.getElementById('pType').value = p.type;
-          document.getElementById('pSize').value = p.size;
           document.getElementById('pRetailPrice').value = p.retailPrice;
           document.getElementById('pMrp').value = p.mrp || Math.round(p.retailPrice * 1.4);
           document.getElementById('pStock').value = p.stock || 25;
           document.getElementById('pMoq').value = p.wholesaleMOQ || 6;
+
+          const typeStr = ((p.type || '') + ' ' + (p.category || '')).toLowerCase();
+          let detectedType = 'attar';
+          if (typeStr.includes('spray') || typeStr.includes('edp') || typeStr.includes('eau de parfum') || typeStr.includes('vaporisateur')) {
+            detectedType = 'spray';
+          } else if (typeStr.includes('custom') || (!typeStr.includes('attar') && !typeStr.includes('oil') && !typeStr.includes('pure'))) {
+            detectedType = 'custom';
+          }
+
+          this.currentProductFormType = detectedType;
+          this.setProductFormType(detectedType);
+          this.renderProductSizeInputs(detectedType, p.bottleSizes || getProductSizes(p));
 
           document.getElementById('pTier1').value = p.wholesaleTiers ? p.wholesaleTiers[0].price : Math.round(p.retailPrice * 0.6);
           document.getElementById('pTier2').value = p.wholesaleTiers ? p.wholesaleTiers[1].price : Math.round(p.retailPrice * 0.55);
@@ -3558,8 +3864,10 @@
           editId.value = '';
           document.getElementById('pName').value = '';
           document.getElementById('pCategory').value = 'Luxury';
-          document.getElementById('pType').value = 'Eau de Parfum';
-          document.getElementById('pSize').value = '100ml';
+          this.currentProductFormType = 'attar';
+          this.setProductFormType('attar');
+          this.renderProductSizeInputs('attar');
+
           document.getElementById('pRetailPrice').value = '';
           document.getElementById('pMrp').value = '';
           document.getElementById('pStock').value = '25';
@@ -3602,12 +3910,53 @@
         const t2 = parseInt(document.getElementById('pTier2').value, 10) || Math.round(retail * 0.55);
         const t3 = parseInt(document.getElementById('pTier3').value, 10) || Math.round(retail * 0.5);
 
+        // Construct bottle sizes from inputs
+        const type = this.currentProductFormType || 'attar';
+        let bottleSizes = [];
+        let primarySize = '12ml';
+
+        if (type === 'attar') {
+          const p3 = parseInt(document.getElementById('pSizePrice_3ml')?.value, 10) || Math.round(retail * 0.4);
+          const mrp3 = parseInt(document.getElementById('pSizeMrp_3ml')?.value, 10) || Math.round(p3 * 1.45);
+          const p6 = parseInt(document.getElementById('pSizePrice_6ml')?.value, 10) || Math.round(retail * 0.65);
+          const mrp6 = parseInt(document.getElementById('pSizeMrp_6ml')?.value, 10) || Math.round(p6 * 1.4);
+          const p12 = parseInt(document.getElementById('pSizePrice_12ml')?.value, 10) || retail;
+          const mrp12 = parseInt(document.getElementById('pSizeMrp_12ml')?.value, 10) || mrp;
+
+          bottleSizes = [
+            { size: '3ml', price: p3, mrp: mrp3, label: '3ml Flacon (Pocket Edition)' },
+            { size: '6ml', price: p6, mrp: mrp6, label: '6ml Flacon (Standard Edition)' },
+            { size: '12ml', price: p12, mrp: mrp12, label: '12ml Flacon (Royal Flacon)' }
+          ];
+          primarySize = '12ml';
+        } else if (type === 'spray') {
+          const p50 = parseInt(document.getElementById('pSizePrice_50ml')?.value, 10) || Math.round(retail * 0.72);
+          const mrp50 = parseInt(document.getElementById('pSizeMrp_50ml')?.value, 10) || Math.round(p50 * 1.35);
+          const p100 = parseInt(document.getElementById('pSizePrice_100ml')?.value, 10) || retail;
+          const mrp100 = parseInt(document.getElementById('pSizeMrp_100ml')?.value, 10) || mrp;
+
+          bottleSizes = [
+            { size: '50ml', price: p50, mrp: mrp50, label: '50ml Spray Flacon' },
+            { size: '100ml', price: p100, mrp: mrp100, label: '100ml Luxury Vaporisateur' }
+          ];
+          primarySize = '100ml';
+        } else {
+          const customSize = document.getElementById('pCustomSizeName')?.value.trim() || 'Standard';
+          const customPrice = parseInt(document.getElementById('pCustomPrice')?.value, 10) || retail;
+          const customMrp = parseInt(document.getElementById('pCustomMrp')?.value, 10) || mrp;
+          bottleSizes = [
+            { size: customSize, price: customPrice, mrp: customMrp, label: customSize }
+          ];
+          primarySize = customSize;
+        }
+
         const newProd = {
           id: editId || `p${Date.now()}`,
           name: document.getElementById('pName').value.trim(),
           category: document.getElementById('pCategory').value,
-          type: document.getElementById('pType').value.trim(),
-          size: document.getElementById('pSize').value.trim(),
+          type: document.getElementById('pType').value.trim() || (type === 'attar' ? 'Pure Concentrated Oil' : (type === 'spray' ? 'Eau de Parfum' : 'Custom Formulation')),
+          size: primarySize,
+          bottleSizes: bottleSizes,
           retailPrice: retail,
           mrp: mrp,
           stock: stock,
@@ -3971,6 +4320,105 @@
         if (phone) phone.value = this.settings.whatsapp_number || CONFIG.WHATSAPP_NUMBER;
         if (ship) ship.value = this.settings.free_shipping_min || CONFIG.FREE_SHIPPING_MIN;
         if (low) low.value = this.settings.low_stock_threshold || CONFIG.LOW_STOCK_THRESHOLD;
+
+        // Wholesale Tiers in Settings
+        const tierMoq = document.getElementById('settingTierMoq');
+        const tier1 = document.getElementById('settingTier1Discount');
+        const tier2 = document.getElementById('settingTier2Discount');
+        const tier3 = document.getElementById('settingTier3Discount');
+        if (tierMoq) tierMoq.value = this.settings.wholesale_tier1_min || 6;
+        if (tier1) tier1.value = this.settings.wholesale_tier1_discount || 40;
+        if (tier2) tier2.value = this.settings.wholesale_tier2_discount || 48;
+        if (tier3) tier3.value = this.settings.wholesale_tier3_discount || 55;
+
+        this.updateTierSimulator();
+      }
+
+      updateTierSimulator() {
+        const moq = parseInt(document.getElementById('settingTierMoq')?.value, 10) || 6;
+        const d1 = parseInt(document.getElementById('settingTier1Discount')?.value, 10) || 40;
+        const d2 = parseInt(document.getElementById('settingTier2Discount')?.value, 10) || 48;
+        const d3 = parseInt(document.getElementById('settingTier3Discount')?.value, 10) || 55;
+        const samplePrice = parseInt(document.getElementById('tierSimSamplePrice')?.value, 10) || 1499;
+
+        const t1Desc = document.getElementById('tier1DescLabel');
+        const t2Desc = document.getElementById('tier2DescLabel');
+        const t3Desc = document.getElementById('tier3DescLabel');
+        if (t1Desc) t1Desc.textContent = `${moq}–${moq * 2 - 1} pcs: ${d1}% off retail`;
+        if (t2Desc) t2Desc.textContent = `${moq * 2}–${moq * 4 - 1} pcs: ${d2}% off retail`;
+        if (t3Desc) t3Desc.textContent = `${moq * 4}+ pcs: ${d3}% off retail`;
+
+        const p1 = Math.round(samplePrice * (1 - d1 / 100));
+        const p2 = Math.round(samplePrice * (1 - d2 / 100));
+        const p3 = Math.round(samplePrice * (1 - d3 / 100));
+
+        const simBox = document.getElementById('tierSimulatorResultGrid');
+        if (simBox) {
+          simBox.innerHTML = `
+            <div style="background:#FFFFFF; border:1px solid var(--border); padding:10px 14px; border-radius:8px;">
+              <div style="font-size:0.75rem; color:var(--text-light); font-weight:700;">Tier 1 (${moq}–${moq * 2 - 1} units)</div>
+              <div style="font-size:1.15rem; font-weight:800; color:var(--green-900); margin-top:2px;">₹${p1.toLocaleString('en-IN')} / unit</div>
+              <div style="font-size:0.72rem; color:var(--green-600); font-weight:600;">Save ${d1}% (₹${(samplePrice - p1).toLocaleString('en-IN')})</div>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid var(--border); padding:10px 14px; border-radius:8px;">
+              <div style="font-size:0.75rem; color:var(--text-light); font-weight:700;">Tier 2 (${moq * 2}–${moq * 4 - 1} units)</div>
+              <div style="font-size:1.15rem; font-weight:800; color:var(--green-900); margin-top:2px;">₹${p2.toLocaleString('en-IN')} / unit</div>
+              <div style="font-size:0.72rem; color:var(--green-600); font-weight:600;">Save ${d2}% (₹${(samplePrice - p2).toLocaleString('en-IN')})</div>
+            </div>
+            <div style="background:#FFFFFF; border:1px solid var(--border); padding:10px 14px; border-radius:8px;">
+              <div style="font-size:0.75rem; color:var(--text-light); font-weight:700;">Tier 3 (${moq * 4}+ units)</div>
+              <div style="font-size:1.15rem; font-weight:800; color:var(--gold-500); margin-top:2px;">₹${p3.toLocaleString('en-IN')} / unit</div>
+              <div style="font-size:0.72rem; color:var(--green-600); font-weight:600;">Save ${d3}% (₹${(samplePrice - p3).toLocaleString('en-IN')})</div>
+            </div>
+          `;
+        }
+      }
+
+      async saveWholesaleTierSettings() {
+        this.settings.wholesale_tier1_min = parseInt(document.getElementById('settingTierMoq')?.value, 10) || 6;
+        this.settings.wholesale_tier1_discount = parseInt(document.getElementById('settingTier1Discount')?.value, 10) || 40;
+        this.settings.wholesale_tier2_min = (this.settings.wholesale_tier1_min * 2);
+        this.settings.wholesale_tier2_discount = parseInt(document.getElementById('settingTier2Discount')?.value, 10) || 48;
+        this.settings.wholesale_tier3_min = (this.settings.wholesale_tier1_min * 4);
+        this.settings.wholesale_tier3_discount = parseInt(document.getElementById('settingTier3Discount')?.value, 10) || 55;
+
+        try {
+          await dbSaveSettings(this.settings);
+          this.showToast('Wholesale Tier settings saved to Supabase database!', 'success');
+        } catch (err) {
+          console.error('[Save Wholesale Tiers Error]', err);
+          this.showToast(`Failed to save tier settings: ${err.message}`, 'error');
+        }
+      }
+
+      async applyWholesaleTiersToAllProducts() {
+        if (!confirm('Recalculate and update wholesale pricing tiers for ALL products in the Supabase catalog?')) return;
+
+        const moq = parseInt(document.getElementById('settingTierMoq')?.value, 10) || 6;
+        const d1 = parseInt(document.getElementById('settingTier1Discount')?.value, 10) || 40;
+        const d2 = parseInt(document.getElementById('settingTier2Discount')?.value, 10) || 48;
+        const d3 = parseInt(document.getElementById('settingTier3Discount')?.value, 10) || 55;
+
+        let updatedCount = 0;
+        try {
+          for (const prod of this.products) {
+            prod.wholesaleMOQ = moq;
+            const retail = Number(prod.retailPrice) || 999;
+            prod.wholesaleTiers = [
+              { min: moq, max: moq * 2 - 1, price: Math.round(retail * (1 - d1 / 100)) },
+              { min: moq * 2, max: moq * 4 - 1, price: Math.round(retail * (1 - d2 / 100)) },
+              { min: moq * 4, max: 9999, price: Math.round(retail * (1 - d3 / 100)) }
+            ];
+            await dbUpdateProduct(prod);
+            updatedCount++;
+          }
+
+          this.renderCatalog();
+          this.showToast(`Successfully updated wholesale tiers for all ${updatedCount} catalog products in Supabase!`, 'success');
+        } catch (err) {
+          console.error('[Apply Wholesale Tiers Error]', err);
+          this.showToast(`Error updating catalog products: ${err.message}`, 'error');
+        }
       }
 
       async saveGeneralSettings() {

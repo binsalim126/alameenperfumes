@@ -459,15 +459,20 @@ async function dbCreateProduct(product) {
     .insert([payload])
     .select();
 
-  // Graceful fallback if 'bottle_sizes' column does not exist in remote Supabase table (PGRST204)
+  // Graceful fallback if 'bottle_sizes' column does not exist or schema cache is stale (PGRST204)
   if (error && (error.code === 'PGRST204' || (error.message && error.message.toLowerCase().includes('bottle_sizes')))) {
-    console.warn('[Supabase Fallback] "bottle_sizes" column missing in Supabase schema. Retrying insert without column...');
+    console.warn('[Supabase Fallback] "bottle_sizes" column missing in Supabase schema cache. Retrying insert without column...');
     window.hasBottleSizesColumn = false;
     const fallbackPayload = { ...payload };
     delete fallbackPayload.bottle_sizes;
-    const retry = await sb.from('products').insert([fallbackPayload]).select();
-    data = retry.data;
-    error = retry.error;
+    const retry = await sb.from('products').insert([fallbackPayload]).select('id, name, category, retail_price, stock');
+    if (retry.data && retry.data.length > 0) {
+      data = [{ ...fallbackPayload, ...retry.data[0] }];
+      error = null;
+    } else {
+      data = retry.data;
+      error = retry.error;
+    }
   }
 
   if (error) {
@@ -493,15 +498,20 @@ async function dbUpdateProduct(product) {
     .eq('id', product.id)
     .select();
 
-  // Graceful fallback if 'bottle_sizes' column does not exist in remote Supabase table (PGRST204)
+  // Graceful fallback if 'bottle_sizes' column does not exist or schema cache is stale (PGRST204)
   if (error && (error.code === 'PGRST204' || (error.message && error.message.toLowerCase().includes('bottle_sizes')))) {
-    console.warn('[Supabase Fallback] "bottle_sizes" column missing in Supabase schema. Retrying update without column...');
+    console.warn('[Supabase Fallback] "bottle_sizes" column missing in Supabase schema cache. Retrying update without column...');
     window.hasBottleSizesColumn = false;
     const fallbackPayload = { ...payload };
     delete fallbackPayload.bottle_sizes;
-    const retry = await sb.from('products').update(fallbackPayload).eq('id', product.id).select();
-    data = retry.data;
-    error = retry.error;
+    const retry = await sb.from('products').update(fallbackPayload).eq('id', product.id).select('id, name, category, retail_price, stock');
+    if (retry.data && retry.data.length > 0) {
+      data = [{ ...fallbackPayload, ...retry.data[0] }];
+      error = null;
+    } else {
+      data = retry.data;
+      error = retry.error;
+    }
   }
 
   if (error) {

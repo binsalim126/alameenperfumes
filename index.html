@@ -2260,18 +2260,28 @@
       renderBestsellers() {
         const grid = document.getElementById('bestsellersGrid');
         if (!grid) return;
-        const bestsellers = this.products.filter(p => p.bestseller).slice(0, 5);
 
-        grid.innerHTML = bestsellers.map(product => {
+        // Show all active products in the store, prioritizing bestsellers first
+        let list = [...(this.products || [])].filter(p => p.active !== false);
+        if (list.length === 0) list = [...(this.products || [])];
+
+        list.sort((a, b) => {
+          if (a.bestseller && !b.bestseller) return -1;
+          if (!a.bestseller && b.bestseller) return 1;
+          return 0;
+        });
+
+        grid.innerHTML = list.map(product => {
           const availableSizes = getProductSizes(product);
           const defaultSize = availableSizes[availableSizes.length - 1]?.size || product.size || '12ml';
           const pricing = calculateProductPrice(product, this.mode, 1, this.settings, defaultSize);
           const isWish = this.wishlist.includes(product.id);
+          const imgUrl = (product.images && product.images.length > 0 && product.images[0]) ? product.images[0] : 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80';
 
           return `
             <div class="product-card" id="card-${product.id}" onclick="window.location.href='shop.html?product=${product.id}'" style="cursor:pointer;">
               <div class="card-media">
-                <img src="${product.images[0]}" alt="${product.name}" class="card-img" loading="lazy">
+                <img src="${imgUrl}" alt="${product.name}" class="card-img" loading="lazy">
                 ${pricing.isOffer ? `<span class="card-badge offer-badge">${this.settings.offer_badge}</span>` : `<span class="card-badge">${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'}</span>`}
                 <button type="button" class="card-wish-btn ${isWish ? 'active' : ''}" onclick="event.stopPropagation(); app.toggleWishlist('${product.id}')" aria-label="Wishlist">
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="${isWish ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>

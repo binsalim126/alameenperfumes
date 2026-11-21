@@ -285,23 +285,25 @@ function calculateTiersFromRetail(retailPrice, tierSettings = null) {
 
 function formatProductFromRow(row) {
   if (!row) return null;
-  const sizes = Array.isArray(row.bottle_sizes) && row.bottle_sizes.length > 0 
-    ? row.bottle_sizes 
-    : getProductSizes({
-        type: row.type,
-        category: row.category,
-        size: row.size,
-        retailPrice: Number(row.retail_price),
-        mrp: Number(row.mrp)
-      });
+  const rawSizes = (Array.isArray(row.bottle_sizes) && row.bottle_sizes.length > 0)
+    ? row.bottle_sizes
+    : (row.notes && Array.isArray(row.notes.bottle_sizes) && row.notes.bottle_sizes.length > 0)
+      ? row.notes.bottle_sizes
+      : getProductSizes({
+          type: row.type,
+          category: row.category,
+          size: row.size,
+          retailPrice: Number(row.retail_price),
+          mrp: Number(row.mrp)
+        });
 
   return {
     id: row.id,
     name: row.name || 'Unnamed Perfume',
     category: row.category || 'Luxury',
     type: row.type || 'Eau de Parfum',
-    size: row.size || (sizes[sizes.length - 1]?.size || '12ml'),
-    bottleSizes: sizes,
+    size: row.size || (rawSizes[rawSizes.length - 1]?.size || '12ml'),
+    bottleSizes: rawSizes,
     rating: Number(row.rating) || 5.0,
     reviews: Number(row.reviews) || 0,
     retailPrice: Number(row.retail_price) || 0,
@@ -322,13 +324,17 @@ function formatProductFromRow(row) {
 function formatProductToRow(product) {
   const retail = Number(product.retailPrice) || 0;
   const sizes = Array.isArray(product.bottleSizes) && product.bottleSizes.length > 0 ? product.bottleSizes : getProductSizes(product);
-  return {
+  
+  // Also preserve bottle_sizes inside notes JSON so sizes are always preserved even if the bottle_sizes column is not in Supabase yet
+  const notesObj = (product.notes && typeof product.notes === 'object') ? { ...product.notes } : { top: '', heart: '', base: '' };
+  notesObj.bottle_sizes = sizes;
+
+  const row = {
     id: product.id,
     name: product.name,
     category: product.category,
     type: product.type || 'Eau de Parfum',
     size: product.size || (sizes[sizes.length - 1]?.size || '12ml'),
-    bottle_sizes: sizes,
     rating: Number(product.rating) || 5.0,
     reviews: Number(product.reviews) || 0,
     retail_price: retail,
@@ -336,13 +342,19 @@ function formatProductToRow(product) {
     stock: typeof product.stock === 'number' ? product.stock : 20,
     wholesale_moq: Number(product.wholesaleMOQ) || 6,
     wholesale_tiers: Array.isArray(product.wholesaleTiers) ? product.wholesaleTiers : calculateTiersFromRetail(retail),
-    notes: product.notes || { top: '', heart: '', base: '' },
+    notes: notesObj,
     description: product.description || '',
     images: Array.isArray(product.images) && product.images.length > 0 ? product.images : [],
     bestseller: !!product.bestseller,
     new_arrival: !!product.newArrival,
     in_stock: (typeof product.stock === 'number') ? product.stock > 0 : (product.active !== false)
   };
+
+  if (window.hasBottleSizesColumn !== false) {
+    row.bottle_sizes = sizes;
+  }
+
+  return row;
 }
 
 function formatOrderFromRow(row) {
@@ -442,10 +454,21 @@ async function dbCreateProduct(product) {
   const sb = getSupabase();
   const payload = formatProductToRow(product);
 
-  const { data, error } = await sb
+  let { data, error } = await sb
     .from('products')
     .insert([payload])
     .select();
+
+  // Graceful fallback if 'bottle_sizes' column does not exist in remote Supabase table (PGRST204)
+  if (error && (error.code === 'PGRST204' || (error.message && error.message.toLowerCase().includes('bottle_sizes')))) {
+    console.warn('[Supabase Fallback] "bottle_sizes" column missing in Supabase schema. Retrying insert without column...');
+    window.hasBottleSizesColumn = false;
+    const fallbackPayload = { ...payload };
+    delete fallbackPayload.bottle_sizes;
+    const retry = await sb.from('products').insert([fallbackPayload]).select();
+    data = retry.data;
+    error = retry.error;
+  }
 
   if (error) {
     console.error('[Supabase Insert Product Error]', error);
@@ -464,11 +487,22 @@ async function dbUpdateProduct(product) {
   const sb = getSupabase();
   const payload = formatProductToRow(product);
 
-  const { data, error } = await sb
+  let { data, error } = await sb
     .from('products')
     .update(payload)
     .eq('id', product.id)
     .select();
+
+  // Graceful fallback if 'bottle_sizes' column does not exist in remote Supabase table (PGRST204)
+  if (error && (error.code === 'PGRST204' || (error.message && error.message.toLowerCase().includes('bottle_sizes')))) {
+    console.warn('[Supabase Fallback] "bottle_sizes" column missing in Supabase schema. Retrying update without column...');
+    window.hasBottleSizesColumn = false;
+    const fallbackPayload = { ...payload };
+    delete fallbackPayload.bottle_sizes;
+    const retry = await sb.from('products').update(fallbackPayload).eq('id', product.id).select();
+    data = retry.data;
+    error = retry.error;
+  }
 
   if (error) {
     console.error('[Supabase Update Product Error]', error);
@@ -679,10 +713,23 @@ async function dbSeedFlagshipProductsToSupabase() {
   const sb = getSupabase();
   const rows = FLAGSHIP_SEED_PRODUCTS.map(formatProductToRow);
 
-  const { data, error } = await sb
+  let { data, error } = await sb
     .from('products')
     .upsert(rows)
     .select();
+
+  // Graceful fallback if 'bottle_sizes' column does not exist in remote Supabase table
+  if (error && (error.code === 'PGRST204' || (error.message && error.message.toLowerCase().includes('bottle_sizes')))) {
+    window.hasBottleSizesColumn = false;
+    const stripped = rows.map(r => {
+      const copy = { ...r };
+      delete copy.bottle_sizes;
+      return copy;
+    });
+    const retry = await sb.from('products').upsert(stripped).select();
+    data = retry.data;
+    error = retry.error;
+  }
 
   if (error) {
     console.error('[Supabase Seed Error]', error);

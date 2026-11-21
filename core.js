@@ -222,6 +222,12 @@ const FLAGSHIP_SEED_PRODUCTS = [
 // 3. ROW FORMATTERS & BOTTLE SIZES (Database snake_case <-> Frontend camelCase)
 // ==========================================================================
 
+// Safely track whether Supabase schema has 'bottle_sizes' column. Default false to prevent PGRST204 errors.
+// Bottle sizes are ALWAYS safely persisted inside 'notes' JSON (notes.bottle_sizes).
+if (typeof window.hasBottleSizesColumn === 'undefined') {
+  window.hasBottleSizesColumn = false;
+}
+
 // Dynamic bottle size generation based on product category & concentration
 function getProductSizes(product) {
   if (!product) return [];
@@ -350,7 +356,7 @@ function formatProductToRow(product) {
     in_stock: (typeof product.stock === 'number') ? product.stock > 0 : (product.active !== false)
   };
 
-  if (window.hasBottleSizesColumn !== false) {
+  if (window.hasBottleSizesColumn === true) {
     row.bottle_sizes = sizes;
   }
 
@@ -405,6 +411,10 @@ async function dbFetchProducts() {
   if (error) {
     console.error('[Supabase Fetch Products Error]', error);
     throw error;
+  }
+
+  if (Array.isArray(data) && data.length > 0) {
+    window.hasBottleSizesColumn = ('bottle_sizes' in data[0]);
   }
 
   return (data || []).map(formatProductFromRow);
@@ -465,7 +475,7 @@ async function dbCreateProduct(product) {
     window.hasBottleSizesColumn = false;
     const fallbackPayload = { ...payload };
     delete fallbackPayload.bottle_sizes;
-    const retry = await sb.from('products').insert([fallbackPayload]).select('id, name, category, retail_price, stock');
+    const retry = await sb.from('products').insert([fallbackPayload]).select();
     if (retry.data && retry.data.length > 0) {
       data = [{ ...fallbackPayload, ...retry.data[0] }];
       error = null;
@@ -504,7 +514,7 @@ async function dbUpdateProduct(product) {
     window.hasBottleSizesColumn = false;
     const fallbackPayload = { ...payload };
     delete fallbackPayload.bottle_sizes;
-    const retry = await sb.from('products').update(fallbackPayload).eq('id', product.id).select('id, name, category, retail_price, stock');
+    const retry = await sb.from('products').update(fallbackPayload).eq('id', product.id).select();
     if (retry.data && retry.data.length > 0) {
       data = [{ ...fallbackPayload, ...retry.data[0] }];
       error = null;
@@ -886,7 +896,18 @@ function setClientSession(key, value) {
   } catch (e) {}
 }
 
+function setStorage(key, value) {
+  setClientSession(key, value);
+}
+
+function getStorage(key, fallback = null) {
+  return getClientSession(key, fallback);
+}
+
 // Global Exports
+window.CONFIG = CONFIG;
+window.setStorage = setStorage;
+window.getStorage = getStorage;
 window.getProductSizes = getProductSizes;
 window.calculateTiersFromRetail = calculateTiersFromRetail;
 window.dbFetchProducts = dbFetchProducts;

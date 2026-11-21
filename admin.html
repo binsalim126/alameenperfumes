@@ -2023,7 +2023,11 @@
               <h1 class="page-title">Product Catalog</h1>
               <p class="header-subtext">Manage formulas, retail pricing, wholesale MOQ, and real-time inventory</p>
             </div>
-            <div style="display:flex; gap:10px; align-items:center;">
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <button type="button" class="btn-action-secondary" onclick="adminApp.openCsvImportModal()" title="Upload multiple products at once via CSV">
+                <span>📄</span>
+                <span>Bulk CSV Upload</span>
+              </button>
               <button type="button" class="btn-action-secondary" onclick="adminApp.seedFlagshipPerfumes()" title="Populate 4 Authentic Al-Ameen Flagship Scents into Supabase">
                 <span>⚡</span>
                 <span>Seed Database Flagships</span>
@@ -2720,6 +2724,118 @@
   </div>
 
   <!-- ==========================================================================
+       MODAL: BULK CSV PRODUCT IMPORT (Direct Supabase Database Sync)
+       ========================================================================== -->
+  <div class="modal-backdrop" id="csvImportModal" onclick="adminApp.closeCsvImportModal()">
+    <div class="modal-box" style="max-width:860px; width:95%;" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border-light); padding-bottom:12px;">
+        <div>
+          <h2 style="font-size:1.35rem; color:var(--green-900); display:flex; align-items:center; gap:8px;">
+            <span>📄</span>
+            <span>Bulk Product Import via CSV</span>
+          </h2>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin:3px 0 0;">
+            Upload your product inventory in bulk from Excel or Google Sheets directly into Supabase database.
+          </p>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="adminApp.closeCsvImportModal()" aria-label="Close modal">✕</button>
+      </div>
+
+      <!-- Action & Template Buttons -->
+      <div style="display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; background:var(--green-50); padding:12px 14px; border-radius:12px; border:1px solid var(--border-gold); align-items:center; justify-content:space-between;">
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button type="button" class="btn-action-secondary" onclick="adminApp.downloadSampleCsvTemplate()" style="font-size:0.82rem; padding:6px 14px; min-height:36px; background:#FFFFFF;">
+            <span>📥</span>
+            <span>Download Sample Template (.csv)</span>
+          </button>
+          <button type="button" class="btn-action-secondary" onclick="adminApp.exportCatalogCsv()" style="font-size:0.82rem; padding:6px 14px; min-height:36px; background:#FFFFFF;">
+            <span>📤</span>
+            <span>Export Current Catalog (.csv)</span>
+          </button>
+        </div>
+        <span style="font-size:0.75rem; color:var(--green-800); font-weight:700;">
+          Auto-fills bottle sizes & wholesale MOQ if left blank
+        </span>
+      </div>
+
+      <!-- Dual Import Controls: File Upload or Paste CSV -->
+      <div style="display:grid; grid-template-columns:1fr; gap:14px; margin-bottom:16px;">
+        <!-- File Dropzone -->
+        <div id="csvDropzone" style="border:2px dashed var(--gold-500); background:#FAFCFA; border-radius:14px; padding:22px 18px; text-align:center; cursor:pointer; transition:all 0.2s ease;" onclick="document.getElementById('csvFileInput').click()">
+          <input type="file" id="csvFileInput" accept=".csv,text/csv" style="display:none;" onchange="adminApp.handleCsvFileSelect(event)">
+          <div style="font-size:2rem; margin-bottom:6px;">📁</div>
+          <strong style="display:block; font-size:0.95rem; color:var(--green-950); margin-bottom:4px;">
+            Choose a CSV file or drag & drop here
+          </strong>
+          <span style="font-size:0.78rem; color:var(--text-muted); display:block; margin-bottom:10px;">
+            Supports Excel / Google Sheets exported .csv files
+          </span>
+          <button type="button" class="btn-action-gold" style="font-size:0.82rem; padding:6px 16px; min-height:34px; pointer-events:none;">
+            Browse File
+          </button>
+          <div id="selectedFileName" style="margin-top:8px; font-size:0.82rem; font-weight:700; color:var(--green-800);"></div>
+        </div>
+
+        <!-- Optional Paste CSV Accordion / Toggle -->
+        <div>
+          <button type="button" class="btn-action-secondary" style="font-size:0.8rem; padding:5px 12px; margin-bottom:8px;" onclick="adminApp.toggleCsvPasteArea()">
+            <span id="pasteAreaToggleIcon">▶</span> Or paste raw CSV text from clipboard
+          </button>
+          <div id="csvPasteBox" style="display:none;">
+            <textarea id="csvPasteTextarea" class="form-input" rows="5" style="font-family:monospace; font-size:0.8rem;" placeholder="Name,Category,Type,RetailPrice,MRP,Stock,WholesaleMOQ...&#10;Royal Oud,Luxury,Attar,1499,2199,25,6" oninput="adminApp.handleCsvTextInput()"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Preview Table Section -->
+      <div id="csvPreviewSection" style="display:none; margin-bottom:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+          <strong style="font-size:0.9rem; color:var(--green-950); display:flex; align-items:center; gap:6px;">
+            <span>Preview & Validation</span>
+            <span id="csvParsedCountBadge" style="background:var(--gold-100); color:var(--gold-900); border:1px solid var(--gold-500); padding:2px 8px; border-radius:12px; font-size:0.74rem;">0 products</span>
+          </strong>
+          <span id="csvValidationSummary" style="font-size:0.78rem; font-weight:700;"></span>
+        </div>
+
+        <div style="max-height:260px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; background:#FFFFFF;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.82rem; text-align:left;">
+            <thead style="background:var(--green-50); position:sticky; top:0; z-index:1;">
+              <tr style="border-bottom:1px solid var(--border);">
+                <th style="padding:8px 10px; color:var(--green-950);">Status</th>
+                <th style="padding:8px 10px; color:var(--green-950);">Name</th>
+                <th style="padding:8px 10px; color:var(--green-950);">Category</th>
+                <th style="padding:8px 10px; color:var(--green-950);">Type</th>
+                <th style="padding:8px 10px; color:var(--green-950);">Rate / MRP</th>
+                <th style="padding:8px 10px; color:var(--green-950);">Sizes</th>
+                <th style="padding:8px 10px; color:var(--green-950);">Stock / MOQ</th>
+              </tr>
+            </thead>
+            <tbody id="csvPreviewTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-light); padding-top:16px; flex-wrap:wrap; gap:10px;">
+        <button type="button" class="btn-action-secondary" onclick="adminApp.clearCsvImport()">
+          Clear / Reset
+        </button>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button type="button" class="btn-action-secondary" onclick="adminApp.closeCsvImportModal()">
+            Cancel
+          </button>
+          <button type="button" class="btn-action-gold" id="btnExecuteCsvImport" onclick="adminApp.executeCsvImport()" disabled style="opacity:0.6; cursor:not-allowed;">
+            <span>⚡</span>
+            <span id="btnExecuteCsvImportText">Import to Supabase Database</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
        PRINT INVOICE TEMPLATE (Hidden until print invoked)
        ========================================================================== -->
   <div id="printableInvoice" style="display:none;"></div>
@@ -2741,6 +2857,7 @@
         this.overviewDateRange = '7d';
         this.activeTab = 'overview';
         this.currentViewingOrderId = null;
+        this.parsedCsvProducts = [];
 
         this.init();
       }
@@ -4247,6 +4364,460 @@
         } catch (err) {
           console.error('[Delete Product Error]', err);
           this.showToast(`Delete failed: ${err.message}`, 'error');
+        }
+      }
+
+      // ======================================================================
+      // 3B. BULK CSV PRODUCT IMPORT ENGINE (Direct Supabase Sync)
+      // ======================================================================
+      openCsvImportModal() {
+        this.parsedCsvProducts = [];
+        const modal = document.getElementById('csvImportModal');
+        if (modal) modal.classList.add('active');
+
+        const fileInput = document.getElementById('csvFileInput');
+        if (fileInput) fileInput.value = '';
+
+        const fileName = document.getElementById('selectedFileName');
+        if (fileName) fileName.textContent = '';
+
+        const textarea = document.getElementById('csvPasteTextarea');
+        if (textarea) textarea.value = '';
+
+        const previewSection = document.getElementById('csvPreviewSection');
+        if (previewSection) previewSection.style.display = 'none';
+
+        const btnExecute = document.getElementById('btnExecuteCsvImport');
+        if (btnExecute) {
+          btnExecute.disabled = true;
+          btnExecute.style.opacity = '0.6';
+          btnExecute.style.cursor = 'not-allowed';
+          const btnText = document.getElementById('btnExecuteCsvImportText');
+          if (btnText) btnText.textContent = 'Import to Supabase Database';
+        }
+      }
+
+      closeCsvImportModal() {
+        const modal = document.getElementById('csvImportModal');
+        if (modal) modal.classList.remove('active');
+      }
+
+      toggleCsvPasteArea() {
+        const box = document.getElementById('csvPasteBox');
+        const icon = document.getElementById('pasteAreaToggleIcon');
+        if (!box) return;
+        const isHidden = box.style.display === 'none';
+        box.style.display = isHidden ? 'block' : 'none';
+        if (icon) icon.textContent = isHidden ? '▼' : '▶';
+      }
+
+      downloadSampleCsvTemplate() {
+        const headers = "Name,Category,Type,RetailPrice,MRP,Stock,WholesaleMOQ,BottleSizes,ImageURL,Description,Bestseller,NewArrival,Active";
+        const rows = [
+          '"Sultan Al Oud",Luxury,Attar,1499,2199,25,6,"3ml:499, 6ml:899, 12ml:1499",https://images.unsplash.com/photo-1594035910387-fea47794261f,"Imperial wild Assam agarwood aged in dark oak casks with spicy Kashmiri saffron.",yes,no,yes',
+          '"Taif Rose Mystique",Women,Spray,2499,3499,30,6,"50ml:1799, 100ml:2499",https://images.unsplash.com/photo-1588405748880-12d1d2a59f75,"Dewy morning Taif roses with French sparkling bergamot and royal white musk.",yes,yes,yes',
+          '"Amber Al-Malaki",Men,Attar,1199,1699,20,6,"3ml:399, 6ml:699, 12ml:1199",https://images.unsplash.com/photo-1523293182086-7651a899d37f,"Golden crystalline amber melted with Mysore sandalwood and warm spice.",no,yes,yes',
+          '"Royal White Musk",Unisex,Attar,999,1499,35,6,"3ml:349, 6ml:599, 12ml:999",https://images.unsplash.com/photo-1541643600914-78b084683601,"Silky powdered white musk with subtle floral amber nuances.",no,no,yes'
+        ];
+        const csvContent = "\uFEFF" + headers + "\n" + rows.join("\n");
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'alameen_products_sample.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        this.showToast('Sample CSV template downloaded! Open in Excel or Google Sheets to fill.', 'success');
+      }
+
+      exportCatalogCsv() {
+        if (!this.products || this.products.length === 0) {
+          this.showToast('No products available in catalog to export.', 'error');
+          return;
+        }
+
+        const headers = "Name,Category,Type,RetailPrice,MRP,Stock,WholesaleMOQ,BottleSizes,ImageURL,Description,Bestseller,NewArrival,Active";
+        const rows = this.products.map(p => {
+          const escapeCsv = (str) => `"${(str || '').toString().replace(/"/g, '""')}"`;
+          const sizesStr = (p.bottleSizes || []).map(s => `${s.size}:${s.price}`).join(', ');
+          return [
+            escapeCsv(p.name),
+            escapeCsv(p.category),
+            escapeCsv(p.type),
+            p.retailPrice,
+            p.mrp,
+            p.stock,
+            p.wholesaleMOQ,
+            escapeCsv(sizesStr),
+            escapeCsv(p.images?.[0] || ''),
+            escapeCsv(p.description || ''),
+            p.bestseller ? 'yes' : 'no',
+            p.newArrival ? 'yes' : 'no',
+            p.active !== false ? 'yes' : 'no'
+          ].join(',');
+        });
+
+        const csvContent = "\uFEFF" + headers + "\n" + rows.join("\n");
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `alameen_catalog_export_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        this.showToast(`Exported ${this.products.length} products to CSV!`, 'success');
+      }
+
+      handleCsvFileSelect(event) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const label = document.getElementById('selectedFileName');
+        if (label) label.textContent = `Selected: ${file.name} (${Math.round(file.size / 1024 * 10) / 10} KB)`;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const text = e.target.result;
+          this.processCsvString(text);
+        };
+        reader.onerror = () => {
+          this.showToast('Failed to read CSV file. Please check file permissions.', 'error');
+        };
+        reader.readAsText(file);
+      }
+
+      handleCsvTextInput() {
+        const textarea = document.getElementById('csvPasteTextarea');
+        if (!textarea) return;
+        this.processCsvString(textarea.value);
+      }
+
+      processCsvString(csvText) {
+        if (!csvText || !csvText.trim()) {
+          this.parsedCsvProducts = [];
+          const preview = document.getElementById('csvPreviewSection');
+          if (preview) preview.style.display = 'none';
+          const btn = document.getElementById('btnExecuteCsvImport');
+          if (btn) {
+            btn.disabled = true;
+            btn.style.opacity = '0.6';
+            btn.style.cursor = 'not-allowed';
+          }
+          return;
+        }
+
+        try {
+          this.parsedCsvProducts = this.parseCsvData(csvText);
+          this.renderCsvPreview();
+        } catch (err) {
+          console.error('[CSV Parse Error]', err);
+          this.showToast(`Error parsing CSV: ${err.message}`, 'error');
+        }
+      }
+
+      parseCsvData(text) {
+        // Robust CSV parser supporting quotes, commas, escapes, CRLF/LF
+        const lines = [];
+        let row = [""];
+        let inQuotes = false;
+
+        for (let i = 0; i < text.length; i++) {
+          const c = text[i];
+          const next = text[i + 1];
+
+          if (c === '"') {
+            if (inQuotes && next === '"') {
+              row[row.length - 1] += '"';
+              i++;
+            } else {
+              inQuotes = !inQuotes;
+            }
+          } else if (c === ',' && !inQuotes) {
+            row.push("");
+          } else if ((c === '\r' || c === '\n') && !inQuotes) {
+            if (c === '\r' && next === '\n') i++;
+            lines.push(row);
+            row = [""];
+          } else {
+            row[row.length - 1] += c;
+          }
+        }
+        if (row.length > 1 || (row.length === 1 && row[0].trim() !== '')) {
+          lines.push(row);
+        }
+
+        if (lines.length < 2) return [];
+
+        // Clean headers: remove spaces, lowercase, alphanumeric only
+        const headers = lines[0].map(h => h.trim().toLowerCase().replace(/[^a-z0-9]/g, ''));
+        const parsedProducts = [];
+
+        for (let r = 1; r < lines.length; r++) {
+          const values = lines[r];
+          if (values.length === 0 || (values.length === 1 && values[0].trim() === '')) continue;
+
+          const rowObj = {};
+          headers.forEach((h, idx) => {
+            rowObj[h] = (values[idx] || '').trim();
+          });
+
+          const name = rowObj.name || rowObj.productname || rowObj.title || rowObj.perfumename || '';
+          if (!name) continue;
+
+          const category = rowObj.category || rowObj.fragrancefamily || 'Luxury';
+          let type = rowObj.type || rowObj.formulation || 'Attar';
+          const typeLower = type.toLowerCase();
+          if (typeLower.includes('spray') || typeLower.includes('edp') || typeLower.includes('eau')) {
+            type = 'Eau de Parfum';
+          } else if (typeLower.includes('attar') || typeLower.includes('oil') || typeLower.includes('pure')) {
+            type = 'Pure Concentrated Oil';
+          }
+
+          const priceRaw = (rowObj.retailprice || rowObj.price || rowObj.rate || '').replace(/[^\d.]/g, '');
+          const retailPrice = parseFloat(priceRaw) || 0;
+
+          const mrpRaw = (rowObj.mrp || rowObj.mrpprice || rowObj.marketprice || '').replace(/[^\d.]/g, '');
+          const mrp = parseFloat(mrpRaw) || Math.round(retailPrice * 1.4);
+
+          const stockRaw = (rowObj.stock || rowObj.inventory || rowObj.units || '').replace(/[^\d]/g, '');
+          const stock = stockRaw ? parseInt(stockRaw, 10) : 25;
+
+          const moqRaw = (rowObj.wholesalemoq || rowObj.moq || rowObj.minorder || '').replace(/[^\d]/g, '');
+          const wholesaleMOQ = moqRaw ? parseInt(moqRaw, 10) : (this.settings.wholesale_default_moq || 6);
+          const wholesalePrice = Math.round(retailPrice * 0.6);
+
+          // Build bottle sizes (use explicit or auto-generate with configured attar_sizes / spray_sizes)
+          const rawSizesStr = rowObj.bottlesizes || rowObj.sizes || rowObj.size || '';
+          let bottleSizes = [];
+          let primarySize = '12ml';
+
+          if (rawSizesStr && rawSizesStr.includes(':')) {
+            const parts = rawSizesStr.split(',').map(s => s.trim()).filter(Boolean);
+            bottleSizes = parts.map(p => {
+              const segs = p.split(':').map(s => s.trim());
+              const sz = segs[0];
+              const pr = parseInt(segs[1], 10) || retailPrice;
+              const mr = segs[2] ? parseInt(segs[2], 10) : Math.round(pr * 1.4);
+              return { size: sz, price: pr, mrp: mr, label: `${sz} Flacon` };
+            });
+            primarySize = bottleSizes[bottleSizes.length - 1]?.size || '12ml';
+          } else {
+            if (type === 'Pure Concentrated Oil' || typeLower.includes('attar') || typeLower.includes('oil')) {
+              const sizesList = (this.settings.attar_sizes && this.settings.attar_sizes.length > 0)
+                ? this.settings.attar_sizes
+                : ['3ml', '6ml', '12ml'];
+              const parsed = sizesList.map(s => ({ size: s, ml: parseFloat(s) || 12 }));
+              const maxMl = Math.max(...parsed.map(p => p.ml));
+
+              bottleSizes = sizesList.map(sz => {
+                const ml = parseFloat(sz) || 12;
+                const defaultPrice = (ml === maxMl) ? retailPrice : Math.max(149, Math.round((retailPrice * Math.pow(ml / maxMl, 0.75)) / 10) * 10 - 1);
+                const defaultMrp = (ml === maxMl) ? mrp : Math.round(defaultPrice * 1.4);
+                return {
+                  size: sz,
+                  price: defaultPrice,
+                  mrp: defaultMrp,
+                  label: `${sz} Flacon (${sz === '3ml' ? 'Pocket Edition' : sz === '12ml' ? 'Royal Flacon' : 'Standard Edition'})`
+                };
+              });
+              primarySize = sizesList[sizesList.length - 1] || '12ml';
+            } else {
+              const sizesList = (this.settings.spray_sizes && this.settings.spray_sizes.length > 0)
+                ? this.settings.spray_sizes
+                : ['50ml', '100ml'];
+              const parsed = sizesList.map(s => ({ size: s, ml: parseFloat(s) || 100 }));
+              const maxMl = Math.max(...parsed.map(p => p.ml));
+
+              bottleSizes = sizesList.map(sz => {
+                const ml = parseFloat(sz) || 100;
+                const defaultPrice = (ml === maxMl) ? retailPrice : Math.max(499, Math.round((retailPrice * Math.pow(ml / maxMl, 0.75)) / 50) * 50 - 1);
+                const defaultMrp = Math.round(defaultPrice * 1.35);
+                return {
+                  size: sz,
+                  price: defaultPrice,
+                  mrp: defaultMrp,
+                  label: `${sz} Spray (${sz === '100ml' ? 'Luxury Vaporisateur' : 'Spray Flacon'})`
+                };
+              });
+              primarySize = sizesList[sizesList.length - 1] || '100ml';
+            }
+          }
+
+          // Match existing product ID by name if already in database (smart upsert)
+          const existingProd = (this.products || []).find(p => p.name.trim().toLowerCase() === name.trim().toLowerCase());
+          const targetId = existingProd ? existingProd.id : (rowObj.id || `p${Date.now()}_${r}_${Math.random().toString(36).substring(2, 6)}`);
+
+          const img = rowObj.imageurl || rowObj.image || rowObj.photo || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80';
+          const description = rowObj.description || rowObj.desc || 'Royal fragrance formulation.';
+          const bestseller = ['true', 'yes', '1', 'y'].includes((rowObj.bestseller || rowObj.featured || '').toLowerCase());
+          const newArrival = ['true', 'yes', '1', 'y'].includes((rowObj.newarrival || '').toLowerCase());
+          const active = !['false', 'no', '0', 'inactive'].includes((rowObj.active || rowObj.instock || '').toLowerCase());
+
+          const isPriceValid = retailPrice > 0;
+
+          parsedProducts.push({
+            id: targetId,
+            name: name,
+            category: category,
+            type: type,
+            size: primarySize,
+            bottleSizes: bottleSizes,
+            retailPrice: retailPrice,
+            mrp: mrp,
+            stock: stock,
+            wholesaleMOQ: wholesaleMOQ,
+            wholesalePrice: wholesalePrice,
+            wholesaleTiers: [{ min: wholesaleMOQ, max: 9999, price: wholesalePrice }],
+            notes: { top: '', heart: '', base: '' },
+            images: [img],
+            description: description,
+            rating: 4.9,
+            reviews: 35,
+            bestseller: bestseller,
+            newArrival: newArrival,
+            active: active,
+            _isExisting: !!existingProd,
+            _isValid: isPriceValid,
+            _error: isPriceValid ? null : 'Missing or invalid Retail Price'
+          });
+        }
+
+        return parsedProducts;
+      }
+
+      renderCsvPreview() {
+        const previewSection = document.getElementById('csvPreviewSection');
+        const tbody = document.getElementById('csvPreviewTableBody');
+        const countBadge = document.getElementById('csvParsedCountBadge');
+        const validationSummary = document.getElementById('csvValidationSummary');
+        const btnExecute = document.getElementById('btnExecuteCsvImport');
+        const btnText = document.getElementById('btnExecuteCsvImportText');
+
+        if (!previewSection || !tbody) return;
+
+        const total = this.parsedCsvProducts.length;
+        if (total === 0) {
+          previewSection.style.display = 'none';
+          if (btnExecute) {
+            btnExecute.disabled = true;
+            btnExecute.style.opacity = '0.6';
+            btnExecute.style.cursor = 'not-allowed';
+          }
+          return;
+        }
+
+        previewSection.style.display = 'block';
+        const validCount = this.parsedCsvProducts.filter(p => p._isValid).length;
+        const invalidCount = total - validCount;
+
+        if (countBadge) countBadge.textContent = `${total} product${total === 1 ? '' : 's'} parsed`;
+
+        if (validationSummary) {
+          if (invalidCount === 0) {
+            validationSummary.innerHTML = `<span style="color:#057A55;">✓ All ${validCount} products valid & ready</span>`;
+          } else {
+            validationSummary.innerHTML = `<span style="color:#E02424;">⚠ ${invalidCount} item(s) have invalid prices</span>`;
+          }
+        }
+
+        tbody.innerHTML = this.parsedCsvProducts.map(p => {
+          const sizesPreview = (p.bottleSizes || []).map(s => `${s.size}: ₹${s.price}`).join(', ');
+          return `
+            <tr style="border-bottom:1px solid var(--border-light); ${p._isValid ? '' : 'background:#FEF2F2;'}">
+              <td style="padding:8px 10px;">
+                ${p._isValid 
+                  ? (p._isExisting 
+                    ? `<span style="background:#E1EFFE; color:#1E429F; padding:2px 8px; border-radius:10px; font-weight:700; font-size:0.72rem;">Updates Existing</span>`
+                    : `<span style="background:#DEF7EC; color:#03543F; padding:2px 8px; border-radius:10px; font-weight:700; font-size:0.72rem;">✓ New</span>`)
+                  : `<span style="background:#FDE8E8; color:#9B1C1C; padding:2px 8px; border-radius:10px; font-weight:700; font-size:0.72rem;" title="${p._error}">⚠ Invalid Price</span>`}
+              </td>
+              <td style="padding:8px 10px; font-weight:700; color:var(--green-950);">${p.name}</td>
+              <td style="padding:8px 10px;">${p.category}</td>
+              <td style="padding:8px 10px; font-size:0.75rem;">${p.type}</td>
+              <td style="padding:8px 10px; font-weight:700; color:var(--green-900);">₹${p.retailPrice.toLocaleString('en-IN')} <span style="font-size:0.72rem; color:var(--text-light); text-decoration:line-through;">₹${p.mrp}</span></td>
+              <td style="padding:8px 10px; font-size:0.75rem; color:var(--text-muted);">${sizesPreview}</td>
+              <td style="padding:8px 10px; font-size:0.76rem;">Stock: ${p.stock} | MOQ: ${p.wholesaleMOQ}</td>
+            </tr>
+          `;
+        }).join('');
+
+        if (btnExecute) {
+          if (validCount > 0) {
+            btnExecute.disabled = false;
+            btnExecute.style.opacity = '1';
+            btnExecute.style.cursor = 'pointer';
+            if (btnText) btnText.textContent = `Import ${validCount} Product${validCount === 1 ? '' : 's'} to Supabase`;
+          } else {
+            btnExecute.disabled = true;
+            btnExecute.style.opacity = '0.6';
+            btnExecute.style.cursor = 'not-allowed';
+            if (btnText) btnText.textContent = 'Import to Supabase Database';
+          }
+        }
+      }
+
+      clearCsvImport() {
+        this.parsedCsvProducts = [];
+        const fileInput = document.getElementById('csvFileInput');
+        if (fileInput) fileInput.value = '';
+        const fileName = document.getElementById('selectedFileName');
+        if (fileName) fileName.textContent = '';
+        const textarea = document.getElementById('csvPasteTextarea');
+        if (textarea) textarea.value = '';
+        const preview = document.getElementById('csvPreviewSection');
+        if (preview) preview.style.display = 'none';
+        const btn = document.getElementById('btnExecuteCsvImport');
+        if (btn) {
+          btn.disabled = true;
+          btn.style.opacity = '0.6';
+          btn.style.cursor = 'not-allowed';
+          const btnText = document.getElementById('btnExecuteCsvImportText');
+          if (btnText) btnText.textContent = 'Import to Supabase Database';
+        }
+      }
+
+      async executeCsvImport() {
+        const validProds = this.parsedCsvProducts.filter(p => p._isValid);
+        if (validProds.length === 0) {
+          this.showToast('No valid products to import.', 'error');
+          return;
+        }
+
+        const btn = document.getElementById('btnExecuteCsvImport');
+        const btnText = document.getElementById('btnExecuteCsvImportText');
+        const origText = btnText ? btnText.textContent : 'Import to Supabase';
+
+        if (btn) btn.disabled = true;
+        if (btnText) btnText.textContent = `Saving ${validProds.length} products to Supabase...`;
+
+        try {
+          const savedProducts = await dbBatchCreateProducts(validProds);
+
+          // Update local catalog state
+          savedProducts.forEach(saved => {
+            const idx = this.products.findIndex(p => p.id === saved.id || p.name.toLowerCase() === saved.name.toLowerCase());
+            if (idx > -1) {
+              this.products[idx] = saved;
+            } else {
+              this.products.unshift(saved);
+            }
+          });
+
+          this.showToast(`🎉 Successfully imported ${savedProducts.length} products directly to Supabase!`, 'success');
+          this.closeCsvImportModal();
+          this.renderCatalog();
+          this.renderOverview();
+          this.updateBadges();
+        } catch (err) {
+          console.error('[CSV Import Error]', err);
+          this.showToast(`Import failed: ${err.message}`, 'error');
+        } finally {
+          if (btn) btn.disabled = false;
+          if (btnText) btnText.textContent = origText;
         }
       }
 

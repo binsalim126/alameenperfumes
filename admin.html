@@ -711,11 +711,6 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
     }
-    .tiers-input-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
     .btn-type-toggle {
       flex: 1 1 auto;
       min-height: 44px;
@@ -1479,10 +1474,6 @@
         grid-template-columns: 1fr !important;
         gap: 12px !important;
       }
-      .tiers-input-grid {
-        grid-template-columns: 1fr !important;
-        gap: 10px !important;
-      }
       .btn-type-toggle {
         min-height: 44px !important;
         width: 100% !important;
@@ -1496,14 +1487,6 @@
       }
       .btn-action-gold, .btn-action-secondary {
         min-height: 44px !important;
-      }
-      .tier-action-btn-group {
-        flex-direction: column !important;
-        width: 100% !important;
-      }
-      .tier-action-btn-group button {
-        width: 100% !important;
-        justify-content: center !important;
       }
     }
 
@@ -2006,7 +1989,7 @@
           <div class="section-header-wrap">
             <div>
               <h1 class="page-title">Product Catalog</h1>
-              <p class="header-subtext">Manage formulas, retail/wholesale tiers, and real-time inventory</p>
+              <p class="header-subtext">Manage formulas, retail pricing, wholesale MOQ, and real-time inventory</p>
             </div>
             <div style="display:flex; gap:10px; align-items:center;">
               <button type="button" class="btn-action-secondary" onclick="adminApp.seedFlagshipPerfumes()" title="Populate 4 Authentic Al-Ameen Flagship Scents into Supabase">
@@ -2064,7 +2047,7 @@
                   <th>Product</th>
                   <th>Category / Size</th>
                   <th>Retail Price</th>
-                  <th>Wholesale MOQ & Tiers</th>
+                  <th>Wholesale MOQ</th>
                   <th>Stock Inventory</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -2354,6 +2337,12 @@
                   <input type="number" id="settingLowStockThreshold" class="form-input" value="10">
                 </div>
               </div>
+
+              <div class="form-group">
+                <label class="form-label">Wholesale Minimum Order Quantity (MOQ) (pcs)</label>
+                <input type="number" id="settingTierMoq" class="form-input" value="6" min="1">
+                <span style="font-size:0.72rem; color:var(--text-light);">Default minimum bottles customer must purchase to unlock wholesale rate</span>
+              </div>
             </div>
 
             <!-- Security & Backup -->
@@ -2400,37 +2389,6 @@
                       🗑️ Clear All Demo Customers & Orders
                     </button>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Wholesale Minimum Quantity & Pricing Parameters (Simplified MOQ Settings) -->
-            <div class="chart-panel" style="grid-column: 1 / -1; margin-top: 10px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
-                <div>
-                  <h3 class="chart-title">Wholesale Minimum Quantity (MOQ) & Pricing</h3>
-                  <p style="font-size:0.82rem; color:var(--text-light); margin-top:2px;">Configure default minimum order quantity and wholesale discount applied when MOQ is reached</p>
-                </div>
-                <div class="tier-action-btn-group" style="display:flex; gap:10px; flex-wrap:wrap;">
-                  <button type="button" class="btn-action-secondary" onclick="adminApp.applyWholesaleTiersToAllProducts()" style="font-size:0.84rem; padding:10px 16px; min-height:44px; display:inline-flex; align-items:center; justify-content:center;">
-                    ⚡ Apply MOQ & Rates to All Products
-                  </button>
-                  <button type="button" class="btn-action-gold" onclick="adminApp.saveWholesaleTierSettings()" style="font-size:0.84rem; padding:10px 18px; min-height:44px; display:inline-flex; align-items:center; justify-content:center;">
-                    💾 Save Wholesale Settings
-                  </button>
-                </div>
-              </div>
-
-              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:16px;">
-                <div class="form-group">
-                  <label class="form-label">Default Minimum Order Quantity (pcs) *</label>
-                  <input type="number" id="settingTierMoq" class="form-input" value="6" min="1">
-                  <span style="font-size:0.72rem; color:var(--text-light);">Minimum bottles customer must purchase to unlock wholesale rates</span>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Default Wholesale Discount (% Off Retail) *</label>
-                  <input type="number" id="settingDefaultWholesaleDiscount" class="form-input" value="40" min="5" max="85">
-                  <span style="font-size:0.72rem; color:var(--text-light);">Standard B2B discount rate (e.g. 40% off retail)</span>
                 </div>
               </div>
             </div>
@@ -2626,34 +2584,15 @@
             <input type="number" id="pStock" class="form-input" required placeholder="25" value="25">
           </div>
           <div class="form-group">
-            <label class="form-label">MOQ *</label>
-            <input type="number" id="pMoq" class="form-input" required placeholder="6" value="6" oninput="adminApp.autoFillTiersFromRetail()">
+            <label class="form-label">Wholesale MOQ (pcs) *</label>
+            <input type="number" id="pMoq" class="form-input" required placeholder="6" value="6" min="1">
+            <span style="font-size:0.72rem; color:var(--text-light);">Min units for wholesale</span>
           </div>
         </div>
 
         <!-- Dynamic Bottle Sizes Pricing Configuration Table -->
         <div id="bottleSizesConfigBox" style="background:var(--green-50); border:1.5px solid var(--gold-500); padding:14px; border-radius:12px; margin-bottom:16px;">
           <!-- Dynamically populated via adminApp.renderProductSizeInputs() -->
-        </div>
-
-        <!-- Wholesale Pricing & MOQ Parameters -->
-        <div style="background:var(--green-50); border:1.5px solid var(--gold-500); padding:14px; border-radius:12px; margin-bottom:16px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-            <span style="font-size:0.75rem; font-weight:800; color:var(--gold-500); text-transform:uppercase;">Wholesale Pricing & MOQ:</span>
-            <button type="button" class="btn-action-secondary" style="padding:4px 12px; font-size:0.74rem; min-height:32px;" onclick="adminApp.autoFillWholesaleFromRetail()">Auto-Fill (40% Off)</button>
-          </div>
-          <div class="product-form-grid-2">
-            <div>
-              <label class="form-label">Wholesale Unit Price (₹) *</label>
-              <input type="number" id="pWholesalePrice" class="form-input" placeholder="600" required>
-              <span style="font-size:0.72rem; color:var(--text-light);">Flat rate applied when customer buys MOQ or above</span>
-            </div>
-            <div>
-              <label class="form-label">Wholesale Minimum Qty (MOQ) *</label>
-              <input type="number" id="pMoqDisplay" class="form-input" placeholder="6" value="6" oninput="document.getElementById('pMoq').value = this.value">
-              <span style="font-size:0.72rem; color:var(--text-light);">Minimum units required for wholesale</span>
-            </div>
-          </div>
         </div>
 
         <div class="form-group">
@@ -4020,20 +3959,6 @@
           if (p50 && !p50.value) p50.value = calc50;
           if (mrp50 && !mrp50.value) mrp50.value = Math.round(calc50 * 1.35);
         }
-
-        this.autoFillTiersFromRetail();
-      }
-
-      autoFillWholesaleFromRetail() {
-        const retail = parseInt(document.getElementById('pRetailPrice')?.value, 10);
-        if (!retail) return;
-        const discount = this.settings.wholesale_default_discount || this.settings.wholesale_tier1_discount || 40;
-        const wsInput = document.getElementById('pWholesalePrice');
-        if (wsInput) wsInput.value = Math.round(retail * (1 - discount / 100));
-      }
-
-      autoFillTiersFromRetail() {
-        this.autoFillWholesaleFromRetail();
       }
 
       openProductModal(productId = null) {
@@ -4065,12 +3990,6 @@
           this.setProductFormType(detectedType);
           this.renderProductSizeInputs(detectedType, p.bottleSizes || getProductSizes(p));
 
-          const wsPrice = p.wholesalePrice || (p.wholesaleTiers && p.wholesaleTiers[0]?.price) || Math.round(p.retailPrice * 0.6);
-          const wsInput = document.getElementById('pWholesalePrice');
-          if (wsInput) wsInput.value = wsPrice;
-          const moqDisplay = document.getElementById('pMoqDisplay');
-          if (moqDisplay) moqDisplay.value = p.wholesaleMOQ || 6;
-
           document.getElementById('pImage').value = p.images?.[0] || '';
           document.getElementById('pDesc').value = p.description || '';
 
@@ -4089,11 +4008,7 @@
           document.getElementById('pRetailPrice').value = '';
           document.getElementById('pMrp').value = '';
           document.getElementById('pStock').value = '25';
-          document.getElementById('pMoq').value = '6';
-          const wsInput = document.getElementById('pWholesalePrice');
-          if (wsInput) wsInput.value = '';
-          const moqDisplay = document.getElementById('pMoqDisplay');
-          if (moqDisplay) moqDisplay.value = '6';
+          document.getElementById('pMoq').value = this.settings.wholesale_default_moq || '6';
           document.getElementById('pImage').value = '';
           document.getElementById('pDesc').value = '';
           document.getElementById('pBestseller').checked = true;
@@ -4121,8 +4036,8 @@
         const retail = parseInt(document.getElementById('pRetailPrice').value, 10) || 999;
         const mrp = parseInt(document.getElementById('pMrp').value, 10) || Math.round(retail * 1.4);
         const stock = parseInt(document.getElementById('pStock').value, 10) || 20;
-        const moq = parseInt(document.getElementById('pMoq')?.value, 10) || parseInt(document.getElementById('pMoqDisplay')?.value, 10) || 6;
-        const wholesalePrice = parseInt(document.getElementById('pWholesalePrice')?.value, 10) || Math.round(retail * 0.6);
+        const moq = parseInt(document.getElementById('pMoq')?.value, 10) || 6;
+        const wholesalePrice = Math.round(retail * 0.6);
 
         // Construct bottle sizes from inputs
         const type = this.currentProductFormType || 'attar';
@@ -4533,98 +4448,8 @@
         if (phone) phone.value = this.settings.whatsapp_number || CONFIG.WHATSAPP_NUMBER;
         if (ship) ship.value = this.settings.free_shipping_min || CONFIG.FREE_SHIPPING_MIN;
         if (low) low.value = this.settings.low_stock_threshold || CONFIG.LOW_STOCK_THRESHOLD;
-
-        // Wholesale Tiers in Settings
         const tierMoq = document.getElementById('settingTierMoq');
-        const tier1 = document.getElementById('settingTier1Discount');
-        const tier2 = document.getElementById('settingTier2Discount');
-        const tier3 = document.getElementById('settingTier3Discount');
-        if (tierMoq) tierMoq.value = this.settings.wholesale_tier1_min || 6;
-        if (tier1) tier1.value = this.settings.wholesale_tier1_discount || 40;
-        if (tier2) tier2.value = this.settings.wholesale_tier2_discount || 48;
-        if (tier3) tier3.value = this.settings.wholesale_tier3_discount || 55;
-
-        this.updateTierSimulator();
-      }
-
-      updateTierSimulator() {
-        const moq = parseInt(document.getElementById('settingTierMoq')?.value, 10) || 6;
-        const d1 = parseInt(document.getElementById('settingTier1Discount')?.value, 10) || 40;
-        const d2 = parseInt(document.getElementById('settingTier2Discount')?.value, 10) || 48;
-        const d3 = parseInt(document.getElementById('settingTier3Discount')?.value, 10) || 55;
-        const samplePrice = parseInt(document.getElementById('tierSimSamplePrice')?.value, 10) || 1499;
-
-        const t1Desc = document.getElementById('tier1DescLabel');
-        const t2Desc = document.getElementById('tier2DescLabel');
-        const t3Desc = document.getElementById('tier3DescLabel');
-        if (t1Desc) t1Desc.textContent = `${moq}–${moq * 2 - 1} pcs: ${d1}% off retail`;
-        if (t2Desc) t2Desc.textContent = `${moq * 2}–${moq * 4 - 1} pcs: ${d2}% off retail`;
-        if (t3Desc) t3Desc.textContent = `${moq * 4}+ pcs: ${d3}% off retail`;
-
-        const p1 = Math.round(samplePrice * (1 - d1 / 100));
-        const p2 = Math.round(samplePrice * (1 - d2 / 100));
-        const p3 = Math.round(samplePrice * (1 - d3 / 100));
-
-        const simBox = document.getElementById('tierSimulatorResultGrid');
-        if (simBox) {
-          simBox.innerHTML = `
-            <div style="background:#FFFFFF; border:1px solid var(--border); padding:10px 14px; border-radius:8px;">
-              <div style="font-size:0.75rem; color:var(--text-light); font-weight:700;">Tier 1 (${moq}–${moq * 2 - 1} units)</div>
-              <div style="font-size:1.15rem; font-weight:800; color:var(--green-900); margin-top:2px;">₹${p1.toLocaleString('en-IN')} / unit</div>
-              <div style="font-size:0.72rem; color:var(--green-600); font-weight:600;">Save ${d1}% (₹${(samplePrice - p1).toLocaleString('en-IN')})</div>
-            </div>
-            <div style="background:#FFFFFF; border:1px solid var(--border); padding:10px 14px; border-radius:8px;">
-              <div style="font-size:0.75rem; color:var(--text-light); font-weight:700;">Tier 2 (${moq * 2}–${moq * 4 - 1} units)</div>
-              <div style="font-size:1.15rem; font-weight:800; color:var(--green-900); margin-top:2px;">₹${p2.toLocaleString('en-IN')} / unit</div>
-              <div style="font-size:0.72rem; color:var(--green-600); font-weight:600;">Save ${d2}% (₹${(samplePrice - p2).toLocaleString('en-IN')})</div>
-            </div>
-            <div style="background:#FFFFFF; border:1px solid var(--border); padding:10px 14px; border-radius:8px;">
-              <div style="font-size:0.75rem; color:var(--text-light); font-weight:700;">Tier 3 (${moq * 4}+ units)</div>
-              <div style="font-size:1.15rem; font-weight:800; color:var(--gold-500); margin-top:2px;">₹${p3.toLocaleString('en-IN')} / unit</div>
-              <div style="font-size:0.72rem; color:var(--green-600); font-weight:600;">Save ${d3}% (₹${(samplePrice - p3).toLocaleString('en-IN')})</div>
-            </div>
-          `;
-        }
-      }
-
-      async saveWholesaleTierSettings() {
-        this.settings.wholesale_default_moq = parseInt(document.getElementById('settingTierMoq')?.value, 10) || 6;
-        this.settings.wholesale_default_discount = parseInt(document.getElementById('settingTier1Discount')?.value, 10) || 40;
-
-        try {
-          await dbSaveSettings(this.settings);
-          this.showToast('Wholesale MOQ & Pricing parameters saved to Supabase database!', 'success');
-        } catch (err) {
-          console.error('[Save Wholesale Parameters Error]', err);
-          this.showToast(`Failed to save wholesale parameters: ${err.message}`, 'error');
-        }
-      }
-
-      async applyWholesaleTiersToAllProducts() {
-        if (!confirm('Apply wholesale MOQ and flat discount rate to ALL products in the Supabase catalog?')) return;
-
-        const moq = parseInt(document.getElementById('settingTierMoq')?.value, 10) || 6;
-        const discountPct = parseInt(document.getElementById('settingTier1Discount')?.value, 10) || 40;
-
-        let updatedCount = 0;
-        try {
-          for (const prod of this.products) {
-            prod.wholesaleMOQ = moq;
-            const retail = Number(prod.retailPrice) || 999;
-            prod.wholesalePrice = Math.round(retail * (1 - discountPct / 100));
-            prod.wholesaleTiers = [
-              { min: moq, max: 9999, price: prod.wholesalePrice }
-            ];
-            await dbUpdateProduct(prod);
-            updatedCount++;
-          }
-
-          this.renderCatalog();
-          this.showToast(`Successfully updated wholesale pricing for all ${updatedCount} catalog products in Supabase!`, 'success');
-        } catch (err) {
-          console.error('[Apply Wholesale Pricing Error]', err);
-          this.showToast(`Error updating catalog products: ${err.message}`, 'error');
-        }
+        if (tierMoq) tierMoq.value = this.settings.wholesale_default_moq || this.settings.wholesale_tier1_min || 6;
       }
 
       async saveGeneralSettings() {
@@ -4633,6 +4458,8 @@
         this.settings.whatsapp_number = document.getElementById('settingWhatsAppNumber')?.value || CONFIG.WHATSAPP_NUMBER;
         this.settings.free_shipping_min = parseInt(document.getElementById('settingFreeShipping')?.value, 10) || 999;
         this.settings.low_stock_threshold = parseInt(document.getElementById('settingLowStockThreshold')?.value, 10) || 10;
+        this.settings.wholesale_default_moq = parseInt(document.getElementById('settingTierMoq')?.value, 10) || 6;
+        this.settings.wholesale_tier1_min = this.settings.wholesale_default_moq;
 
         try {
           await dbSaveSettings(this.settings);

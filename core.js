@@ -235,20 +235,58 @@ if (typeof window.hasBottleSizesColumn === 'undefined') {
   window.hasBottleSizesColumn = false;
 }
 
-// Dynamic bottle size generation based on product category, concentration & admin configured settings
-function getProductSizes(product, customSettings = null) {
+// Dynamic bottle size generation based on product category, concentration, mode & admin configured settings
+function getProductSizes(product, customSettings = null, mode = 'retail') {
   if (!product) return [];
-  if (Array.isArray(product.bottleSizes) && product.bottleSizes.length > 0) {
-    return product.bottleSizes;
-  }
-  if (Array.isArray(product.bottle_sizes) && product.bottle_sizes.length > 0) {
-    return product.bottle_sizes;
-  }
 
   const settings = customSettings || window.currentSettings || DEFAULT_SETTINGS;
-  const basePrice = Number(product.retailPrice || product.retail_price) || 999;
-  const baseMrp = Number(product.mrp) || Math.round(basePrice * 1.4);
   const typeStr = ((product.type || '') + ' ' + (product.category || '')).toLowerCase();
+
+  // WHOLESALE MODE: Permanently 50ml, 100ml, 500ml
+  if (mode === 'wholesale') {
+    if (Array.isArray(product.wholesaleSizes) && product.wholesaleSizes.length > 0) {
+      return product.wholesaleSizes;
+    }
+    if (Array.isArray(product.wholesale_sizes) && product.wholesale_sizes.length > 0) {
+      return product.wholesale_sizes;
+    }
+    if (product.notes && Array.isArray(product.notes.wholesale_sizes) && product.notes.wholesale_sizes.length > 0) {
+      return product.notes.wholesale_sizes;
+    }
+
+    // Default wholesale sizes: 50ml (base), 100ml, 500ml
+    const baseRetail = Number(product.retailPrice || product.retail_price) || 499;
+    const base50 = Number(product.wholesalePrice || product.wholesale_price) 
+      || (product.wholesaleTiers && product.wholesaleTiers[0]?.price) 
+      || Math.max(599, Math.round(baseRetail * 2.2));
+    const p100 = Math.max(999, Math.round((base50 * 1.85) / 50) * 50 - 1);
+    const p500 = Math.max(3999, Math.round((base50 * 7.8) / 100) * 100 - 1);
+
+    return [
+      { size: '50ml', price: base50, mrp: Math.round(base50 * 1.35), label: '50ml Wholesale Flacon' },
+      { size: '100ml', price: p100, mrp: Math.round(p100 * 1.35), label: '100ml Wholesale Flacon' },
+      { size: '500ml', price: p500, mrp: Math.round(p500 * 1.35), label: '500ml Bulk Wholesale Flacon' }
+    ];
+  }
+
+  // RETAIL MODE: 3ml, 6ml, 12ml for Attar / Concentrated Oil; 50ml, 100ml for Spray
+  let retailList = null;
+  if (Array.isArray(product.bottleSizes) && product.bottleSizes.length > 0) {
+    retailList = product.bottleSizes;
+  } else if (Array.isArray(product.bottle_sizes) && product.bottle_sizes.length > 0) {
+    retailList = product.bottle_sizes;
+  } else if (product.notes && Array.isArray(product.notes.bottle_sizes) && product.notes.bottle_sizes.length > 0) {
+    retailList = product.notes.bottle_sizes;
+  }
+
+  if (retailList && retailList.length > 0) {
+    // If retail list contains 500ml (erroneously mixed from wholesale), filter it out
+    const cleanRetail = retailList.filter(s => s.size !== '500ml');
+    if (cleanRetail.length > 0) return cleanRetail;
+  }
+
+  const basePrice = Number(product.retailPrice || product.retail_price) || 499;
+  const baseMrp = Number(product.mrp) || Math.round(basePrice * 1.4);
 
   const attarSizes = (settings && Array.isArray(settings.attar_sizes) && settings.attar_sizes.length > 0)
     ? settings.attar_sizes
@@ -258,14 +296,13 @@ function getProductSizes(product, customSettings = null) {
     ? settings.spray_sizes
     : ['50ml', '100ml'];
 
-  // Attar / Concentrated Oil: configured ml sizes
-  if (typeStr.includes('attar') || typeStr.includes('oil') || typeStr.includes('concentrated') || typeStr.includes('pure') || (product.size && product.size.toLowerCase().includes('12ml')) || !typeStr.includes('spray')) {
-    const parsed = attarSizes.map(s => ({ size: s, ml: parseFloat(s) || 12 }));
-    const maxMl = Math.max(...parsed.map(p => p.ml));
+  // Attar / Concentrated Oil: configured ml sizes (starts with 3ml base)
+  if (typeStr.includes('attar') || typeStr.includes('oil') || typeStr.includes('concentrated') || typeStr.includes('pure') || (product.size && (product.size.toLowerCase().includes('3ml') || product.size.toLowerCase().includes('12ml'))) || !typeStr.includes('spray')) {
+    const minMl = parseFloat(attarSizes[0]) || 3;
 
     return attarSizes.map(sz => {
-      const ml = parseFloat(sz) || 12;
-      const price = (ml === maxMl) ? basePrice : Math.max(149, Math.round((basePrice * Math.pow(ml / maxMl, 0.75)) / 10) * 10 - 1);
+      const ml = parseFloat(sz) || 3;
+      const price = (ml === minMl) ? basePrice : Math.max(149, Math.round((basePrice * Math.pow(ml / minMl, 0.72)) / 10) * 10 - 1);
       const mrp = Math.round(price * 1.4);
       const label = `${sz} Flacon (${sz === '3ml' ? 'Pocket Edition' : sz === '12ml' ? 'Royal Flacon' : 'Standard Edition'})`;
       return { size: sz, price: price, mrp: mrp, label: label };
@@ -274,12 +311,11 @@ function getProductSizes(product, customSettings = null) {
 
   // Spray / Eau de Parfum: configured ml sizes
   if (typeStr.includes('spray') || typeStr.includes('edp') || typeStr.includes('eau de parfum') || typeStr.includes('parfum')) {
-    const parsed = spraySizes.map(s => ({ size: s, ml: parseFloat(s) || 100 }));
-    const maxMl = Math.max(...parsed.map(p => p.ml));
+    const minMl = parseFloat(spraySizes[0]) || 50;
 
     return spraySizes.map(sz => {
-      const ml = parseFloat(sz) || 100;
-      const price = (ml === maxMl) ? basePrice : Math.max(499, Math.round((basePrice * Math.pow(ml / maxMl, 0.75)) / 50) * 50 - 1);
+      const ml = parseFloat(sz) || 50;
+      const price = (ml === minMl) ? basePrice : Math.max(499, Math.round((basePrice * Math.pow(ml / minMl, 0.75)) / 50) * 50 - 1);
       const mrp = Math.round(price * 1.35);
       const label = `${sz} Spray (${sz === '100ml' ? 'Luxury Vaporisateur' : 'Spray Flacon'})`;
       return { size: sz, price: price, mrp: mrp, label: label };
@@ -288,7 +324,7 @@ function getProductSizes(product, customSettings = null) {
 
   // Fallback
   return [
-    { size: product.size || 'Standard', price: basePrice, mrp: baseMrp, label: product.size || 'Standard Edition' }
+    { size: product.size || '3ml', price: basePrice, mrp: baseMrp, label: product.size || 'Standard Edition' }
   ];
 }
 
@@ -310,7 +346,7 @@ function calculateTiersFromRetail(retailPrice, tierSettings = null) {
 
 function formatProductFromRow(row) {
   if (!row) return null;
-  const rawSizes = (Array.isArray(row.bottle_sizes) && row.bottle_sizes.length > 0)
+  const rawRetailSizes = (Array.isArray(row.bottle_sizes) && row.bottle_sizes.length > 0)
     ? row.bottle_sizes
     : (row.notes && Array.isArray(row.notes.bottle_sizes) && row.notes.bottle_sizes.length > 0)
       ? row.notes.bottle_sizes
@@ -320,25 +356,42 @@ function formatProductFromRow(row) {
           size: row.size,
           retailPrice: Number(row.retail_price),
           mrp: Number(row.mrp)
-        });
+        }, null, 'retail');
+
+  const rawWholesaleSizes = (Array.isArray(row.wholesale_sizes) && row.wholesale_sizes.length > 0)
+    ? row.wholesale_sizes
+    : (row.notes && Array.isArray(row.notes.wholesale_sizes) && row.notes.wholesale_sizes.length > 0)
+      ? row.notes.wholesale_sizes
+      : getProductSizes({
+          type: row.type,
+          category: row.category,
+          size: row.size,
+          retailPrice: Number(row.retail_price),
+          wholesalePrice: Number(row.wholesale_price),
+          mrp: Number(row.mrp)
+        }, null, 'wholesale');
+
+  const baseRetail = (rawRetailSizes && rawRetailSizes[0]?.price) || Number(row.retail_price) || 0;
+  const baseWholesale = (rawWholesaleSizes && rawWholesaleSizes[0]?.price) || Number(row.wholesale_price) || Math.round(baseRetail * 2.2);
 
   return {
     id: row.id,
     name: row.name || 'Unnamed Perfume',
     category: row.category || 'Luxury',
-    type: row.type || 'Eau de Parfum',
-    size: row.size || (rawSizes[rawSizes.length - 1]?.size || '12ml'),
-    bottleSizes: rawSizes,
+    type: row.type || 'Pure Concentrated Oil',
+    size: row.size || (rawRetailSizes[0]?.size || '3ml'),
+    bottleSizes: rawRetailSizes,
+    wholesaleSizes: rawWholesaleSizes,
     rating: Number(row.rating) || 5.0,
     reviews: Number(row.reviews) || 0,
-    retailPrice: Number(row.retail_price) || 0,
-    mrp: Number(row.mrp) || Number(row.retail_price) || 0,
+    retailPrice: baseRetail,
+    mrp: Number(row.mrp) || (rawRetailSizes && rawRetailSizes[0]?.mrp) || Math.round(baseRetail * 1.4),
     stock: typeof row.stock === 'number' ? row.stock : (row.in_stock ? 20 : 0),
     wholesaleMOQ: Number(row.wholesale_moq) || 6,
-    wholesalePrice: Number(row.wholesale_price) || (Array.isArray(row.wholesale_tiers) && row.wholesale_tiers[0]?.price) || Math.round((Number(row.retail_price) || 0) * 0.60),
+    wholesalePrice: baseWholesale,
     wholesaleTiers: Array.isArray(row.wholesale_tiers) && row.wholesale_tiers.length > 0 
       ? row.wholesale_tiers 
-      : [{ min: Number(row.wholesale_moq) || 6, max: 9999, price: Math.round((Number(row.retail_price) || 0) * 0.60) }],
+      : [{ min: Number(row.wholesale_moq) || 6, max: 9999, price: baseWholesale }],
     notes: row.notes && typeof row.notes === 'object' ? row.notes : { top: '', heart: '', base: '' },
     description: row.description || '',
     images: (Array.isArray(row.images) && row.images.length > 0) ? row.images : ((typeof row.images === 'string' && row.images.trim()) ? [row.images.trim()] : ['https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80']),
@@ -351,29 +404,33 @@ function formatProductFromRow(row) {
 
 function formatProductToRow(product) {
   const retail = Number(product.retailPrice) || 0;
-  const sizes = Array.isArray(product.bottleSizes) && product.bottleSizes.length > 0 ? product.bottleSizes : getProductSizes(product);
+  const sizes = Array.isArray(product.bottleSizes) && product.bottleSizes.length > 0 ? product.bottleSizes : getProductSizes(product, null, 'retail');
+  const wholesaleSizes = Array.isArray(product.wholesaleSizes) && product.wholesaleSizes.length > 0 ? product.wholesaleSizes : getProductSizes(product, null, 'wholesale');
   
-  // Also preserve bottle_sizes inside notes JSON so sizes are always preserved even if the bottle_sizes column is not in Supabase yet
+  // Also preserve bottle_sizes and wholesale_sizes inside notes JSON so sizes are always preserved even if columns are not in Supabase
   const notesObj = (product.notes && typeof product.notes === 'object') ? { ...product.notes } : { top: '', heart: '', base: '' };
   notesObj.bottle_sizes = sizes;
+  notesObj.retail_sizes = sizes;
+  notesObj.wholesale_sizes = wholesaleSizes;
 
   const row = {
     id: product.id,
     name: product.name,
     category: product.category,
-    type: product.type || 'Eau de Parfum',
-    size: product.size || (sizes[sizes.length - 1]?.size || '12ml'),
+    type: product.type || 'Pure Concentrated Oil',
+    size: product.size || (sizes[0]?.size || '3ml'),
     rating: Number(product.rating) || 5.0,
     reviews: Number(product.reviews) || 0,
-    retail_price: retail,
-    mrp: Number(product.mrp) || Math.round(retail * 1.4),
+    retail_price: retail || (sizes[0]?.price) || 0,
+    mrp: Number(product.mrp) || (sizes[0]?.mrp) || Math.round((retail || 0) * 1.4),
     stock: typeof product.stock === 'number' ? product.stock : 20,
     wholesale_moq: Number(product.wholesaleMOQ) || 6,
+    wholesale_price: Number(product.wholesalePrice) || (wholesaleSizes[0]?.price) || Math.round(retail * 2.2),
     wholesale_tiers: [
       {
         min: Number(product.wholesaleMOQ) || 6,
         max: 9999,
-        price: Number(product.wholesalePrice) || Math.round(retail * 0.60)
+        price: Number(product.wholesalePrice) || (wholesaleSizes[0]?.price) || Math.round(retail * 2.2)
       }
     ],
     notes: notesObj,
@@ -913,70 +970,48 @@ function removeSupabaseRealtime(channel) {
 
 function calculateProductPrice(product, mode = 'retail', qty = 1, settings = null, selectedSize = null) {
   if (!settings) settings = DEFAULT_SETTINGS;
+  const isWholesale = (mode === 'wholesale');
+  const defaultFallbackSize = isWholesale ? '50ml' : '3ml';
+
   if (!product) {
-    return { unitPrice: 0, originalPrice: 0, mrp: 0, selectedSize: '12ml', isOffer: false, discountPercent: 0, totalPrice: 0 };
+    return { unitPrice: 0, originalPrice: 0, mrp: 0, selectedSize: defaultFallbackSize, isOffer: false, discountPercent: 0, totalPrice: 0 };
   }
 
-  // Resolve sizes
-  const sizes = getProductSizes(product);
+  // Resolve sizes for active mode (retail: 3ml, 6ml, 12ml; wholesale: 50ml, 100ml, 500ml)
+  const sizes = getProductSizes(product, settings, mode);
+  const resolvedDefaultSize = isWholesale ? '50ml' : (sizes[0]?.size || '3ml');
+
   let sizeObj = null;
   if (selectedSize && sizes.length > 0) {
     sizeObj = sizes.find(s => s.size === selectedSize || s.size.toLowerCase() === selectedSize.toLowerCase());
   }
   if (!sizeObj && sizes.length > 0) {
-    sizeObj = sizes.find(s => s.size === product.size) || sizes[sizes.length - 1];
+    sizeObj = sizes.find(s => s.size.toLowerCase() === resolvedDefaultSize.toLowerCase()) || sizes[0];
   }
 
-  const baseRetailPrice = sizeObj ? Number(sizeObj.price) : (Number(product.retailPrice) || 0);
-  const baseMrp = sizeObj ? Number(sizeObj.mrp) : (Number(product.mrp) || Math.round(baseRetailPrice * 1.4));
-  const activeSizeName = sizeObj ? sizeObj.size : (product.size || '12ml');
+  const activeSizeName = sizeObj ? sizeObj.size : resolvedDefaultSize;
+  const baseRate = sizeObj ? Number(sizeObj.price) : (isWholesale ? (Number(product.wholesalePrice) || 999) : (Number(product.retailPrice) || 499));
+  const baseMrp = sizeObj ? Number(sizeObj.mrp) : (Number(product.mrp) || Math.round(baseRate * 1.4));
 
   let isOfferActive = settings.offer_enabled && settings.offer_discount_percent > 0;
-  
   if (isOfferActive && settings.offer_applies_to) {
-    if (settings.offer_applies_to === 'retail' && mode !== 'retail') isOfferActive = false;
-    if (settings.offer_applies_to === 'wholesale' && mode !== 'wholesale') isOfferActive = false;
+    if (settings.offer_applies_to === 'retail' && isWholesale) isOfferActive = false;
+    if (settings.offer_applies_to === 'wholesale' && !isWholesale) isOfferActive = false;
   }
 
   const discountRate = isOfferActive ? (1 - settings.offer_discount_percent / 100) : 1;
+  const effectiveUnitPrice = isOfferActive ? Math.round(baseRate * discountRate) : baseRate;
 
-  if (mode === 'retail') {
-    const originalPrice = baseRetailPrice;
-    const effectiveUnitPrice = isOfferActive ? Math.round(originalPrice * discountRate) : originalPrice;
-    return {
-      unitPrice: effectiveUnitPrice,
-      originalPrice: originalPrice,
-      mrp: baseMrp,
-      selectedSize: activeSizeName,
-      isOffer: isOfferActive,
-      discountPercent: settings.offer_discount_percent,
-      totalPrice: effectiveUnitPrice * qty
-    };
-  } else {
-    // Single Wholesale Pricing based purely on MOQ (Tier complexity removed)
-    const baseWholesalePrice = Number(product.wholesalePrice) 
-      || (product.wholesaleTiers && product.wholesaleTiers[0]?.price) 
-      || Math.round(baseRetailPrice * 0.6);
-    let originalTierPrice = baseWholesalePrice;
-
-    // Scale proportionally if customer chose a smaller/larger size in wholesale
-    if (sizeObj && product.retailPrice && baseRetailPrice !== Number(product.retailPrice)) {
-      const ratio = baseRetailPrice / Number(product.retailPrice);
-      originalTierPrice = Math.max(50, Math.round(originalTierPrice * ratio));
-    }
-
-    const effectiveTierPrice = isOfferActive ? Math.round(originalTierPrice * discountRate) : originalTierPrice;
-    return {
-      unitPrice: effectiveTierPrice,
-      originalPrice: originalTierPrice,
-      mrp: baseMrp,
-      selectedSize: activeSizeName,
-      isOffer: isOfferActive,
-      discountPercent: settings.offer_discount_percent,
-      totalPrice: effectiveTierPrice * qty,
-      moq: product.wholesaleMOQ || 6
-    };
-  }
+  return {
+    unitPrice: effectiveUnitPrice,
+    originalPrice: baseRate,
+    mrp: baseMrp,
+    selectedSize: activeSizeName,
+    isOffer: isOfferActive,
+    discountPercent: settings.offer_discount_percent,
+    totalPrice: effectiveUnitPrice * qty,
+    moq: (isWholesale ? (product.wholesaleMOQ || 6) : 1)
+  };
 }
 
 // UI Cart & Wishlist Storage (Isolated client-side session only)

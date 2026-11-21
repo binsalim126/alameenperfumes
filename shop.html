@@ -1435,12 +1435,27 @@
       renderCategoryChips() {
         const container = document.getElementById('categoryChips');
         if (!container) return;
-        container.innerHTML = CATEGORIES.map(cat => {
-          const count = cat.name === 'All' ? this.products.length : this.products.filter(p => p.category === cat.name).length;
-          const isActive = this.activeCategory === cat.name;
+
+        // Extract all unique categories present in the products list + standard categories
+        const catMap = new Map();
+        CATEGORIES.forEach(c => catMap.set(c.name.toLowerCase(), c.name));
+        (this.products || []).forEach(p => {
+          if (p.category && !catMap.has(p.category.toLowerCase())) {
+            catMap.set(p.category.toLowerCase(), p.category);
+          }
+        });
+
+        const allCats = Array.from(catMap.values());
+        const sortedCats = ['All', ...allCats.filter(c => c.toLowerCase() !== 'all')];
+
+        container.innerHTML = sortedCats.map(catName => {
+          const count = catName === 'All' 
+            ? this.products.length 
+            : this.products.filter(p => (p.category || '').toLowerCase() === catName.toLowerCase()).length;
+          const isActive = (this.activeCategory || 'All').toLowerCase() === catName.toLowerCase();
           return `
-            <button type="button" class="filter-chip ${isActive ? 'active' : ''}" onclick="shopApp.filterByCategory('${cat.name}')">
-              ${cat.name} (${count})
+            <button type="button" class="filter-chip ${isActive ? 'active' : ''}" onclick="shopApp.filterByCategory('${catName}')">
+              ${catName} (${count})
             </button>
           `;
         }).join('');
@@ -1464,17 +1479,30 @@
 
       getFilteredProducts() {
         let list = [...this.products];
-        if (this.activeCategory !== 'All') {
-          list = list.filter(p => p.category === this.activeCategory);
+        // Filter by category (case-insensitive)
+        if (this.activeCategory && this.activeCategory.toLowerCase() !== 'all') {
+          list = list.filter(p => (p.category || '').toLowerCase() === this.activeCategory.toLowerCase());
         }
+        // Safe Search Filter (no uncaught TypeError on missing notes)
         if (this.searchQuery) {
-          list = list.filter(p => 
-            p.name.toLowerCase().includes(this.searchQuery) ||
-            p.category.toLowerCase().includes(this.searchQuery) ||
-            p.notes.top.toLowerCase().includes(this.searchQuery) ||
-            p.notes.heart.toLowerCase().includes(this.searchQuery) ||
-            p.notes.base.toLowerCase().includes(this.searchQuery)
-          );
+          const q = this.searchQuery.toLowerCase().trim();
+          list = list.filter(p => {
+            const name = (p.name || '').toLowerCase();
+            const cat = (p.category || '').toLowerCase();
+            const type = (p.type || '').toLowerCase();
+            const desc = (p.description || '').toLowerCase();
+            const top = (p.notes?.top || '').toLowerCase();
+            const heart = (p.notes?.heart || '').toLowerCase();
+            const base = (p.notes?.base || '').toLowerCase();
+            return name.includes(q) || cat.includes(q) || type.includes(q) || desc.includes(q) ||
+                   top.includes(q) || heart.includes(q) || base.includes(q);
+          });
+        }
+
+        // Active items filter: keep products unless explicitly disabled (and never leave empty if products exist)
+        const activeList = list.filter(p => p.active !== false);
+        if (activeList.length > 0) {
+          list = activeList;
         }
 
         // Sorting
@@ -1518,11 +1546,12 @@
           const defaultSize = availableSizes[availableSizes.length - 1]?.size || product.size || '12ml';
           const pricing = calculateProductPrice(product, this.mode, 1, this.settings, defaultSize);
           const isWish = this.wishlist.includes(product.id);
+          const imgUrl = (product.images && product.images.length > 0 && product.images[0]) ? product.images[0] : 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80';
 
           return `
             <div class="product-card" id="shop-card-${product.id}" onclick="shopApp.openProductModal('${product.id}')" style="cursor:pointer;">
               <div class="card-media">
-                <img src="${product.images[0]}" alt="${product.name}" class="card-img" loading="lazy">
+                <img src="${imgUrl}" alt="${product.name}" class="card-img" loading="lazy">
                 ${pricing.isOffer ? `<span class="card-badge offer-badge">${this.settings.offer_badge}</span>` : `<span class="card-badge">${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'}</span>`}
                 <button type="button" class="card-wish-btn ${isWish ? 'active' : ''}" onclick="event.stopPropagation(); shopApp.toggleWishlist('${product.id}')" aria-label="Wishlist">
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="${isWish ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
@@ -1618,7 +1647,9 @@
         this.modalSelectedSize = defaultSize;
         const pricing = calculateProductPrice(product, this.mode, 1, this.settings, defaultSize);
         const modal = document.getElementById('pdpModalContent');
-        const minQty = this.mode === 'wholesale' ? product.wholesaleMOQ : 1;
+        const minQty = this.mode === 'wholesale' ? (product.wholesaleMOQ || 6) : 1;
+        const imgUrl = (product.images && product.images.length > 0 && product.images[0]) ? product.images[0] : 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80';
+        const wsRate = product.wholesalePrice || (product.wholesaleTiers && product.wholesaleTiers[0]?.price) || Math.round(product.retailPrice * 0.6);
 
         modal.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
@@ -1630,7 +1661,7 @@
           </div>
 
           <div style="height:220px; border-radius:14px; overflow:hidden; margin-bottom:16px;">
-            <img src="${product.images[0]}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">
+            <img src="${imgUrl}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">
           </div>
 
           <!-- Bottle Size Selector in QuickView -->
@@ -1653,13 +1684,12 @@
           </p>
 
           ${this.mode === 'wholesale' ? `
-            <div style="background:#F2F7F4; border:1px solid var(--border-gold); padding:12px; border-radius:10px; margin-bottom:16px;">
-              <span style="font-size:0.75rem; font-weight:800; color:var(--gold-700); text-transform:uppercase;">Wholesale Tier Pricing:</span>
-              <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:0.8rem; font-weight:700;">
-                <span>6–11 pcs: ₹${product.wholesaleTiers[0].price}</span>
-                <span>12–23 pcs: ₹${product.wholesaleTiers[1].price}</span>
-                <span>24+ pcs: ₹${product.wholesaleTiers[2].price}</span>
+            <div style="background:#F2F7F4; border:1px solid var(--border-gold); padding:12px 14px; border-radius:12px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="font-size:0.75rem; font-weight:800; color:var(--gold-700); text-transform:uppercase; display:block;">Wholesale Pricing</span>
+                <span style="font-size:0.95rem; font-weight:800; color:var(--green-950);">₹${wsRate} / piece</span>
               </div>
+              <span style="background:var(--gold-500); color:var(--green-950); font-size:0.76rem; font-weight:800; padding:5px 12px; border-radius:14px;">MOQ: ${product.wholesaleMOQ || 6} pcs</span>
             </div>
           ` : ''}
 
@@ -1667,7 +1697,7 @@
             <div class="pdp-action-top-row">
               <div>
                 <div class="pdp-price-label" id="modalPriceLabel">₹${pricing.unitPrice.toLocaleString('en-IN')}</div>
-                <div class="pdp-price-sub">${this.mode === 'wholesale' ? `Wholesale (MOQ: ${product.wholesaleMOQ})` : 'Retail Selected Bottle'}</div>
+                <div class="pdp-price-sub">${this.mode === 'wholesale' ? `Wholesale (MOQ: ${product.wholesaleMOQ || 6} pcs)` : 'Retail Selected Bottle'}</div>
               </div>
 
               <div class="pdp-stepper-box">

@@ -67,6 +67,8 @@ const DEFAULT_SETTINGS = {
   offer_coupon_code: "",
   offer_min_order: 0,
   offer_end_date: "",
+  wholesale_default_moq: 6,
+  wholesale_default_discount: 40,
   wholesale_tier1_min: 6,
   wholesale_tier1_discount: 40,
   wholesale_tier2_min: 12,
@@ -78,10 +80,13 @@ const DEFAULT_SETTINGS = {
 // Default Categories for UI Carousel & Filters
 const CATEGORIES = [
   { name: "All", image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=300&q=80" },
+  { name: "Luxury", image: "https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=300&q=80" },
   { name: "Men", image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=300&q=80" },
   { name: "Women", image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=300&q=80" },
   { name: "Unisex", image: "https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?auto=format&fit=crop&w=300&q=80" },
-  { name: "Luxury", image: "https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=300&q=80" }
+  { name: "Gift Sets", image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=300&q=80" },
+  { name: "Miniatures", image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=300&q=80" },
+  { name: "Body Mists", image: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=300&q=80" }
 ];
 
 // 4 Authentic Al-Ameen Flagship Creations for Manual DB Seeding
@@ -316,7 +321,10 @@ function formatProductFromRow(row) {
     mrp: Number(row.mrp) || Number(row.retail_price) || 0,
     stock: typeof row.stock === 'number' ? row.stock : (row.in_stock ? 20 : 0),
     wholesaleMOQ: Number(row.wholesale_moq) || 6,
-    wholesaleTiers: Array.isArray(row.wholesale_tiers) && row.wholesale_tiers.length > 0 ? row.wholesale_tiers : calculateTiersFromRetail(row.retail_price),
+    wholesalePrice: Number(row.wholesale_price) || (Array.isArray(row.wholesale_tiers) && row.wholesale_tiers[0]?.price) || Math.round((Number(row.retail_price) || 0) * 0.60),
+    wholesaleTiers: Array.isArray(row.wholesale_tiers) && row.wholesale_tiers.length > 0 
+      ? row.wholesale_tiers 
+      : [{ min: Number(row.wholesale_moq) || 6, max: 9999, price: Math.round((Number(row.retail_price) || 0) * 0.60) }],
     notes: row.notes && typeof row.notes === 'object' ? row.notes : { top: '', heart: '', base: '' },
     description: row.description || '',
     images: Array.isArray(row.images) && row.images.length > 0 ? row.images : ['https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80'],
@@ -347,13 +355,19 @@ function formatProductToRow(product) {
     mrp: Number(product.mrp) || Math.round(retail * 1.4),
     stock: typeof product.stock === 'number' ? product.stock : 20,
     wholesale_moq: Number(product.wholesaleMOQ) || 6,
-    wholesale_tiers: Array.isArray(product.wholesaleTiers) ? product.wholesaleTiers : calculateTiersFromRetail(retail),
+    wholesale_tiers: [
+      {
+        min: Number(product.wholesaleMOQ) || 6,
+        max: 9999,
+        price: Number(product.wholesalePrice) || Math.round(retail * 0.60)
+      }
+    ],
     notes: notesObj,
     description: product.description || '',
     images: Array.isArray(product.images) && product.images.length > 0 ? product.images : [],
     bestseller: !!product.bestseller,
     new_arrival: !!product.newArrival,
-    in_stock: (typeof product.stock === 'number') ? product.stock > 0 : (product.active !== false)
+    in_stock: product.active !== false
   };
 
   if (window.hasBottleSizesColumn === true) {
@@ -880,20 +894,16 @@ function calculateProductPrice(product, mode = 'retail', qty = 1, settings = nul
       totalPrice: effectiveUnitPrice * qty
     };
   } else {
-    let matchedTier = (product.wholesaleTiers && product.wholesaleTiers.length > 0)
-      ? product.wholesaleTiers[0]
-      : { price: Math.round(baseRetailPrice * 0.6) };
+    // Single Wholesale Pricing based purely on MOQ (Tier complexity removed)
+    const baseWholesalePrice = Number(product.wholesalePrice) 
+      || (product.wholesaleTiers && product.wholesaleTiers[0]?.price) 
+      || Math.round(baseRetailPrice * 0.6);
+    let originalTierPrice = baseWholesalePrice;
 
-    if (product.wholesaleTiers && Array.isArray(product.wholesaleTiers)) {
-      for (const tier of product.wholesaleTiers) {
-        if (qty >= tier.min) matchedTier = tier;
-      }
-    }
-    let originalTierPrice = matchedTier.price;
     // Scale proportionally if customer chose a smaller/larger size in wholesale
     if (sizeObj && product.retailPrice && baseRetailPrice !== Number(product.retailPrice)) {
       const ratio = baseRetailPrice / Number(product.retailPrice);
-      originalTierPrice = Math.max(100, Math.round(originalTierPrice * ratio));
+      originalTierPrice = Math.max(50, Math.round(originalTierPrice * ratio));
     }
 
     const effectiveTierPrice = isOfferActive ? Math.round(originalTierPrice * discountRate) : originalTierPrice;

@@ -327,7 +327,7 @@ function formatProductFromRow(row) {
       : [{ min: Number(row.wholesale_moq) || 6, max: 9999, price: Math.round((Number(row.retail_price) || 0) * 0.60) }],
     notes: row.notes && typeof row.notes === 'object' ? row.notes : { top: '', heart: '', base: '' },
     description: row.description || '',
-    images: Array.isArray(row.images) && row.images.length > 0 ? row.images : ['https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80'],
+    images: (Array.isArray(row.images) && row.images.length > 0) ? row.images : ((typeof row.images === 'string' && row.images.trim()) ? [row.images.trim()] : ['https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80']),
     bestseller: !!row.bestseller,
     newArrival: !!row.new_arrival,
     active: row.in_stock !== false,

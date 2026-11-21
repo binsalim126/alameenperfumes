@@ -224,14 +224,14 @@
     }
 
     .action-icon-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
+      width: 40px !important;
+      height: 40px !important;
+      border-radius: 50% !important;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
       color: #FFFFFF;
       position: relative;
       flex-shrink: 0 !important;
@@ -363,8 +363,10 @@
 
     /* Products Grid */
     .shop-content-section {
-      padding: 10px 0 60px;
+      padding: 10px 16px 60px;
       flex: 1;
+      width: 100%;
+      box-sizing: border-box;
     }
     .products-grid {
       display: grid;
@@ -533,21 +535,112 @@
       max-height: 90vh;
       overflow-y: auto;
     }
-    .pdp-notes-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin: 16px 0;
+    /* PDP Action Bar & Add To Bag Stepper (Phone & Desktop Sizing) */
+    .pdp-action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-subtle);
     }
-    .note-card {
+    .pdp-action-top-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .pdp-price-label {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--green-950);
+      line-height: 1.1;
+    }
+    .pdp-price-sub {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+    .pdp-stepper-box {
+      display: inline-flex;
+      align-items: center;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #FFFFFF;
+      height: 44px;
+    }
+    .pdp-step-btn {
+      width: 38px;
+      height: 44px;
+      font-size: 1.15rem;
+      font-weight: 800;
       background: var(--green-50);
-      border: 1px solid var(--border-card);
-      border-radius: var(--radius-md);
-      padding: 10px;
-      text-align: center;
+      color: var(--green-950);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
     }
-    .note-card h5 { font-size: 0.72rem; color: var(--green-700); text-transform: uppercase; margin-bottom: 4px; }
-    .note-card p { font-size: 0.78rem; font-weight: 600; color: var(--text-dark); }
+    .pdp-step-btn:hover { background: var(--green-200); }
+    .pdp-step-input {
+      width: 44px;
+      height: 44px;
+      text-align: center;
+      border: none;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--green-950);
+      background: transparent;
+      outline: none;
+    }
+    .pdp-add-to-bag-btn {
+      min-height: 46px;
+      padding: 0 24px;
+      white-space: nowrap !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--gold-500), #B28E1D);
+      color: var(--green-950);
+      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+      border: 1px solid rgba(212, 175, 55, 0.5);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .pdp-add-to-bag-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(212, 175, 55, 0.45);
+    }
+
+    /* Phone Size Sizing (<= 640px) */
+    @media (max-width: 640px) {
+      .pdp-action-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 14px !important;
+        margin-top: 16px !important;
+        padding-top: 14px !important;
+      }
+      .pdp-action-top-row {
+        width: 100% !important;
+        justify-content: space-between !important;
+      }
+      .pdp-add-to-bag-btn {
+        width: 100% !important;
+        height: 50px !important;
+        font-size: 1.05rem !important;
+        border-radius: 12px !important;
+        justify-content: center !important;
+      }
+    }
 
     /* Cart Drawer & Footer */
     .drawer-backdrop {
@@ -1442,7 +1535,6 @@
                   <span class="card-size" id="shop-card-size-label-${product.id}">${defaultSize}</span>
                 </div>
                 <h3 class="card-title">${product.name}</h3>
-                <div class="card-notes-brief">Notes: ${product.notes.top}</div>
 
                 <!-- Bottle Size Selection Pills -->
                 <div class="card-sizes-row" style="display:flex; gap:6px; margin:8px 0 10px; flex-wrap:wrap;">
@@ -1560,21 +1652,6 @@
             ${product.description}
           </p>
 
-          <div class="pdp-notes-grid">
-            <div class="note-card">
-              <h5>Top Notes</h5>
-              <p>${product.notes.top}</p>
-            </div>
-            <div class="note-card">
-              <h5>Heart Notes</h5>
-              <p>${product.notes.heart}</p>
-            </div>
-            <div class="note-card">
-              <h5>Base Notes</h5>
-              <p>${product.notes.base}</p>
-            </div>
-          </div>
-
           ${this.mode === 'wholesale' ? `
             <div style="background:#F2F7F4; border:1px solid var(--border-gold); padding:12px; border-radius:10px; margin-bottom:16px;">
               <span style="font-size:0.75rem; font-weight:800; color:var(--gold-700); text-transform:uppercase;">Wholesale Tier Pricing:</span>
@@ -1586,23 +1663,28 @@
             </div>
           ` : ''}
 
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:20px;">
-            <div>
-              <div style="font-size:1.4rem; font-weight:800; color:var(--green-950);" id="modalPriceLabel">₹${pricing.unitPrice.toLocaleString('en-IN')}</div>
-              <div style="font-size:0.75rem; color:var(--text-light);">${this.mode === 'wholesale' ? `Wholesale (MOQ: ${product.wholesaleMOQ})` : 'Retail Selected Bottle'}</div>
-            </div>
-
-            <div style="display:flex; align-items:center; gap:8px;">
-              <div style="display:flex; align-items:center; border:1.5px solid var(--border-subtle); border-radius:8px; overflow:hidden;">
-                <button type="button" style="padding:8px 12px; font-weight:800; background:#F4F7F5;" onclick="shopApp.changeModalQty(-1, ${minQty})">−</button>
-                <input type="number" id="modalQtyInput" value="${minQty}" min="${minQty}" style="width:50px; text-align:center; border:none; font-weight:800;">
-                <button type="button" style="padding:8px 12px; font-weight:800; background:#F4F7F5;" onclick="shopApp.changeModalQty(1, ${minQty})">+</button>
+          <div class="pdp-action-bar">
+            <div class="pdp-action-top-row">
+              <div>
+                <div class="pdp-price-label" id="modalPriceLabel">₹${pricing.unitPrice.toLocaleString('en-IN')}</div>
+                <div class="pdp-price-sub">${this.mode === 'wholesale' ? `Wholesale (MOQ: ${product.wholesaleMOQ})` : 'Retail Selected Bottle'}</div>
               </div>
 
-              <button type="button" class="btn-primary" onclick="shopApp.addFromModal('${product.id}')">
-                Add to Bag
-              </button>
+              <div class="pdp-stepper-box">
+                <button type="button" class="pdp-step-btn" onclick="shopApp.changeModalQty(-1, ${minQty})">−</button>
+                <input type="number" id="modalQtyInput" value="${minQty}" min="${minQty}" class="pdp-step-input">
+                <button type="button" class="pdp-step-btn" onclick="shopApp.changeModalQty(1, ${minQty})">+</button>
+              </div>
             </div>
+
+            <button type="button" class="btn-primary pdp-add-to-bag-btn" onclick="shopApp.addFromModal('${product.id}')">
+              <span>Add to Bag</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+            </button>
           </div>
         `;
 

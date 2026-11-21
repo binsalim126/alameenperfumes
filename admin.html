@@ -1330,6 +1330,7 @@
        RESPONSIVE BREAKPOINTS (360px, 390px, 768px, 1280px)
        ========================================================================== */
     @media (max-width: 1024px) {
+      .desktop-only { display: none !important; }
       .charts-grid { grid-template-columns: 1fr; }
       .overview-dual-grid { grid-template-columns: 1fr; }
       .overview-promo-cards-grid { grid-template-columns: 1fr; }
@@ -2646,13 +2647,6 @@
               <input type="number" id="pTier3" class="form-input" placeholder="640" required>
             </div>
           </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Fragrance Notes Architecture *</label>
-          <input type="text" id="pNotesTop" class="form-input" placeholder="Top notes (e.g. Cambodian Oud, Bergamot)" style="margin-bottom:6px;" required>
-          <input type="text" id="pNotesHeart" class="form-input" placeholder="Heart notes (e.g. Taif Rose, Smoked Amber)" style="margin-bottom:6px;" required>
-          <input type="text" id="pNotesBase" class="form-input" placeholder="Base notes (e.g. Assam Agarwood, Sandalwood)" required>
         </div>
 
         <div class="form-group">
@@ -4069,9 +4063,6 @@
           document.getElementById('pTier2').value = p.wholesaleTiers ? p.wholesaleTiers[1].price : Math.round(p.retailPrice * 0.55);
           document.getElementById('pTier3').value = p.wholesaleTiers ? p.wholesaleTiers[2].price : Math.round(p.retailPrice * 0.5);
 
-          document.getElementById('pNotesTop').value = p.notes?.top || '';
-          document.getElementById('pNotesHeart').value = p.notes?.heart || '';
-          document.getElementById('pNotesBase').value = p.notes?.base || '';
           document.getElementById('pImage').value = p.images?.[0] || '';
           document.getElementById('pDesc').value = p.description || '';
 
@@ -4094,9 +4085,6 @@
           document.getElementById('pTier1').value = '';
           document.getElementById('pTier2').value = '';
           document.getElementById('pTier3').value = '';
-          document.getElementById('pNotesTop').value = '';
-          document.getElementById('pNotesHeart').value = '';
-          document.getElementById('pNotesBase').value = '';
           document.getElementById('pImage').value = '';
           document.getElementById('pDesc').value = '';
           document.getElementById('pBestseller').checked = false;
@@ -4186,9 +4174,9 @@
             { min: moq * 4, max: 9999, price: t3 }
           ],
           notes: {
-            top: document.getElementById('pNotesTop').value.trim(),
-            heart: document.getElementById('pNotesHeart').value.trim(),
-            base: document.getElementById('pNotesBase').value.trim()
+            top: '',
+            heart: '',
+            base: ''
           },
           images: [document.getElementById('pImage').value.trim() || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80'],
           description: document.getElementById('pDesc').value.trim() || 'Royal fragrance formulation.',

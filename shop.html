@@ -1542,8 +1542,8 @@
         }
 
         grid.innerHTML = list.map(product => {
-          const availableSizes = getProductSizes(product);
-          const defaultSize = availableSizes[availableSizes.length - 1]?.size || product.size || '12ml';
+          const availableSizes = getProductSizes(product, this.settings, this.mode);
+          const defaultSize = (this.mode === 'wholesale') ? '50ml' : (availableSizes[0]?.size || '3ml');
           const pricing = calculateProductPrice(product, this.mode, 1, this.settings, defaultSize);
           const isWish = this.wishlist.includes(product.id);
           const imgUrl = (product.images && product.images.length > 0 && product.images[0]) ? product.images[0] : 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80';
@@ -1642,8 +1642,8 @@
       openProductModal(productId) {
         const product = this.products.find(p => p.id === productId);
         if (!product) return;
-        const availableSizes = getProductSizes(product);
-        const defaultSize = availableSizes[availableSizes.length - 1]?.size || product.size || '12ml';
+        const availableSizes = getProductSizes(product, this.settings, this.mode);
+        const defaultSize = (this.mode === 'wholesale') ? '50ml' : (availableSizes[0]?.size || '3ml');
         this.modalSelectedSize = defaultSize;
         const pricing = calculateProductPrice(product, this.mode, 1, this.settings, defaultSize);
         const modal = document.getElementById('pdpModalContent');
@@ -1771,8 +1771,9 @@
         if (!product) return;
         const defaultQty = (this.mode === 'wholesale') ? product.wholesaleMOQ : 1;
         const qty = qtyToAdd || defaultQty;
-        const availableSizes = getProductSizes(product);
-        const chosenSize = sizeToAdd || (availableSizes[availableSizes.length - 1]?.size || product.size || '12ml');
+        const availableSizes = getProductSizes(product, this.settings, this.mode);
+        const defaultSize = (this.mode === 'wholesale') ? '50ml' : (availableSizes[0]?.size || '3ml');
+        const chosenSize = sizeToAdd || defaultSize;
 
         const existing = this.cart.find(item => item.productId === productId && (item.selectedSize || product.size || '12ml') === chosenSize);
         if (existing) {
@@ -1854,8 +1855,9 @@
         list.innerHTML = this.cart.map(item => {
           const product = this.products.find(p => p.id === item.productId);
           if (!product) return '';
-          const availableSizes = getProductSizes(product);
-          const currentSize = item.selectedSize || product.size || (availableSizes[availableSizes.length - 1]?.size || '12ml');
+          const availableSizes = getProductSizes(product, this.settings, this.mode);
+          const defaultSize = (this.mode === 'wholesale') ? '50ml' : (availableSizes[0]?.size || '3ml');
+          const currentSize = item.selectedSize || defaultSize;
           const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings, currentSize);
           overallTotal += pricing.totalPrice;
 

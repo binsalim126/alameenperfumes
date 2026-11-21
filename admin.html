@@ -2666,34 +2666,64 @@
           <input type="hidden" id="pSize" value="12ml">
         </div>
 
-        <div class="product-form-grid-4">
-          <div class="form-group">
-            <label class="form-label">Primary Retail (₹) *</label>
-            <input type="number" id="pRetailPrice" class="form-input" required placeholder="1499" oninput="adminApp.autoFillBottleSizesFromRetail()">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Primary MRP (₹)</label>
-            <input type="number" id="pMrp" class="form-input" placeholder="2199">
-          </div>
+        <!-- Primary Retail & MRP removed as requested: Rates configured directly per bottle size -->
+        <input type="hidden" id="pRetailPrice" value="499">
+        <input type="hidden" id="pMrp" value="699">
+
+        <div class="product-form-grid-2" style="margin-bottom:16px;">
           <div class="form-group">
             <label class="form-label">Stock Units *</label>
-            <input type="number" id="pStock" class="form-input" required placeholder="25" value="25">
+            <input type="number" id="pStock" class="form-input" required placeholder="25" value="25" min="0">
+            <span style="font-size:0.72rem; color:var(--text-light);">Total available units</span>
           </div>
           <div class="form-group">
             <label class="form-label">Wholesale MOQ (pcs) *</label>
             <input type="number" id="pMoq" class="form-input" required placeholder="6" value="6" min="1">
-            <span style="font-size:0.72rem; color:var(--text-light);">Min units for wholesale</span>
+            <span style="font-size:0.72rem; color:var(--text-light);">Minimum quantity for wholesale</span>
           </div>
         </div>
 
-        <!-- Dynamic Bottle Sizes Pricing Configuration Table -->
-        <div id="bottleSizesConfigBox" style="background:var(--green-50); border:1.5px solid var(--gold-500); padding:14px; border-radius:12px; margin-bottom:16px;">
+        <!-- Retail Bottle Sizes & Rates Configuration Box -->
+        <div id="bottleSizesConfigBox" style="background:var(--green-50); border:1.5px solid var(--gold-500); padding:14px; border-radius:12px; margin-bottom:14px;">
           <!-- Dynamically populated via adminApp.renderProductSizeInputs() -->
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Image URL (Optional)</label>
-          <input type="text" id="pImage" class="form-input" placeholder="https://images.unsplash.com/... or paste image link">
+        <!-- Wholesale Bottle Sizes & Rates Configuration Box (Permanently 50ml, 100ml, 500ml) -->
+        <div id="wholesaleSizesConfigBox" style="background:var(--green-50); border:1.5px solid var(--gold-500); padding:14px; border-radius:12px; margin-bottom:16px;">
+          <!-- Dynamically populated via adminApp.renderWholesaleSizeInputs() -->
+        </div>
+
+        <!-- Product Image Upload & URL Section -->
+        <div class="form-group" style="margin-bottom:16px;">
+          <label class="form-label">Perfume Bottle Image</label>
+          
+          <div id="imageDropzone" style="background:#FAF8F5; border:1.5px dashed var(--gold-500); border-radius:12px; padding:16px; text-align:center; transition:all 0.2s ease;">
+            <input type="file" id="pImageFile" accept="image/*" style="display:none;" onchange="adminApp.handleProductImageFile(event)">
+            
+            <div id="imagePreviewContainer" style="display:none; margin-bottom:12px; align-items:center; justify-content:center; gap:12px;">
+              <div style="position:relative; display:inline-block;">
+                <img id="imagePreviewThumb" src="" alt="Product preview" style="width:72px; height:72px; object-fit:cover; border-radius:10px; border:2px solid var(--gold-400); box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+                <button type="button" onclick="adminApp.clearProductImage(event)" title="Remove image" style="position:absolute; top:-6px; right:-6px; width:22px; height:22px; border-radius:50%; background:#ef4444; color:#fff; border:none; cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; font-weight:bold;">✕</button>
+              </div>
+              <div style="text-align:left;">
+                <div id="imagePreviewName" style="font-size:0.82rem; font-weight:700; color:var(--green-950); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Image selected</div>
+                <div id="imagePreviewSize" style="font-size:0.72rem; color:var(--text-light);">Ready to save</div>
+              </div>
+            </div>
+
+            <div id="imageUploadPrompt">
+              <button type="button" class="btn-action-secondary" onclick="document.getElementById('pImageFile').click()" style="margin:0 auto 6px; font-size:0.82rem; padding:8px 16px; background:#FFFFFF; border:1.5px solid var(--gold-500); color:var(--green-950); font-weight:700; display:inline-flex; align-items:center; gap:6px;">
+                <span>📷</span>
+                <span>Upload Image from Phone / Computer</span>
+              </button>
+              <div style="font-size:0.72rem; color:var(--text-light);">JPG, PNG, WEBP supported · Camera or Gallery</div>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+            <span style="font-size:0.74rem; color:var(--text-light); white-space:nowrap;">Or paste Image URL:</span>
+            <input type="text" id="pImage" class="form-input" style="font-size:0.82rem; padding:6px 10px;" placeholder="https://images.unsplash.com/... or web image link" oninput="adminApp.handleImageUrlInput(this.value)">
+          </div>
         </div>
 
         <div class="form-group">
@@ -4006,7 +4036,7 @@
 
         this.currentProductFormType = type;
         this.renderProductSizeInputs(type);
-        this.autoFillBottleSizesFromRetail();
+        this.renderWholesaleSizeInputs();
       }
 
       renderProductSizeInputs(type, existingSizes = null) {
@@ -4020,26 +4050,30 @@
 
           box.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-              <span style="font-size:0.76rem; font-weight:800; color:var(--green-900); text-transform:uppercase; letter-spacing:0.04em;">
-                Attar Bottle Sizes & Rates (${sizesList.join(', ')}):
+              <span style="font-size:0.78rem; font-weight:800; color:var(--green-900); text-transform:uppercase; letter-spacing:0.04em; display:flex; align-items:center; gap:6px;">
+                <span>🧴</span>
+                <span>Retail Flacon Sizes & Rates (${sizesList.join(', ')}):</span>
               </span>
-              <button type="button" class="btn-action-secondary" style="padding:6px 12px; font-size:0.78rem; min-height:36px;" onclick="adminApp.autoFillBottleSizesFromRetail()">Auto-Calculate from Base</button>
+              <button type="button" class="btn-action-secondary" style="padding:4px 10px; font-size:0.75rem; min-height:30px;" onclick="adminApp.autoFillRetailSizesFromBase()">Auto-Calculate from 3ml</button>
             </div>
 
             <div class="bottle-sizes-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;">
-              ${sizesList.map(sz => {
+              ${sizesList.map((sz, idx) => {
                 const found = existingSizes?.find(s => s.size.toLowerCase() === sz.toLowerCase()) || { size: sz, price: '', mrp: '' };
+                const isBase = sz === '3ml' || idx === 0;
                 return `
-                  <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
-                    <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">${sz} Flacon</strong>
+                  <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid ${isBase ? 'var(--gold-500)' : 'var(--border)'};">
+                    <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">
+                      ${sz} Flacon ${isBase ? '<span style="color:var(--gold-600); font-size:0.7rem;">(Base Retail)</span>' : ''}
+                    </strong>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
                       <div>
                         <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
-                        <input type="number" id="pSizePrice_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="Rate" value="${found.price !== undefined ? found.price : ''}">
+                        <input type="number" id="pSizePrice_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="${isBase ? 'e.g. 499' : 'Rate'}" value="${found.price !== undefined ? found.price : ''}" oninput="${isBase ? 'adminApp.autoFillRetailSizesFromBase()' : ''}">
                       </div>
                       <div>
                         <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
-                        <input type="number" id="pSizeMrp_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="MRP" value="${found.mrp !== undefined ? found.mrp : ''}">
+                        <input type="number" id="pSizeMrp_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="${isBase ? 'e.g. 699' : 'MRP'}" value="${found.mrp !== undefined ? found.mrp : ''}">
                       </div>
                     </div>
                   </div>
@@ -4054,26 +4088,30 @@
 
           box.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-              <span style="font-size:0.76rem; font-weight:800; color:var(--green-900); text-transform:uppercase; letter-spacing:0.04em;">
-                Spray Vaporisateur Sizes & Rates (${sizesList.join(', ')}):
+              <span style="font-size:0.78rem; font-weight:800; color:var(--green-900); text-transform:uppercase; letter-spacing:0.04em; display:flex; align-items:center; gap:6px;">
+                <span>✨</span>
+                <span>Spray Vaporisateur Sizes & Rates (${sizesList.join(', ')}):</span>
               </span>
-              <button type="button" class="btn-action-secondary" style="padding:6px 12px; font-size:0.78rem; min-height:36px;" onclick="adminApp.autoFillBottleSizesFromRetail()">Auto-Calculate from Base</button>
+              <button type="button" class="btn-action-secondary" style="padding:4px 10px; font-size:0.75rem; min-height:30px;" onclick="adminApp.autoFillRetailSizesFromBase()">Auto-Calculate from Base</button>
             </div>
 
             <div class="bottle-sizes-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;">
-              ${sizesList.map(sz => {
+              ${sizesList.map((sz, idx) => {
                 const found = existingSizes?.find(s => s.size.toLowerCase() === sz.toLowerCase()) || { size: sz, price: '', mrp: '' };
+                const isBase = idx === 0;
                 return `
-                  <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid var(--border);">
-                    <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">${sz} Spray</strong>
+                  <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid ${isBase ? 'var(--gold-500)' : 'var(--border)'};">
+                    <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">
+                      ${sz} Spray ${isBase ? '<span style="color:var(--gold-600); font-size:0.7rem;">(Base Retail)</span>' : ''}
+                    </strong>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
                       <div>
                         <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
-                        <input type="number" id="pSizePrice_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="Rate" value="${found.price !== undefined ? found.price : ''}">
+                        <input type="number" id="pSizePrice_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="${isBase ? 'e.g. 1499' : 'Rate'}" value="${found.price !== undefined ? found.price : ''}" oninput="${isBase ? 'adminApp.autoFillRetailSizesFromBase()' : ''}">
                       </div>
                       <div>
                         <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
-                        <input type="number" id="pSizeMrp_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="MRP" value="${found.mrp !== undefined ? found.mrp : ''}">
+                        <input type="number" id="pSizeMrp_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="${isBase ? 'e.g. 2199' : 'MRP'}" value="${found.mrp !== undefined ? found.mrp : ''}">
                       </div>
                     </div>
                   </div>
@@ -4085,9 +4123,9 @@
           const sCustom = existingSizes?.[0] || { size: 'Standard', price: '', mrp: '' };
           box.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <span style="font-size:0.76rem; font-weight:800; color:var(--green-900); text-transform:uppercase;">Custom Single Edition:</span>
+              <span style="font-size:0.78rem; font-weight:800; color:var(--green-900); text-transform:uppercase;">Custom Single Edition:</span>
             </div>
-            <div class="bottle-sizes-grid">
+            <div class="bottle-sizes-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;">
               <div>
                 <span style="font-size:0.7rem; color:var(--text-light);">Edition Label</span>
                 <input type="text" id="pCustomSizeName" class="form-input" style="padding:4px 6px;" placeholder="e.g. Gift Chest / 250g" value="${sCustom.size}">
@@ -4105,44 +4143,218 @@
         }
       }
 
-      autoFillBottleSizesFromRetail() {
-        const retail = parseInt(document.getElementById('pRetailPrice')?.value, 10);
-        if (!retail) return;
-        const mrp = parseInt(document.getElementById('pMrp')?.value, 10) || Math.round(retail * 1.4);
+      renderWholesaleSizeInputs(existingWholesaleSizes = null) {
+        const box = document.getElementById('wholesaleSizesConfigBox');
+        if (!box) return;
 
+        const wholesaleList = ['50ml', '100ml', '500ml'];
+        box.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+            <span style="font-size:0.78rem; font-weight:800; color:var(--green-900); text-transform:uppercase; letter-spacing:0.04em; display:flex; align-items:center; gap:6px;">
+              <span>📦</span>
+              <span>Wholesale Volume Sizes & Rates (50ml, 100ml, 500ml):</span>
+            </span>
+            <button type="button" class="btn-action-secondary" style="padding:4px 10px; font-size:0.75rem; min-height:30px;" onclick="adminApp.autoFillWholesaleSizesFromBase()">Auto-Calculate from 50ml</button>
+          </div>
+
+          <div class="bottle-sizes-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;">
+            ${wholesaleList.map((sz, idx) => {
+              const found = existingWholesaleSizes?.find(s => s.size.toLowerCase() === sz.toLowerCase()) || { size: sz, price: '', mrp: '' };
+              const isBase = sz === '50ml';
+              return `
+                <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid ${isBase ? 'var(--gold-500)' : 'var(--border)'};">
+                  <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">
+                    ${sz} Wholesale ${isBase ? '<span style="color:var(--gold-600); font-size:0.7rem;">(Base Wholesale)</span>' : ''}
+                  </strong>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                    <div>
+                      <span style="font-size:0.7rem; color:var(--text-light);">Rate (₹)</span>
+                      <input type="number" id="pWholesalePrice_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="${isBase ? 'e.g. 999' : 'Rate'}" value="${found.price !== undefined ? found.price : ''}" oninput="${isBase ? 'adminApp.autoFillWholesaleSizesFromBase()' : ''}">
+                    </div>
+                    <div>
+                      <span style="font-size:0.7rem; color:var(--text-light);">MRP (₹)</span>
+                      <input type="number" id="pWholesaleMrp_${sz}" class="form-input" style="padding:4px 6px; font-size:0.82rem;" placeholder="${isBase ? 'e.g. 1499' : 'MRP'}" value="${found.mrp !== undefined ? found.mrp : ''}">
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+
+      autoFillRetailSizesFromBase() {
         const type = this.currentProductFormType || 'attar';
         if (type === 'attar') {
-          const sizesList = (this.settings.attar_sizes && this.settings.attar_sizes.length > 0) ? this.settings.attar_sizes : ['3ml', '6ml', '12ml'];
-          const parsed = sizesList.map(s => ({ size: s, ml: parseFloat(s) || 12 }));
-          const maxMl = Math.max(...parsed.map(p => p.ml));
+          const p3 = parseInt(document.getElementById('pSizePrice_3ml')?.value, 10);
+          if (!p3) return;
+          const m3Input = document.getElementById('pSizeMrp_3ml');
+          if (m3Input && !m3Input.value) m3Input.value = Math.round(p3 * 1.4);
 
-          sizesList.forEach(sz => {
-            const ml = parseFloat(sz) || 12;
-            const pInput = document.getElementById(`pSizePrice_${sz}`);
-            const mrpInput = document.getElementById(`pSizeMrp_${sz}`);
+          const p6Input = document.getElementById('pSizePrice_6ml');
+          const m6Input = document.getElementById('pSizeMrp_6ml');
+          const p12Input = document.getElementById('pSizePrice_12ml');
+          const m12Input = document.getElementById('pSizeMrp_12ml');
 
-            const calcPrice = (ml === maxMl) ? retail : Math.max(149, Math.round((retail * Math.pow(ml / maxMl, 0.75)) / 10) * 10 - 1);
-            const calcMrp = (ml === maxMl) ? mrp : Math.round(calcPrice * 1.4);
+          const p6 = Math.max(149, Math.round((p3 * 1.75) / 10) * 10 - 1);
+          const m6 = Math.round(p6 * 1.4);
+          const p12 = Math.max(299, Math.round((p3 * 3.1) / 10) * 10 - 1);
+          const m12 = Math.round(p12 * 1.4);
 
-            if (pInput && (!pInput.value || pInput.value == retail || ml === maxMl)) pInput.value = calcPrice;
-            if (mrpInput && (!mrpInput.value || mrpInput.value == mrp || ml === maxMl)) mrpInput.value = calcMrp;
-          });
+          if (p6Input && (!p6Input.value || p6Input.dataset.autofilled === 'true')) {
+            p6Input.value = p6;
+            p6Input.dataset.autofilled = 'true';
+          }
+          if (m6Input && (!m6Input.value || m6Input.dataset.autofilled === 'true')) {
+            m6Input.value = m6;
+            m6Input.dataset.autofilled = 'true';
+          }
+          if (p12Input && (!p12Input.value || p12Input.dataset.autofilled === 'true')) {
+            p12Input.value = p12;
+            p12Input.dataset.autofilled = 'true';
+          }
+          if (m12Input && (!m12Input.value || m12Input.dataset.autofilled === 'true')) {
+            m12Input.value = m12;
+            m12Input.dataset.autofilled = 'true';
+          }
+
+          // Also suggest wholesale base if empty
+          const p50W = document.getElementById('pWholesalePrice_50ml');
+          if (p50W && !p50W.value) {
+            p50W.value = Math.round(p3 * 2.2);
+            p50W.dataset.autofilled = 'true';
+            this.autoFillWholesaleSizesFromBase();
+          }
         } else if (type === 'spray') {
-          const sizesList = (this.settings.spray_sizes && this.settings.spray_sizes.length > 0) ? this.settings.spray_sizes : ['50ml', '100ml'];
-          const parsed = sizesList.map(s => ({ size: s, ml: parseFloat(s) || 100 }));
-          const maxMl = Math.max(...parsed.map(p => p.ml));
+          const p50 = parseInt(document.getElementById('pSizePrice_50ml')?.value, 10);
+          if (!p50) return;
+          const m50Input = document.getElementById('pSizeMrp_50ml');
+          if (m50Input && !m50Input.value) m50Input.value = Math.round(p50 * 1.35);
 
-          sizesList.forEach(sz => {
-            const ml = parseFloat(sz) || 100;
-            const pInput = document.getElementById(`pSizePrice_${sz}`);
-            const mrpInput = document.getElementById(`pSizeMrp_${sz}`);
+          const p100Input = document.getElementById('pSizePrice_100ml');
+          const m100Input = document.getElementById('pSizeMrp_100ml');
+          const p100 = Math.max(499, Math.round((p50 * 1.8) / 50) * 50 - 1);
+          const m100 = Math.round(p100 * 1.35);
 
-            const calcPrice = (ml === maxMl) ? retail : Math.max(499, Math.round((retail * Math.pow(ml / maxMl, 0.75)) / 50) * 50 - 1);
-            const calcMrp = (ml === maxMl) ? mrp : Math.round(calcPrice * 1.35);
+          if (p100Input && (!p100Input.value || p100Input.dataset.autofilled === 'true')) {
+            p100Input.value = p100;
+            p100Input.dataset.autofilled = 'true';
+          }
+          if (m100Input && (!m100Input.value || m100Input.dataset.autofilled === 'true')) {
+            m100Input.value = m100;
+            m100Input.dataset.autofilled = 'true';
+          }
+        }
+      }
 
-            if (pInput && (!pInput.value || pInput.value == retail || ml === maxMl)) pInput.value = calcPrice;
-            if (mrpInput && (!mrpInput.value || mrpInput.value == mrp || ml === maxMl)) mrpInput.value = calcMrp;
-          });
+      autoFillWholesaleSizesFromBase() {
+        const p50 = parseInt(document.getElementById('pWholesalePrice_50ml')?.value, 10);
+        if (!p50) return;
+        const m50Input = document.getElementById('pWholesaleMrp_50ml');
+        if (m50Input && !m50Input.value) m50Input.value = Math.round(p50 * 1.35);
+
+        const p100Input = document.getElementById('pWholesalePrice_100ml');
+        const m100Input = document.getElementById('pWholesaleMrp_100ml');
+        const p500Input = document.getElementById('pWholesalePrice_500ml');
+        const m500Input = document.getElementById('pWholesaleMrp_500ml');
+
+        const p100 = Math.max(499, Math.round((p50 * 1.85) / 50) * 50 - 1);
+        const m100 = Math.round(p100 * 1.35);
+        const p500 = Math.max(1999, Math.round((p50 * 7.8) / 100) * 100 - 1);
+        const m500 = Math.round(p500 * 1.35);
+
+        if (p100Input && (!p100Input.value || p100Input.dataset.autofilled === 'true')) {
+          p100Input.value = p100;
+          p100Input.dataset.autofilled = 'true';
+        }
+        if (m100Input && (!m100Input.value || m100Input.dataset.autofilled === 'true')) {
+          m100Input.value = m100;
+          m100Input.dataset.autofilled = 'true';
+        }
+        if (p500Input && (!p500Input.value || p500Input.dataset.autofilled === 'true')) {
+          p500Input.value = p500;
+          p500Input.dataset.autofilled = 'true';
+        }
+        if (m500Input && (!m500Input.value || m500Input.dataset.autofilled === 'true')) {
+          m500Input.value = m500;
+          m500Input.dataset.autofilled = 'true';
+        }
+      }
+
+      handleProductImageFile(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+          this.showToast('Please select a valid image file (JPG, PNG, WEBP).', 'error');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (uploadEvent) => {
+          const rawDataUrl = uploadEvent.target.result;
+
+          const img = new Image();
+          img.onload = () => {
+            const maxDim = 800;
+            let width = img.width;
+            let height = img.height;
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              } else {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            const optimizedUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+            document.getElementById('pImage').value = optimizedUrl;
+            const thumb = document.getElementById('imagePreviewThumb');
+            if (thumb) thumb.src = optimizedUrl;
+            const nameEl = document.getElementById('imagePreviewName');
+            if (nameEl) nameEl.textContent = file.name;
+            const sizeEl = document.getElementById('imagePreviewSize');
+            if (sizeEl) sizeEl.textContent = `${Math.round(file.size / 1024)} KB (Ready)`;
+
+            const container = document.getElementById('imagePreviewContainer');
+            if (container) container.style.display = 'flex';
+            this.showToast('Image uploaded & optimized successfully!', 'success');
+          };
+          img.src = rawDataUrl;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      clearProductImage(e) {
+        if (e) e.stopPropagation();
+        const fileInput = document.getElementById('pImageFile');
+        if (fileInput) fileInput.value = '';
+        const urlInput = document.getElementById('pImage');
+        if (urlInput) urlInput.value = '';
+        const container = document.getElementById('imagePreviewContainer');
+        if (container) container.style.display = 'none';
+      }
+
+      handleImageUrlInput(url) {
+        const container = document.getElementById('imagePreviewContainer');
+        const thumb = document.getElementById('imagePreviewThumb');
+        const nameEl = document.getElementById('imagePreviewName');
+        const sizeEl = document.getElementById('imagePreviewSize');
+        if (url && url.trim()) {
+          if (thumb) thumb.src = url.trim();
+          if (nameEl) nameEl.textContent = 'Web Image Link';
+          if (sizeEl) sizeEl.textContent = 'External URL';
+          if (container) container.style.display = 'flex';
+        } else {
+          if (container) container.style.display = 'none';
         }
       }
 
@@ -4166,8 +4378,6 @@
           editId.value = p.id;
           document.getElementById('pName').value = p.name;
           document.getElementById('pCategory').value = p.category;
-          document.getElementById('pRetailPrice').value = p.retailPrice;
-          document.getElementById('pMrp').value = p.mrp || Math.round(p.retailPrice * 1.4);
           document.getElementById('pStock').value = p.stock || 25;
           document.getElementById('pMoq').value = p.wholesaleMOQ || 6;
 
@@ -4181,9 +4391,14 @@
 
           this.currentProductFormType = detectedType;
           this.setProductFormType(detectedType);
-          this.renderProductSizeInputs(detectedType, p.bottleSizes || getProductSizes(p, this.settings));
+          const retailSizes = p.bottleSizes || (p.notes && p.notes.bottle_sizes) || getProductSizes(p, this.settings, 'retail');
+          const wholesaleSizes = p.wholesaleSizes || (p.notes && p.notes.wholesale_sizes) || getProductSizes(p, this.settings, 'wholesale');
+          this.renderProductSizeInputs(detectedType, retailSizes);
+          this.renderWholesaleSizeInputs(wholesaleSizes);
 
-          document.getElementById('pImage').value = p.images?.[0] || '';
+          const img = p.images?.[0] || '';
+          document.getElementById('pImage').value = img;
+          this.handleImageUrlInput(img);
           document.getElementById('pDesc').value = p.description || '';
 
           document.getElementById('pBestseller').checked = !!p.bestseller;
@@ -4197,12 +4412,11 @@
           this.currentProductFormType = 'attar';
           this.setProductFormType('attar');
           this.renderProductSizeInputs('attar');
+          this.renderWholesaleSizeInputs();
 
-          document.getElementById('pRetailPrice').value = '';
-          document.getElementById('pMrp').value = '';
           document.getElementById('pStock').value = '25';
           document.getElementById('pMoq').value = this.settings.wholesale_default_moq || '6';
-          document.getElementById('pImage').value = '';
+          this.clearProductImage();
           document.getElementById('pDesc').value = '';
           document.getElementById('pBestseller').checked = true;
           document.getElementById('pNewArrival').checked = true;
@@ -4226,32 +4440,23 @@
         }
 
         const editId = document.getElementById('pEditId').value;
-        const retail = parseInt(document.getElementById('pRetailPrice').value, 10) || 999;
-        const mrp = parseInt(document.getElementById('pMrp').value, 10) || Math.round(retail * 1.4);
         const stock = parseInt(document.getElementById('pStock').value, 10) || 20;
         const moq = parseInt(document.getElementById('pMoq')?.value, 10) || 6;
-        const wholesalePrice = Math.round(retail * 0.6);
 
-        // Construct bottle sizes from inputs
+        // Construct retail bottle sizes from inputs
         const type = this.currentProductFormType || 'attar';
-        let bottleSizes = [];
-        let primarySize = '12ml';
+        let retailSizes = [];
+        let baseRetailPrice = 499;
+        let baseRetailMrp = 699;
 
         if (type === 'attar') {
           const sizesList = (this.settings.attar_sizes && this.settings.attar_sizes.length > 0)
             ? this.settings.attar_sizes
             : ['3ml', '6ml', '12ml'];
 
-          const parsed = sizesList.map(s => ({ size: s, ml: parseFloat(s) || 12 }));
-          const maxMl = Math.max(...parsed.map(p => p.ml));
-
-          bottleSizes = sizesList.map(sz => {
-            const ml = parseFloat(sz) || 12;
-            const defaultPrice = (ml === maxMl) ? retail : Math.max(149, Math.round((retail * Math.pow(ml / maxMl, 0.75)) / 10) * 10 - 1);
-            const defaultMrp = (ml === maxMl) ? mrp : Math.round(defaultPrice * 1.4);
-
-            const p = parseInt(document.getElementById(`pSizePrice_${sz}`)?.value, 10) || defaultPrice;
-            const m = parseInt(document.getElementById(`pSizeMrp_${sz}`)?.value, 10) || defaultMrp;
+          retailSizes = sizesList.map((sz, idx) => {
+            const p = parseInt(document.getElementById(`pSizePrice_${sz}`)?.value, 10) || (sz === '3ml' ? 499 : (sz === '6ml' ? 899 : 1499));
+            const m = parseInt(document.getElementById(`pSizeMrp_${sz}`)?.value, 10) || Math.round(p * 1.4);
             return {
               size: sz,
               price: p,
@@ -4259,22 +4464,16 @@
               label: `${sz} Flacon (${sz === '3ml' ? 'Pocket Edition' : sz === '12ml' ? 'Royal Flacon' : 'Standard Edition'})`
             };
           });
-          primarySize = sizesList[sizesList.length - 1] || '12ml';
+          baseRetailPrice = retailSizes[0]?.price || 499;
+          baseRetailMrp = retailSizes[0]?.mrp || Math.round(baseRetailPrice * 1.4);
         } else if (type === 'spray') {
           const sizesList = (this.settings.spray_sizes && this.settings.spray_sizes.length > 0)
             ? this.settings.spray_sizes
             : ['50ml', '100ml'];
 
-          const parsed = sizesList.map(s => ({ size: s, ml: parseFloat(s) || 100 }));
-          const maxMl = Math.max(...parsed.map(p => p.ml));
-
-          bottleSizes = sizesList.map(sz => {
-            const ml = parseFloat(sz) || 100;
-            const defaultPrice = (ml === maxMl) ? retail : Math.max(499, Math.round((retail * Math.pow(ml / maxMl, 0.75)) / 50) * 50 - 1);
-            const defaultMrp = (ml === maxMl) ? mrp : Math.round(defaultPrice * 1.35);
-
-            const p = parseInt(document.getElementById(`pSizePrice_${sz}`)?.value, 10) || defaultPrice;
-            const m = parseInt(document.getElementById(`pSizeMrp_${sz}`)?.value, 10) || defaultMrp;
+          retailSizes = sizesList.map((sz, idx) => {
+            const p = parseInt(document.getElementById(`pSizePrice_${sz}`)?.value, 10) || (sz === '50ml' ? 1499 : 2499);
+            const m = parseInt(document.getElementById(`pSizeMrp_${sz}`)?.value, 10) || Math.round(p * 1.35);
             return {
               size: sz,
               price: p,
@@ -4282,38 +4481,60 @@
               label: `${sz} Spray (${sz === '100ml' ? 'Luxury Vaporisateur' : 'Spray Flacon'})`
             };
           });
-          primarySize = sizesList[sizesList.length - 1] || '100ml';
+          baseRetailPrice = retailSizes[0]?.price || 1499;
+          baseRetailMrp = retailSizes[0]?.mrp || Math.round(baseRetailPrice * 1.35);
         } else {
           const customSize = document.getElementById('pCustomSizeName')?.value.trim() || 'Standard';
-          const customPrice = parseInt(document.getElementById('pCustomPrice')?.value, 10) || retail;
-          const customMrp = parseInt(document.getElementById('pCustomMrp')?.value, 10) || mrp;
-          bottleSizes = [
+          const customPrice = parseInt(document.getElementById('pCustomPrice')?.value, 10) || 1499;
+          const customMrp = parseInt(document.getElementById('pCustomMrp')?.value, 10) || Math.round(customPrice * 1.4);
+          retailSizes = [
             { size: customSize, price: customPrice, mrp: customMrp, label: customSize }
           ];
-          primarySize = customSize;
+          baseRetailPrice = customPrice;
+          baseRetailMrp = customMrp;
         }
+
+        // Construct wholesale volume sizes (permanently 50ml, 100ml, 500ml)
+        const wholesaleSizes = ['50ml', '100ml', '500ml'].map(sz => {
+          const defaultP = (sz === '50ml') ? Math.round(baseRetailPrice * 2.2) : (sz === '100ml') ? Math.round(baseRetailPrice * 3.8) : Math.round(baseRetailPrice * 15);
+          const p = parseInt(document.getElementById(`pWholesalePrice_${sz}`)?.value, 10) || defaultP;
+          const m = parseInt(document.getElementById(`pWholesaleMrp_${sz}`)?.value, 10) || Math.round(p * 1.35);
+          return {
+            size: sz,
+            price: p,
+            mrp: m,
+            label: `${sz} Wholesale ${sz === '500ml' ? 'Bulk Flacon' : 'Flacon'}`
+          };
+        });
+        const baseWholesalePrice = wholesaleSizes[0]?.price || Math.round(baseRetailPrice * 2.2);
+
+        const imageUrl = document.getElementById('pImage').value.trim() || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80';
 
         const newProd = {
           id: editId || `p${Date.now()}`,
           name: document.getElementById('pName').value.trim(),
           category: document.getElementById('pCategory').value,
           type: document.getElementById('pType').value.trim() || (type === 'attar' ? 'Pure Concentrated Oil' : (type === 'spray' ? 'Eau de Parfum' : 'Custom Formulation')),
-          size: primarySize,
-          bottleSizes: bottleSizes,
-          retailPrice: retail,
-          mrp: mrp,
+          size: (type === 'attar' ? '3ml' : (type === 'spray' ? '50ml' : 'Standard')),
+          bottleSizes: retailSizes,
+          wholesaleSizes: wholesaleSizes,
+          retailPrice: baseRetailPrice,
+          mrp: baseRetailMrp,
           stock: stock,
           wholesaleMOQ: moq,
-          wholesalePrice: wholesalePrice,
+          wholesalePrice: baseWholesalePrice,
           wholesaleTiers: [
-            { min: moq, max: 9999, price: wholesalePrice }
+            { min: moq, max: 9999, price: baseWholesalePrice }
           ],
           notes: {
             top: '',
             heart: '',
-            base: ''
+            base: '',
+            bottle_sizes: retailSizes,
+            retail_sizes: retailSizes,
+            wholesale_sizes: wholesaleSizes
           },
-          images: [document.getElementById('pImage').value.trim() || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80'],
+          images: [imageUrl],
           description: document.getElementById('pDesc').value.trim() || 'Royal fragrance formulation.',
           rating: 4.9,
           reviews: 45,
@@ -4333,7 +4554,6 @@
             this.products.unshift(saved);
             this.showToast(`Fragrance "${newProd.name}" added to Supabase database!`, 'success');
           }
-
           this.closeProductModal();
           this.renderCatalog();
           this.renderOverview();
@@ -4658,6 +4878,13 @@
           const active = !['false', 'no', '0', 'inactive'].includes((rowObj.active || rowObj.instock || '').toLowerCase());
 
           const isPriceValid = retailPrice > 0;
+          const baseRetail = bottleSizes[0]?.price || retailPrice || 499;
+          const baseWholesale = Math.round(baseRetail * 2.2);
+          const wholesaleSizes = [
+            { size: '50ml', price: baseWholesale, mrp: Math.round(baseWholesale * 1.35), label: '50ml Wholesale Flacon' },
+            { size: '100ml', price: Math.max(999, Math.round((baseWholesale * 1.85) / 50) * 50 - 1), mrp: Math.round(baseWholesale * 1.85 * 1.35), label: '100ml Wholesale Flacon' },
+            { size: '500ml', price: Math.max(3999, Math.round((baseWholesale * 7.8) / 100) * 100 - 1), mrp: Math.round(baseWholesale * 7.8 * 1.35), label: '500ml Bulk Wholesale Flacon' }
+          ];
 
           parsedProducts.push({
             id: targetId,
@@ -4666,13 +4893,21 @@
             type: type,
             size: primarySize,
             bottleSizes: bottleSizes,
-            retailPrice: retailPrice,
+            wholesaleSizes: wholesaleSizes,
+            retailPrice: baseRetail,
             mrp: mrp,
             stock: stock,
             wholesaleMOQ: wholesaleMOQ,
-            wholesalePrice: wholesalePrice,
-            wholesaleTiers: [{ min: wholesaleMOQ, max: 9999, price: wholesalePrice }],
-            notes: { top: '', heart: '', base: '' },
+            wholesalePrice: baseWholesale,
+            wholesaleTiers: [{ min: wholesaleMOQ, max: 9999, price: baseWholesale }],
+            notes: {
+              top: '',
+              heart: '',
+              base: '',
+              bottle_sizes: bottleSizes,
+              retail_sizes: bottleSizes,
+              wholesale_sizes: wholesaleSizes
+            },
             images: [img],
             description: description,
             rating: 4.9,

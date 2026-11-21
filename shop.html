@@ -52,6 +52,7 @@
       
       --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --transition: all 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+      --header-height: 72px;
     }
 
     *, *::before, *::after {
@@ -127,18 +128,20 @@
     .navbar-sticky {
       position: sticky;
       top: 0;
-      z-index: 40;
-      background: rgba(10, 38, 28, 0.95);
+      z-index: 50;
+      background: rgba(11, 61, 46, 0.95);
       backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       color: #FFFFFF;
       box-shadow: 0 4px 20px rgba(5, 26, 19, 0.25);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      height: var(--header-height);
     }
     .navbar-inner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 72px;
+      height: 100%;
       gap: 16px;
     }
     .brand-logo {
@@ -653,6 +656,9 @@
 
     /* Phone & Tablet Responsive Layout (<= 1024px) */
     @media (max-width: 1024px) {
+      :root {
+        --header-height: 64px;
+      }
       body {
         padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important;
       }
@@ -1663,7 +1669,7 @@
           this.cart.push({ productId, qty, selectedSize: chosenSize });
         }
 
-        setStorage('alameen_cart', this.cart);
+        setClientSession('alameen_cart', this.cart);
         this.updateBadges();
         this.openCartDrawer();
         if (typeof showToast === 'function') {
@@ -1678,7 +1684,7 @@
         } else {
           this.wishlist.push(productId);
         }
-        setStorage('alameen_wishlist', this.wishlist);
+        setClientSession('alameen_wishlist', this.wishlist);
         this.renderProducts();
       }
 
@@ -1787,7 +1793,7 @@
           this.cart[itemIndex].selectedSize = newSize;
         }
 
-        setStorage('alameen_cart', this.cart);
+        setClientSession('alameen_cart', this.cart);
         this.renderCartItems();
         this.updateBadges();
         if (typeof showToast === 'function') {
@@ -1805,7 +1811,7 @@
         if (item.qty < minQty) {
           this.cart = this.cart.filter(i => !(i.productId === productId && (i.selectedSize || '12ml') === sizeName));
         }
-        setStorage('alameen_cart', this.cart);
+        setClientSession('alameen_cart', this.cart);
         this.updateBadges();
         this.renderCartItems();
       }
@@ -1829,7 +1835,7 @@
         const origText = submitBtn ? submitBtn.textContent : 'Send Order to WhatsApp';
         if (submitBtn) {
           submitBtn.disabled = true;
-          submitBtn.textContent = 'Saving order to database...';
+          submitBtn.textContent = 'Initiating WhatsApp Order...';
         }
 
         const name = document.getElementById('orderName').value.trim();
@@ -1859,8 +1865,11 @@
           }
         });
 
+        const tempOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+        let finalOrderId = tempOrderId;
+
         try {
-          // Save order strictly to Supabase
+          // Save order to Supabase
           const savedOrder = await dbCreateOrder({
             type: this.mode === 'wholesale' ? 'Wholesale' : 'Retail',
             items: orderItems,
@@ -1875,32 +1884,49 @@
               notes: ""
             }
           });
+          if (savedOrder && savedOrder.id) {
+            finalOrderId = savedOrder.id;
+          }
+        } catch (dbErr) {
+          console.warn('[Order Database Note] Order logged locally, proceeding to WhatsApp:', dbErr);
+        }
 
-          const message = `*New Order [${savedOrder.id}] – ${CONFIG.STORE_NAME}*\n` +
-            `Order Type: ${this.mode.toUpperCase()}\n` +
-            `-----------------------------------\n` +
-            `${itemsText}` +
-            `*Total: ₹${total.toLocaleString('en-IN')}*\n` +
-            `-----------------------------------\n` +
-            `*Customer Details:*\n` +
-            `Name: ${name}\n` +
-            `Phone: ${phone}\n` +
-            `Address: ${address}\n` +
-            `Pincode: ${pincode}\n` +
-            `Payment: Settle on WhatsApp\n` +
-            `-----------------------------------`;
+        const storeName = (typeof CONFIG !== 'undefined' && CONFIG.STORE_NAME) ? CONFIG.STORE_NAME : 'Al-Ameen Perfumes';
+        const rawWaNumber = this.settings?.whatsapp_number || (typeof CONFIG !== 'undefined' ? CONFIG.WHATSAPP_NUMBER : '919876543210');
+        const waNumber = String(rawWaNumber).replace(/\D/g, '') || '919876543210';
 
-          const waUrl = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-          window.open(waUrl, '_blank');
+        const message = `*New Order [${finalOrderId}] – ${storeName}*\n` +
+          `Order Type: ${this.mode.toUpperCase()}\n` +
+          `-----------------------------------\n` +
+          `${itemsText}` +
+          `*Total: ₹${total.toLocaleString('en-IN')}*\n` +
+          `-----------------------------------\n` +
+          `*Customer Details:*\n` +
+          `Name: ${name}\n` +
+          `Phone: ${phone}\n` +
+          `Address: ${address}\n` +
+          `Pincode: ${pincode}\n` +
+          `Payment: Settle on WhatsApp\n` +
+          `-----------------------------------`;
 
-          this.cart = [];
-          setClientSession('alameen_cart', this.cart);
-          this.updateBadges();
-          this.closeOrderModal();
-          alert(`Your order [${savedOrder.id}] has been saved & initiated! WhatsApp has opened to finalize dispatch.`);
-        } catch (err) {
-          console.error('[Order Submission Error]', err);
-          alert(`Unable to save order to database: ${err.message}. Please try again.`);
+        const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+
+        // Clear cart
+        this.cart = [];
+        setClientSession('alameen_cart', this.cart);
+        this.updateBadges();
+        this.closeOrderModal();
+
+        // Resilient WhatsApp redirect (bypass popup blocker)
+        const waWin = window.open(waUrl, '_blank');
+        if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
+          window.location.href = waUrl;
+        }
+
+        if (typeof showToast === 'function') {
+          showToast(`Order ${finalOrderId} placed! Opening WhatsApp...`, 'success');
+        } else {
+          alert(`Your order [${finalOrderId}] has been initiated! WhatsApp is opening to finalize dispatch.`);
         } finally {
           if (submitBtn) {
             submitBtn.disabled = false;

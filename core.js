@@ -66,7 +66,13 @@ const DEFAULT_SETTINGS = {
   offer_scope: "all",
   offer_coupon_code: "",
   offer_min_order: 0,
-  offer_end_date: ""
+  offer_end_date: "",
+  wholesale_tier1_min: 6,
+  wholesale_tier1_discount: 40,
+  wholesale_tier2_min: 12,
+  wholesale_tier2_discount: 48,
+  wholesale_tier3_min: 24,
+  wholesale_tier3_discount: 55
 };
 
 // Default Categories for UI Carousel & Filters
@@ -92,6 +98,11 @@ const FLAGSHIP_SEED_PRODUCTS = [
     mrp: 2199,
     stock: 28,
     wholesaleMOQ: 6,
+    bottleSizes: [
+      { size: "3ml", price: 499, mrp: 799, label: "3ml Flacon (Pocket Edition)" },
+      { size: "6ml", price: 899, mrp: 1399, label: "6ml Flacon (Standard Edition)" },
+      { size: "12ml", price: 1499, mrp: 2199, label: "12ml Flacon (Royal Flacon)" }
+    ],
     wholesaleTiers: [
       { min: 6, max: 11, price: 780 },
       { min: 12, max: 23, price: 710 },
@@ -120,6 +131,10 @@ const FLAGSHIP_SEED_PRODUCTS = [
     mrp: 3499,
     stock: 18,
     wholesaleMOQ: 6,
+    bottleSizes: [
+      { size: "50ml", price: 1799, mrp: 2499, label: "50ml Spray Flacon" },
+      { size: "100ml", price: 2499, mrp: 3499, label: "100ml Luxury Vaporisateur" }
+    ],
     wholesaleTiers: [
       { min: 6, max: 11, price: 1350 },
       { min: 12, max: 23, price: 1220 },
@@ -148,6 +163,10 @@ const FLAGSHIP_SEED_PRODUCTS = [
     mrp: 2599,
     stock: 22,
     wholesaleMOQ: 6,
+    bottleSizes: [
+      { size: "50ml", price: 1899, mrp: 2599, label: "50ml Spray Flacon" },
+      { size: "100ml", price: 2699, mrp: 3699, label: "100ml Luxury Vaporisateur" }
+    ],
     wholesaleTiers: [
       { min: 6, max: 11, price: 990 },
       { min: 12, max: 23, price: 890 },
@@ -176,6 +195,11 @@ const FLAGSHIP_SEED_PRODUCTS = [
     mrp: 2799,
     stock: 15,
     wholesaleMOQ: 6,
+    bottleSizes: [
+      { size: "3ml", price: 699, mrp: 999, label: "3ml Flacon (Pocket Edition)" },
+      { size: "6ml", price: 1199, mrp: 1699, label: "6ml Flacon (Standard Edition)" },
+      { size: "12ml", price: 1999, mrp: 2799, label: "12ml Flacon (Royal Flacon)" }
+    ],
     wholesaleTiers: [
       { min: 6, max: 11, price: 1050 },
       { min: 12, max: 23, price: 950 },
@@ -195,28 +219,96 @@ const FLAGSHIP_SEED_PRODUCTS = [
 ];
 
 // ==========================================================================
-// 3. ROW FORMATTERS (Database snake_case <-> Frontend camelCase)
+// 3. ROW FORMATTERS & BOTTLE SIZES (Database snake_case <-> Frontend camelCase)
 // ==========================================================================
+
+// Dynamic bottle size generation based on product category & concentration
+function getProductSizes(product) {
+  if (!product) return [];
+  if (Array.isArray(product.bottleSizes) && product.bottleSizes.length > 0) {
+    return product.bottleSizes;
+  }
+  if (Array.isArray(product.bottle_sizes) && product.bottle_sizes.length > 0) {
+    return product.bottle_sizes;
+  }
+
+  const basePrice = Number(product.retailPrice || product.retail_price) || 999;
+  const baseMrp = Number(product.mrp) || Math.round(basePrice * 1.4);
+  const typeStr = ((product.type || '') + ' ' + (product.category || '')).toLowerCase();
+
+  // Attar / Concentrated Oil: 3ml, 6ml, 12ml
+  if (typeStr.includes('attar') || typeStr.includes('oil') || typeStr.includes('concentrated') || typeStr.includes('pure') || (product.size && product.size.toLowerCase().includes('12ml')) || !typeStr.includes('spray')) {
+    const p3 = Math.max(199, Math.round((basePrice * 0.40) / 10) * 10 - 1);
+    const p6 = Math.max(349, Math.round((basePrice * 0.65) / 10) * 10 - 1);
+    const mrp3 = Math.round(p3 * 1.45);
+    const mrp6 = Math.round(p6 * 1.4);
+
+    return [
+      { size: '3ml', price: p3, mrp: mrp3, label: '3ml Flacon (Pocket Edition)' },
+      { size: '6ml', price: p6, mrp: mrp6, label: '6ml Flacon (Standard Edition)' },
+      { size: '12ml', price: basePrice, mrp: baseMrp, label: '12ml Flacon (Royal Flacon)' }
+    ];
+  }
+
+  // Spray / Eau de Parfum: 50ml, 100ml
+  if (typeStr.includes('spray') || typeStr.includes('edp') || typeStr.includes('eau de parfum') || typeStr.includes('parfum')) {
+    const p50 = Math.max(499, Math.round((basePrice * 0.72) / 50) * 50 - 1);
+    const mrp50 = Math.round(p50 * 1.35);
+
+    return [
+      { size: '50ml', price: p50, mrp: mrp50, label: '50ml Spray Flacon' },
+      { size: '100ml', price: basePrice, mrp: baseMrp, label: '100ml Luxury Vaporisateur' }
+    ];
+  }
+
+  // Fallback
+  return [
+    { size: product.size || 'Standard', price: basePrice, mrp: baseMrp, label: product.size || 'Standard Edition' }
+  ];
+}
+
+// Calculate wholesale volume tiers from retail price & tier settings
+function calculateTiersFromRetail(retailPrice, tierSettings = null) {
+  const retail = Number(retailPrice) || 0;
+  const s = tierSettings || DEFAULT_SETTINGS;
+  const t1Disc = Number(s.wholesale_tier1_discount) || 40;
+  const t2Disc = Number(s.wholesale_tier2_discount) || 48;
+  const t3Disc = Number(s.wholesale_tier3_discount) || 55;
+  const moq = Number(s.wholesale_tier1_min || s.wholesaleMOQ) || 6;
+
+  return [
+    { min: moq, max: moq * 2 - 1, price: Math.round(retail * (1 - t1Disc / 100)) },
+    { min: moq * 2, max: moq * 4 - 1, price: Math.round(retail * (1 - t2Disc / 100)) },
+    { min: moq * 4, max: 9999, price: Math.round(retail * (1 - t3Disc / 100)) }
+  ];
+}
 
 function formatProductFromRow(row) {
   if (!row) return null;
+  const sizes = Array.isArray(row.bottle_sizes) && row.bottle_sizes.length > 0 
+    ? row.bottle_sizes 
+    : getProductSizes({
+        type: row.type,
+        category: row.category,
+        size: row.size,
+        retailPrice: Number(row.retail_price),
+        mrp: Number(row.mrp)
+      });
+
   return {
     id: row.id,
     name: row.name || 'Unnamed Perfume',
     category: row.category || 'Luxury',
     type: row.type || 'Eau de Parfum',
-    size: row.size || '100ml',
+    size: row.size || (sizes[sizes.length - 1]?.size || '12ml'),
+    bottleSizes: sizes,
     rating: Number(row.rating) || 5.0,
     reviews: Number(row.reviews) || 0,
     retailPrice: Number(row.retail_price) || 0,
     mrp: Number(row.mrp) || Number(row.retail_price) || 0,
     stock: typeof row.stock === 'number' ? row.stock : (row.in_stock ? 20 : 0),
     wholesaleMOQ: Number(row.wholesale_moq) || 6,
-    wholesaleTiers: Array.isArray(row.wholesale_tiers) && row.wholesale_tiers.length > 0 ? row.wholesale_tiers : [
-      { min: 6, max: 11, price: Math.round(Number(row.retail_price) * 0.6) },
-      { min: 12, max: 23, price: Math.round(Number(row.retail_price) * 0.55) },
-      { min: 24, max: 9999, price: Math.round(Number(row.retail_price) * 0.5) }
-    ],
+    wholesaleTiers: Array.isArray(row.wholesale_tiers) && row.wholesale_tiers.length > 0 ? row.wholesale_tiers : calculateTiersFromRetail(row.retail_price),
     notes: row.notes && typeof row.notes === 'object' ? row.notes : { top: '', heart: '', base: '' },
     description: row.description || '',
     images: Array.isArray(row.images) && row.images.length > 0 ? row.images : ['https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80'],
@@ -229,19 +321,21 @@ function formatProductFromRow(row) {
 
 function formatProductToRow(product) {
   const retail = Number(product.retailPrice) || 0;
+  const sizes = Array.isArray(product.bottleSizes) && product.bottleSizes.length > 0 ? product.bottleSizes : getProductSizes(product);
   return {
     id: product.id,
     name: product.name,
     category: product.category,
     type: product.type || 'Eau de Parfum',
-    size: product.size || '100ml',
+    size: product.size || (sizes[sizes.length - 1]?.size || '12ml'),
+    bottle_sizes: sizes,
     rating: Number(product.rating) || 5.0,
     reviews: Number(product.reviews) || 0,
     retail_price: retail,
     mrp: Number(product.mrp) || Math.round(retail * 1.4),
     stock: typeof product.stock === 'number' ? product.stock : 20,
     wholesale_moq: Number(product.wholesaleMOQ) || 6,
-    wholesale_tiers: Array.isArray(product.wholesaleTiers) ? product.wholesaleTiers : [],
+    wholesale_tiers: Array.isArray(product.wholesaleTiers) ? product.wholesaleTiers : calculateTiersFromRetail(retail),
     notes: product.notes || { top: '', heart: '', base: '' },
     description: product.description || '',
     images: Array.isArray(product.images) && product.images.length > 0 ? product.images : [],
@@ -647,9 +741,26 @@ function removeSupabaseRealtime(channel) {
 // 6. PRICE CALCULATION (Dynamic with Wholesale Tiers & Offers)
 // ==========================================================================
 
-function calculateProductPrice(product, mode = 'retail', qty = 1, settings = null) {
+function calculateProductPrice(product, mode = 'retail', qty = 1, settings = null, selectedSize = null) {
   if (!settings) settings = DEFAULT_SETTINGS;
-  
+  if (!product) {
+    return { unitPrice: 0, originalPrice: 0, mrp: 0, selectedSize: '12ml', isOffer: false, discountPercent: 0, totalPrice: 0 };
+  }
+
+  // Resolve sizes
+  const sizes = getProductSizes(product);
+  let sizeObj = null;
+  if (selectedSize && sizes.length > 0) {
+    sizeObj = sizes.find(s => s.size === selectedSize || s.size.toLowerCase() === selectedSize.toLowerCase());
+  }
+  if (!sizeObj && sizes.length > 0) {
+    sizeObj = sizes.find(s => s.size === product.size) || sizes[sizes.length - 1];
+  }
+
+  const baseRetailPrice = sizeObj ? Number(sizeObj.price) : (Number(product.retailPrice) || 0);
+  const baseMrp = sizeObj ? Number(sizeObj.mrp) : (Number(product.mrp) || Math.round(baseRetailPrice * 1.4));
+  const activeSizeName = sizeObj ? sizeObj.size : (product.size || '12ml');
+
   let isOfferActive = settings.offer_enabled && settings.offer_discount_percent > 0;
   
   if (isOfferActive && settings.offer_applies_to) {
@@ -660,11 +771,13 @@ function calculateProductPrice(product, mode = 'retail', qty = 1, settings = nul
   const discountRate = isOfferActive ? (1 - settings.offer_discount_percent / 100) : 1;
 
   if (mode === 'retail') {
-    const originalPrice = product.retailPrice || 0;
+    const originalPrice = baseRetailPrice;
     const effectiveUnitPrice = isOfferActive ? Math.round(originalPrice * discountRate) : originalPrice;
     return {
       unitPrice: effectiveUnitPrice,
       originalPrice: originalPrice,
+      mrp: baseMrp,
+      selectedSize: activeSizeName,
       isOffer: isOfferActive,
       discountPercent: settings.offer_discount_percent,
       totalPrice: effectiveUnitPrice * qty
@@ -672,18 +785,26 @@ function calculateProductPrice(product, mode = 'retail', qty = 1, settings = nul
   } else {
     let matchedTier = (product.wholesaleTiers && product.wholesaleTiers.length > 0)
       ? product.wholesaleTiers[0]
-      : { price: Math.round((product.retailPrice || 0) * 0.6) };
+      : { price: Math.round(baseRetailPrice * 0.6) };
 
     if (product.wholesaleTiers && Array.isArray(product.wholesaleTiers)) {
       for (const tier of product.wholesaleTiers) {
         if (qty >= tier.min) matchedTier = tier;
       }
     }
-    const originalTierPrice = matchedTier.price;
+    let originalTierPrice = matchedTier.price;
+    // Scale proportionally if customer chose a smaller/larger size in wholesale
+    if (sizeObj && product.retailPrice && baseRetailPrice !== Number(product.retailPrice)) {
+      const ratio = baseRetailPrice / Number(product.retailPrice);
+      originalTierPrice = Math.max(100, Math.round(originalTierPrice * ratio));
+    }
+
     const effectiveTierPrice = isOfferActive ? Math.round(originalTierPrice * discountRate) : originalTierPrice;
     return {
       unitPrice: effectiveTierPrice,
       originalPrice: originalTierPrice,
+      mrp: baseMrp,
+      selectedSize: activeSizeName,
       isOffer: isOfferActive,
       discountPercent: settings.offer_discount_percent,
       totalPrice: effectiveTierPrice * qty,
@@ -709,6 +830,8 @@ function setClientSession(key, value) {
 }
 
 // Global Exports
+window.getProductSizes = getProductSizes;
+window.calculateTiersFromRetail = calculateTiersFromRetail;
 window.dbFetchProducts = dbFetchProducts;
 window.dbFetchOrders = dbFetchOrders;
 window.dbFetchSettings = dbFetchSettings;

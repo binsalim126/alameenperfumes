@@ -6,7 +6,11 @@
 const CONFIG = {
   STORE_NAME: "AL-AMEEN PERFUMES",
   TAGLINE: "Discover Your Signature Scent",
-  WHATSAPP_NUMBER: "919876543210", // Primary WhatsApp order receiving number
+  WHATSAPP_NUMBER: "919446617266", // Primary WhatsApp order receiving number (+91 94466 17266)
+  PHONE: "+91 94466 17266",
+  EMAIL: "alameenperfumes786@gmail.com",
+  ADDRESS: "Alameen Perfumes Online, Near Ernakulam, Eramalloor, 688537, Keralam",
+  COURIER_PARTNERS: "DTDC, Speed & Safe Gokulam",
   CURRENCY: "₹",
   FREE_SHIPPING_MIN: 999,
   LOW_STOCK_THRESHOLD: 10
@@ -51,7 +55,11 @@ try {
 const DEFAULT_SETTINGS = {
   store_name: "AL-AMEEN PERFUMES",
   tagline: "Discover Your Signature Scent",
-  whatsapp_number: "919876543210",
+  whatsapp_number: "919446617266",
+  store_phone: "+91 94466 17266",
+  store_email: "alameenperfumes786@gmail.com",
+  store_address: "Alameen Perfumes Online, Near Ernakulam, Eramalloor, 688537, Keralam",
+  courier_partners: "DTDC, Speed & Safe Gokulam",
   free_shipping_min: 999,
   low_stock_threshold: 10,
   announcement_enabled: false,

@@ -305,6 +305,39 @@ values
 on conflict (key) do nothing;
 
 -- --------------------------------------------------------------------------
--- 11. RELOAD POSTGREST SCHEMA CACHE (Ensures columns like bottle_sizes are immediately recognized)
+-- 11. WHOLESALE COLUMNS MIGRATION (Optional native columns)
+-- --------------------------------------------------------------------------
+alter table public.products add column if not exists wholesale_price numeric;
+alter table public.products add column if not exists wholesale_sizes jsonb;
+
+-- --------------------------------------------------------------------------
+-- 12. SUPABASE STORAGE BUCKET FOR PRODUCT IMAGES (Phone & Computer Uploads)
+-- --------------------------------------------------------------------------
+insert into storage.buckets (id, name, public)
+values ('product-images', 'product-images', true)
+on conflict (id) do update set public = true;
+
+drop policy if exists "Public Access for Product Images" on storage.objects;
+create policy "Public Access for Product Images"
+on storage.objects for select
+using (bucket_id = 'product-images');
+
+drop policy if exists "Public Insert for Product Images" on storage.objects;
+create policy "Public Insert for Product Images"
+on storage.objects for insert
+with check (bucket_id = 'product-images');
+
+drop policy if exists "Public Update for Product Images" on storage.objects;
+create policy "Public Update for Product Images"
+on storage.objects for update
+using (bucket_id = 'product-images');
+
+drop policy if exists "Public Delete for Product Images" on storage.objects;
+create policy "Public Delete for Product Images"
+on storage.objects for delete
+using (bucket_id = 'product-images');
+
+-- --------------------------------------------------------------------------
+-- 13. RELOAD POSTGREST SCHEMA CACHE
 -- --------------------------------------------------------------------------
 notify pgrst, 'reload schema';

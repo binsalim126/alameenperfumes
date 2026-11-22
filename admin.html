@@ -2418,7 +2418,24 @@
 
                 <div class="form-group">
                   <label class="form-label">WhatsApp Order Mobile Number (with country code)</label>
-                  <input type="text" id="settingWhatsAppNumber" class="form-input" value="919876543210">
+                  <input type="text" id="settingWhatsAppNumber" class="form-input" value="919446617266">
+                  <span style="font-size:0.72rem; color:var(--text-light);">Customer orders via WhatsApp will be sent directly to this number (+91 94466 17266)</span>
+                </div>
+
+                <div class="settings-two-col">
+                  <div class="form-group">
+                    <label class="form-label">Support Email Address</label>
+                    <input type="email" id="settingStoreEmail" class="form-input" value="alameenperfumes786@gmail.com">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Courier & Dispatch Partners</label>
+                    <input type="text" id="settingCourierPartners" class="form-input" value="DTDC, Speed & Safe Gokulam">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Store Physical / Operating Address</label>
+                  <input type="text" id="settingStoreAddress" class="form-input" value="Alameen Perfumes Online, Near Ernakulam, Eramalloor, 688537, Keralam">
                 </div>
 
                 <div class="settings-two-col">
@@ -3855,9 +3872,10 @@
               </div>
               <div style="text-align:right;">
                 <h4 style="font-size:9pt; text-transform:uppercase; color:#718D80; margin-bottom:4px;">Dispatched By:</h4>
-                <div style="font-weight:700; font-size:10pt;">Al-Ameen Perfumery Atelier</div>
-                <div style="font-size:9pt;">Crawford Market, Mumbai, MH</div>
-                <div style="font-size:9pt;">WhatsApp: +91 98765 43210</div>
+                <div style="font-weight:700; font-size:10pt;">Al-Ameen Perfumes Online</div>
+                <div style="font-size:9pt;">Near Ernakulam, Eramalloor – 688537, Keralam</div>
+                <div style="font-size:9pt;">Phone & WhatsApp: +91 94466 17266</div>
+                <div style="font-size:9pt;">Couriers: DTDC, Speed & Safe Gokulam</div>
                 <div style="font-size:9pt;">Channel: <strong>${order.type.toUpperCase()}</strong></div>
               </div>
             </div>
@@ -5449,12 +5467,18 @@
         const storeName = document.getElementById('settingStoreName');
         const tagline = document.getElementById('settingTagline');
         const phone = document.getElementById('settingWhatsAppNumber');
+        const email = document.getElementById('settingStoreEmail');
+        const courier = document.getElementById('settingCourierPartners');
+        const address = document.getElementById('settingStoreAddress');
         const ship = document.getElementById('settingFreeShipping');
         const low = document.getElementById('settingLowStockThreshold');
 
         if (storeName) storeName.value = this.settings.store_name || CONFIG.STORE_NAME;
         if (tagline) tagline.value = this.settings.tagline || CONFIG.TAGLINE;
         if (phone) phone.value = this.settings.whatsapp_number || CONFIG.WHATSAPP_NUMBER;
+        if (email) email.value = this.settings.store_email || (CONFIG.EMAIL || 'alameenperfumes786@gmail.com');
+        if (courier) courier.value = this.settings.courier_partners || (CONFIG.COURIER_PARTNERS || 'DTDC, Speed & Safe Gokulam');
+        if (address) address.value = this.settings.store_address || (CONFIG.ADDRESS || 'Alameen Perfumes Online, Near Ernakulam, Eramalloor, 688537, Keralam');
         if (ship) ship.value = this.settings.free_shipping_min || CONFIG.FREE_SHIPPING_MIN;
         if (low) low.value = this.settings.low_stock_threshold || CONFIG.LOW_STOCK_THRESHOLD;
         const tierMoq = document.getElementById('settingTierMoq');
@@ -5630,6 +5654,9 @@
         this.settings.store_name = document.getElementById('settingStoreName')?.value || CONFIG.STORE_NAME;
         this.settings.tagline = document.getElementById('settingTagline')?.value || CONFIG.TAGLINE;
         this.settings.whatsapp_number = document.getElementById('settingWhatsAppNumber')?.value || CONFIG.WHATSAPP_NUMBER;
+        this.settings.store_email = document.getElementById('settingStoreEmail')?.value || (CONFIG.EMAIL || 'alameenperfumes786@gmail.com');
+        this.settings.courier_partners = document.getElementById('settingCourierPartners')?.value || (CONFIG.COURIER_PARTNERS || 'DTDC, Speed & Safe Gokulam');
+        this.settings.store_address = document.getElementById('settingStoreAddress')?.value || (CONFIG.ADDRESS || 'Alameen Perfumes Online, Near Ernakulam, Eramalloor, 688537, Keralam');
         this.settings.free_shipping_min = parseInt(document.getElementById('settingFreeShipping')?.value, 10) || 999;
         this.settings.low_stock_threshold = parseInt(document.getElementById('settingLowStockThreshold')?.value, 10) || 10;
         this.settings.wholesale_default_moq = parseInt(document.getElementById('settingTierMoq')?.value, 10) || 6;

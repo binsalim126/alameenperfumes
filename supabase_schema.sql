@@ -300,7 +300,7 @@ on conflict (id) do nothing;
 -- Seed default site settings
 insert into public.site_settings (key, value)
 values
-  ('general', '{"store_name": "AL-AMEEN PERFUMES", "tagline": "Discover Your Signature Scent", "whatsapp_number": "919876543210", "free_shipping_min": 999, "low_stock_threshold": 10, "announcement_enabled": false, "announcement_text": "Free shipping Pan-India · Wholesale rates available", "offer_enabled": false, "offer_name": "Festive Season Special", "offer_badge": "Festive Offer", "offer_discount_percent": 15, "offer_applies_to": "both"}'::jsonb),
+  ('general', '{"store_name": "AL-AMEEN PERFUMES", "tagline": "Discover Your Signature Scent", "whatsapp_number": "919446617266", "store_phone": "+91 94466 17266", "store_email": "alameenperfumes786@gmail.com", "store_address": "Alameen Perfumes Online, Near Ernakulam, Eramalloor, 688537, Keralam", "courier_partners": "DTDC, Speed & Safe Gokulam", "free_shipping_min": 999, "low_stock_threshold": 10, "announcement_enabled": false, "announcement_text": "Free shipping Pan-India · Wholesale rates available", "offer_enabled": false, "offer_name": "Festive Season Special", "offer_badge": "Festive Offer", "offer_discount_percent": 15, "offer_applies_to": "both"}'::jsonb),
   ('admin_auth', '{"admin_id": "AlameenPerfumes", "password_hash": "Alameen@786"}'::jsonb)
 on conflict (key) do nothing;
 

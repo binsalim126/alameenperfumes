@@ -344,6 +344,15 @@ function calculateTiersFromRetail(retailPrice, tierSettings = null) {
   ];
 }
 
+// Safely track whether Supabase schema has optional columns. Default false to prevent PGRST204 errors.
+// All size and price data are ALWAYS safely persisted inside 'notes' JSON (notes.bottle_sizes & notes.wholesale_sizes)
+if (typeof window.hasWholesalePriceColumn === 'undefined') {
+  window.hasWholesalePriceColumn = false;
+}
+if (typeof window.hasWholesaleSizesColumn === 'undefined') {
+  window.hasWholesaleSizesColumn = false;
+}
+
 function formatProductFromRow(row) {
   if (!row) return null;
   const rawRetailSizes = (Array.isArray(row.bottle_sizes) && row.bottle_sizes.length > 0)
@@ -372,7 +381,11 @@ function formatProductFromRow(row) {
         }, null, 'wholesale');
 
   const baseRetail = (rawRetailSizes && rawRetailSizes[0]?.price) || Number(row.retail_price) || 0;
-  const baseWholesale = (rawWholesaleSizes && rawWholesaleSizes[0]?.price) || Number(row.wholesale_price) || Math.round(baseRetail * 2.2);
+  const baseWholesale = Number(row.wholesale_price)
+    || (row.notes && row.notes.wholesale_price)
+    || (rawWholesaleSizes && rawWholesaleSizes[0]?.price)
+    || (row.wholesale_tiers && row.wholesale_tiers[0]?.price)
+    || Math.round(baseRetail * 2.2);
 
   return {
     id: row.id,
@@ -406,12 +419,14 @@ function formatProductToRow(product) {
   const retail = Number(product.retailPrice) || 0;
   const sizes = Array.isArray(product.bottleSizes) && product.bottleSizes.length > 0 ? product.bottleSizes : getProductSizes(product, null, 'retail');
   const wholesaleSizes = Array.isArray(product.wholesaleSizes) && product.wholesaleSizes.length > 0 ? product.wholesaleSizes : getProductSizes(product, null, 'wholesale');
+  const baseWholesalePrice = Number(product.wholesalePrice) || (wholesaleSizes[0]?.price) || Math.round((retail || 499) * 2.2);
   
-  // Also preserve bottle_sizes and wholesale_sizes inside notes JSON so sizes are always preserved even if columns are not in Supabase
+  // Preserve bottle_sizes and wholesale_sizes inside notes JSON so sizes are ALWAYS safely preserved
   const notesObj = (product.notes && typeof product.notes === 'object') ? { ...product.notes } : { top: '', heart: '', base: '' };
   notesObj.bottle_sizes = sizes;
   notesObj.retail_sizes = sizes;
   notesObj.wholesale_sizes = wholesaleSizes;
+  notesObj.wholesale_price = baseWholesalePrice;
 
   const row = {
     id: product.id,
@@ -425,12 +440,11 @@ function formatProductToRow(product) {
     mrp: Number(product.mrp) || (sizes[0]?.mrp) || Math.round((retail || 0) * 1.4),
     stock: typeof product.stock === 'number' ? product.stock : 20,
     wholesale_moq: Number(product.wholesaleMOQ) || 6,
-    wholesale_price: Number(product.wholesalePrice) || (wholesaleSizes[0]?.price) || Math.round(retail * 2.2),
     wholesale_tiers: [
       {
         min: Number(product.wholesaleMOQ) || 6,
         max: 9999,
-        price: Number(product.wholesalePrice) || (wholesaleSizes[0]?.price) || Math.round(retail * 2.2)
+        price: baseWholesalePrice
       }
     ],
     notes: notesObj,
@@ -443,6 +457,12 @@ function formatProductToRow(product) {
 
   if (window.hasBottleSizesColumn === true) {
     row.bottle_sizes = sizes;
+  }
+  if (window.hasWholesalePriceColumn === true) {
+    row.wholesale_price = baseWholesalePrice;
+  }
+  if (window.hasWholesaleSizesColumn === true) {
+    row.wholesale_sizes = wholesaleSizes;
   }
 
   return row;
@@ -555,12 +575,16 @@ async function dbCreateProduct(product) {
     .insert([payload])
     .select();
 
-  // Graceful fallback if 'bottle_sizes' column does not exist or schema cache is stale (PGRST204)
-  if (error && (error.code === 'PGRST204' || (error.message && error.message.toLowerCase().includes('bottle_sizes')))) {
-    console.warn('[Supabase Fallback] "bottle_sizes" column missing in Supabase schema cache. Retrying insert without column...');
+  // Graceful fallback if optional columns do not exist in Supabase schema (PGRST204)
+  if (error && (error.code === 'PGRST204' || (error.message && (error.message.toLowerCase().includes('column') || error.message.toLowerCase().includes('bottle_sizes') || error.message.toLowerCase().includes('wholesale'))))) {
+    console.warn('[Supabase Fallback] Schema cache mismatch. Retrying insert with universal core columns...');
     window.hasBottleSizesColumn = false;
+    window.hasWholesalePriceColumn = false;
+    window.hasWholesaleSizesColumn = false;
     const fallbackPayload = { ...payload };
     delete fallbackPayload.bottle_sizes;
+    delete fallbackPayload.wholesale_price;
+    delete fallbackPayload.wholesale_sizes;
     
     // Explicitly select only universal columns to prevent PostgREST from failing on stale column cache
     const retry = await sb.from('products')
@@ -609,13 +633,17 @@ async function dbBatchCreateProducts(products) {
     .upsert(rows)
     .select();
 
-  // Graceful fallback if 'bottle_sizes' column does not exist or schema cache is stale (PGRST204)
-  if (error && (error.code === 'PGRST204' || (error.message && error.message.toLowerCase().includes('bottle_sizes')))) {
-    console.warn('[Supabase Fallback] "bottle_sizes" column missing in Supabase schema cache during batch upsert. Retrying without column...');
+  // Graceful fallback if optional columns do not exist in Supabase schema (PGRST204)
+  if (error && (error.code === 'PGRST204' || (error.message && (error.message.toLowerCase().includes('column') || error.message.toLowerCase().includes('bottle_sizes') || error.message.toLowerCase().includes('wholesale'))))) {
+    console.warn('[Supabase Fallback] Schema cache mismatch during batch upsert. Retrying with universal core columns...');
     window.hasBottleSizesColumn = false;
+    window.hasWholesalePriceColumn = false;
+    window.hasWholesaleSizesColumn = false;
     const stripped = rows.map(r => {
       const copy = { ...r };
       delete copy.bottle_sizes;
+      delete copy.wholesale_price;
+      delete copy.wholesale_sizes;
       return copy;
     });
 
@@ -653,12 +681,16 @@ async function dbUpdateProduct(product) {
     .eq('id', product.id)
     .select();
 
-  // Graceful fallback if 'bottle_sizes' column does not exist or schema cache is stale (PGRST204)
-  if (error && (error.code === 'PGRST204' || (error.message && error.message.toLowerCase().includes('bottle_sizes')))) {
-    console.warn('[Supabase Fallback] "bottle_sizes" column missing in Supabase schema cache. Retrying update without column...');
+  // Graceful fallback if optional columns do not exist in Supabase schema (PGRST204)
+  if (error && (error.code === 'PGRST204' || (error.message && (error.message.toLowerCase().includes('column') || error.message.toLowerCase().includes('bottle_sizes') || error.message.toLowerCase().includes('wholesale'))))) {
+    console.warn('[Supabase Fallback] Schema cache mismatch. Retrying update with universal core columns...');
     window.hasBottleSizesColumn = false;
+    window.hasWholesalePriceColumn = false;
+    window.hasWholesaleSizesColumn = false;
     const fallbackPayload = { ...payload };
     delete fallbackPayload.bottle_sizes;
+    delete fallbackPayload.wholesale_price;
+    delete fallbackPayload.wholesale_sizes;
     
     // Explicitly select only universal columns
     const retry = await sb.from('products')
@@ -715,6 +747,45 @@ async function dbDeleteProduct(productId) {
   }
 
   return true;
+}
+
+// Upload perfume image to Supabase Storage ('product-images' bucket)
+// Returns public CDN URL on success, or null on fallback so Base64 can be stored directly
+async function uploadImageToSupabase(file) {
+  if (!file) return null;
+  try {
+    const sb = getSupabase();
+    if (!sb || !sb.storage) return null;
+
+    const ext = file.name ? file.name.split('.').pop().toLowerCase() : 'jpg';
+    const cleanExt = ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext) ? ext : 'jpg';
+    const filePath = `perfumes/${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${cleanExt}`;
+
+    const { data, error } = await sb.storage
+      .from('product-images')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: true
+      });
+
+    if (error) {
+      console.warn('[Supabase Storage Upload Info]', error.message || error);
+      return null;
+    }
+
+    const { data: publicData } = sb.storage
+      .from('product-images')
+      .getPublicUrl(filePath);
+
+    if (publicData && publicData.publicUrl) {
+      console.log('[Supabase Storage Upload Success]', publicData.publicUrl);
+      return publicData.publicUrl;
+    }
+    return null;
+  } catch (err) {
+    console.warn('[Supabase Storage Upload Fallback]', err.message || err);
+    return null;
+  }
 }
 
 // Create an order in Supabase
@@ -1061,6 +1132,7 @@ window.dbSaveAdminPassword = dbSaveAdminPassword;
 window.dbSeedFlagshipProductsToSupabase = dbSeedFlagshipProductsToSupabase;
 window.initSupabaseRealtime = initSupabaseRealtime;
 window.removeSupabaseRealtime = removeSupabaseRealtime;
+window.uploadImageToSupabase = uploadImageToSupabase;
 window.calculateProductPrice = calculateProductPrice;
 window.getClientSession = getClientSession;
 window.setClientSession = setClientSession;

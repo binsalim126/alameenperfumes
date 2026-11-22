@@ -2438,6 +2438,27 @@
                     </button>
                   </div>
                 </div>
+
+                <!-- Wholesale Volume Sizes Config Box (50ml, 100ml, 500ml) -->
+                <div style="background:var(--green-50); border:1.5px solid var(--border-gold); padding:16px; border-radius:12px; margin-top:18px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                    <strong style="font-size:0.88rem; color:var(--green-950); display:flex; align-items:center; gap:6px;">
+                      <span>Wholesale Volume Sizes (ml)</span>
+                    </strong>
+                    <button type="button" class="btn-action-secondary" style="font-size:0.75rem; padding:4px 10px; min-height:30px;" onclick="adminApp.resetWholesaleSizesDefault()">
+                      ↺ Reset Default (50ml, 100ml, 500ml)
+                    </button>
+                  </div>
+                  <div id="wholesaleSizesTagsContainer" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+                    <!-- Dynamically rendered wholesale size badges with remove button -->
+                  </div>
+                  <div style="display:flex; gap:8px; align-items:center; max-width:380px;">
+                    <input type="text" id="newWholesaleSizeInput" class="form-input" style="padding:7px 12px; font-size:0.85rem;" placeholder="Add ml (e.g. 250ml, 1000ml)" onkeydown="if(event.key==='Enter'){event.preventDefault();adminApp.addWholesaleSize();}">
+                    <button type="button" class="btn-action-secondary" style="white-space:nowrap; padding:7px 14px; font-size:0.82rem; min-height:38px;" onclick="adminApp.addWholesaleSize()">
+                      + Add Size
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -4147,20 +4168,22 @@
         const box = document.getElementById('wholesaleSizesConfigBox');
         if (!box) return;
 
-        const wholesaleList = ['50ml', '100ml', '500ml'];
+        const wholesaleList = (this.settings.wholesale_sizes && this.settings.wholesale_sizes.length > 0)
+          ? this.settings.wholesale_sizes
+          : ['50ml', '100ml', '500ml'];
         box.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
             <span style="font-size:0.78rem; font-weight:800; color:var(--green-900); text-transform:uppercase; letter-spacing:0.04em; display:flex; align-items:center; gap:6px;">
               <span>📦</span>
-              <span>Wholesale Volume Sizes & Rates (50ml, 100ml, 500ml):</span>
+              <span>Wholesale Volume Sizes & Rates (${wholesaleList.join(', ')}):</span>
             </span>
-            <button type="button" class="btn-action-secondary" style="padding:4px 10px; font-size:0.75rem; min-height:30px;" onclick="adminApp.autoFillWholesaleSizesFromBase()">Auto-Calculate from 50ml</button>
+            <button type="button" class="btn-action-secondary" style="padding:4px 10px; font-size:0.75rem; min-height:30px;" onclick="adminApp.autoFillWholesaleSizesFromBase()">Auto-Calculate from ${wholesaleList[0] || '50ml'}</button>
           </div>
 
           <div class="bottle-sizes-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;">
             ${wholesaleList.map((sz, idx) => {
               const found = existingWholesaleSizes?.find(s => s.size.toLowerCase() === sz.toLowerCase()) || { size: sz, price: '', mrp: '' };
-              const isBase = sz === '50ml';
+              const isBase = idx === 0;
               return `
                 <div style="background:#FFFFFF; padding:10px; border-radius:8px; border:1px solid ${isBase ? 'var(--gold-500)' : 'var(--border)'};">
                   <strong style="display:block; font-size:0.8rem; color:var(--green-950); margin-bottom:6px;">
@@ -4248,40 +4271,37 @@
       }
 
       autoFillWholesaleSizesFromBase() {
-        const p50 = parseInt(document.getElementById('pWholesalePrice_50ml')?.value, 10);
-        if (!p50) return;
-        const m50Input = document.getElementById('pWholesaleMrp_50ml');
-        if (m50Input && !m50Input.value) m50Input.value = Math.round(p50 * 1.35);
+        const wholesaleList = (this.settings.wholesale_sizes && this.settings.wholesale_sizes.length > 0)
+          ? this.settings.wholesale_sizes
+          : ['50ml', '100ml', '500ml'];
+        const baseSz = wholesaleList[0] || '50ml';
+        const pBase = parseInt(document.getElementById(`pWholesalePrice_${baseSz}`)?.value, 10);
+        if (!pBase) return;
+        const mBaseInput = document.getElementById(`pWholesaleMrp_${baseSz}`);
+        if (mBaseInput && !mBaseInput.value) mBaseInput.value = Math.round(pBase * 1.35);
 
-        const p100Input = document.getElementById('pWholesalePrice_100ml');
-        const m100Input = document.getElementById('pWholesaleMrp_100ml');
-        const p500Input = document.getElementById('pWholesalePrice_500ml');
-        const m500Input = document.getElementById('pWholesaleMrp_500ml');
+        wholesaleList.slice(1).forEach(sz => {
+          const pInput = document.getElementById(`pWholesalePrice_${sz}`);
+          const mInput = document.getElementById(`pWholesaleMrp_${sz}`);
+          const baseNum = parseFloat(baseSz) || 50;
+          const szNum = parseFloat(sz) || 100;
+          const ratio = szNum / baseNum;
+          const factor = ratio <= 2 ? (ratio * 0.92) : (ratio * 0.78);
+          const p = Math.max(299, Math.round((pBase * factor) / 50) * 50 - 1);
+          const m = Math.round(p * 1.35);
 
-        const p100 = Math.max(499, Math.round((p50 * 1.85) / 50) * 50 - 1);
-        const m100 = Math.round(p100 * 1.35);
-        const p500 = Math.max(1999, Math.round((p50 * 7.8) / 100) * 100 - 1);
-        const m500 = Math.round(p500 * 1.35);
-
-        if (p100Input && (!p100Input.value || p100Input.dataset.autofilled === 'true')) {
-          p100Input.value = p100;
-          p100Input.dataset.autofilled = 'true';
-        }
-        if (m100Input && (!m100Input.value || m100Input.dataset.autofilled === 'true')) {
-          m100Input.value = m100;
-          m100Input.dataset.autofilled = 'true';
-        }
-        if (p500Input && (!p500Input.value || p500Input.dataset.autofilled === 'true')) {
-          p500Input.value = p500;
-          p500Input.dataset.autofilled = 'true';
-        }
-        if (m500Input && (!m500Input.value || m500Input.dataset.autofilled === 'true')) {
-          m500Input.value = m500;
-          m500Input.dataset.autofilled = 'true';
-        }
+          if (pInput && (!pInput.value || pInput.dataset.autofilled === 'true')) {
+            pInput.value = p;
+            pInput.dataset.autofilled = 'true';
+          }
+          if (mInput && (!mInput.value || mInput.dataset.autofilled === 'true')) {
+            mInput.value = m;
+            mInput.dataset.autofilled = 'true';
+          }
+        });
       }
 
-      handleProductImageFile(e) {
+      async handleProductImageFile(e) {
         const file = e.target.files && e.target.files[0];
         if (!file) return;
 
@@ -4290,12 +4310,21 @@
           return;
         }
 
+        const sizeEl = document.getElementById('imagePreviewSize');
+        const nameEl = document.getElementById('imagePreviewName');
+        const container = document.getElementById('imagePreviewContainer');
+        const thumb = document.getElementById('imagePreviewThumb');
+        
+        if (container) container.style.display = 'flex';
+        if (nameEl) nameEl.textContent = file.name;
+        if (sizeEl) sizeEl.textContent = 'Optimizing for Supabase...';
+
         const reader = new FileReader();
-        reader.onload = (uploadEvent) => {
+        reader.onload = async (uploadEvent) => {
           const rawDataUrl = uploadEvent.target.result;
 
           const img = new Image();
-          img.onload = () => {
+          img.onload = async () => {
             const maxDim = 800;
             let width = img.width;
             let height = img.height;
@@ -4316,17 +4345,33 @@
             ctx.drawImage(img, 0, 0, width, height);
             const optimizedUrl = canvas.toDataURL('image/jpeg', 0.85);
 
-            document.getElementById('pImage').value = optimizedUrl;
-            const thumb = document.getElementById('imagePreviewThumb');
             if (thumb) thumb.src = optimizedUrl;
-            const nameEl = document.getElementById('imagePreviewName');
-            if (nameEl) nameEl.textContent = file.name;
-            const sizeEl = document.getElementById('imagePreviewSize');
-            if (sizeEl) sizeEl.textContent = `${Math.round(file.size / 1024)} KB (Ready)`;
 
-            const container = document.getElementById('imagePreviewContainer');
-            if (container) container.style.display = 'flex';
-            this.showToast('Image uploaded & optimized successfully!', 'success');
+            // Try uploading to Supabase Storage ('product-images' bucket)
+            let finalImageUrl = optimizedUrl;
+            try {
+              if (typeof uploadImageToSupabase === 'function') {
+                if (sizeEl) sizeEl.textContent = 'Uploading to Supabase Storage CDN...';
+                const cdnUrl = await uploadImageToSupabase(file);
+                if (cdnUrl) {
+                  finalImageUrl = cdnUrl;
+                  if (sizeEl) sizeEl.textContent = 'Supabase Storage CDN (Active)';
+                  this.showToast('Image uploaded to Supabase Storage!', 'success');
+                } else {
+                  if (sizeEl) sizeEl.textContent = `${Math.round(file.size / 1024)} KB (Supabase Cloud Ready)`;
+                  this.showToast('Image optimized for Supabase database!', 'success');
+                }
+              } else {
+                if (sizeEl) sizeEl.textContent = `${Math.round(file.size / 1024)} KB (Supabase Cloud Ready)`;
+                this.showToast('Image optimized for Supabase database!', 'success');
+              }
+            } catch (storageErr) {
+              console.warn('[Image upload warning]', storageErr);
+              if (sizeEl) sizeEl.textContent = `${Math.round(file.size / 1024)} KB (Supabase Cloud Ready)`;
+              this.showToast('Image optimized for Supabase database!', 'success');
+            }
+
+            document.getElementById('pImage').value = finalImageUrl;
           };
           img.src = rawDataUrl;
         };
@@ -4494,16 +4539,21 @@
           baseRetailMrp = customMrp;
         }
 
-        // Construct wholesale volume sizes (permanently 50ml, 100ml, 500ml)
-        const wholesaleSizes = ['50ml', '100ml', '500ml'].map(sz => {
-          const defaultP = (sz === '50ml') ? Math.round(baseRetailPrice * 2.2) : (sz === '100ml') ? Math.round(baseRetailPrice * 3.8) : Math.round(baseRetailPrice * 15);
+        // Construct wholesale volume sizes (from settings or 50ml, 100ml, 500ml)
+        const wholesaleSizesList = (this.settings.wholesale_sizes && this.settings.wholesale_sizes.length > 0)
+          ? this.settings.wholesale_sizes
+          : ['50ml', '100ml', '500ml'];
+
+        const wholesaleSizes = wholesaleSizesList.map(sz => {
+          const szNum = parseFloat(sz) || 50;
+          const defaultP = (sz === '50ml') ? Math.round(baseRetailPrice * 2.2) : Math.round(baseRetailPrice * (szNum / 50) * 1.8);
           const p = parseInt(document.getElementById(`pWholesalePrice_${sz}`)?.value, 10) || defaultP;
           const m = parseInt(document.getElementById(`pWholesaleMrp_${sz}`)?.value, 10) || Math.round(p * 1.35);
           return {
             size: sz,
             price: p,
             mrp: m,
-            label: `${sz} Wholesale ${sz === '500ml' ? 'Bulk Flacon' : 'Flacon'}`
+            label: `${sz} Wholesale ${parseFloat(sz) >= 500 ? 'Bulk Flacon' : 'Flacon'}`
           };
         });
         const baseWholesalePrice = wholesaleSizes[0]?.price || Math.round(baseRetailPrice * 2.2);
@@ -5360,12 +5410,16 @@
       renderSettingsSizesUI() {
         const attarContainer = document.getElementById('attarSizesTagsContainer');
         const sprayContainer = document.getElementById('spraySizesTagsContainer');
+        const wholesaleContainer = document.getElementById('wholesaleSizesTagsContainer');
 
         if (!Array.isArray(this.settings.attar_sizes) || this.settings.attar_sizes.length === 0) {
           this.settings.attar_sizes = ['3ml', '6ml', '12ml'];
         }
         if (!Array.isArray(this.settings.spray_sizes) || this.settings.spray_sizes.length === 0) {
           this.settings.spray_sizes = ['50ml', '100ml'];
+        }
+        if (!Array.isArray(this.settings.wholesale_sizes) || this.settings.wholesale_sizes.length === 0) {
+          this.settings.wholesale_sizes = ['50ml', '100ml', '500ml'];
         }
 
         if (attarContainer) {
@@ -5382,6 +5436,15 @@
             <span class="size-tag-badge">
               <span>${sz}</span>
               <button type="button" onclick="adminApp.removeSpraySize(${idx})" title="Remove ${sz}">✕</button>
+            </span>
+          `).join('');
+        }
+
+        if (wholesaleContainer) {
+          wholesaleContainer.innerHTML = this.settings.wholesale_sizes.map((sz, idx) => `
+            <span class="size-tag-badge">
+              <span>${sz}</span>
+              <button type="button" onclick="adminApp.removeWholesaleSize(${idx})" title="Remove ${sz}">✕</button>
             </span>
           `).join('');
         }
@@ -5467,6 +5530,46 @@
         this.showToast('Reset Spray sizes to default (50ml, 100ml).', 'success');
       }
 
+      addWholesaleSize() {
+        const input = document.getElementById('newWholesaleSizeInput');
+        if (!input) return;
+        let val = input.value.trim().toLowerCase().replace(/\s+/g, '');
+        if (!val) return;
+        if (/^\d+$/.test(val)) val = val + 'ml';
+        if (!val.endsWith('ml')) val = val + 'ml';
+
+        if (!Array.isArray(this.settings.wholesale_sizes)) {
+          this.settings.wholesale_sizes = ['50ml', '100ml', '500ml'];
+        }
+        if (this.settings.wholesale_sizes.includes(val)) {
+          this.showToast(`Wholesale size "${val}" already exists.`, 'error');
+          return;
+        }
+
+        this.settings.wholesale_sizes.push(val);
+        this.settings.wholesale_sizes.sort((a, b) => (parseFloat(a) || 0) - (parseFloat(b) || 0));
+        input.value = '';
+        this.renderSettingsSizesUI();
+        this.showToast(`Added ${val} to Wholesale sizes. Click "Save Sizes" or "Save Settings" to persist.`, 'success');
+      }
+
+      removeWholesaleSize(idx) {
+        if (!Array.isArray(this.settings.wholesale_sizes)) return;
+        if (this.settings.wholesale_sizes.length <= 1) {
+          this.showToast('You must keep at least one Wholesale volume size.', 'error');
+          return;
+        }
+        const removed = this.settings.wholesale_sizes.splice(idx, 1);
+        this.renderSettingsSizesUI();
+        this.showToast(`Removed ${removed[0]} from Wholesale sizes.`, 'success');
+      }
+
+      resetWholesaleSizesDefault() {
+        this.settings.wholesale_sizes = ['50ml', '100ml', '500ml'];
+        this.renderSettingsSizesUI();
+        this.showToast('Reset Wholesale sizes to default (50ml, 100ml, 500ml).', 'success');
+      }
+
       async saveGeneralSettings() {
         this.settings.store_name = document.getElementById('settingStoreName')?.value || CONFIG.STORE_NAME;
         this.settings.tagline = document.getElementById('settingTagline')?.value || CONFIG.TAGLINE;
@@ -5481,6 +5584,9 @@
         }
         if (!Array.isArray(this.settings.spray_sizes) || this.settings.spray_sizes.length === 0) {
           this.settings.spray_sizes = ['50ml', '100ml'];
+        }
+        if (!Array.isArray(this.settings.wholesale_sizes) || this.settings.wholesale_sizes.length === 0) {
+          this.settings.wholesale_sizes = ['50ml', '100ml', '500ml'];
         }
 
         try {

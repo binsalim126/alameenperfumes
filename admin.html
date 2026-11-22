@@ -953,6 +953,40 @@
       transition: var(--transition);
     }
     .drawer-backdrop.active { opacity: 1; visibility: visible; }
+    .mobile-menu-btn {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #FFFFFF;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .mobile-nav-drawer {
+      position: fixed !important;
+      top: 0 !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: auto !important;
+      width: 320px !important;
+      max-width: 86vw !important;
+      height: 100% !important;
+      background: #FFFFFF !important;
+      z-index: 1060 !important;
+      transform: translateX(-100%) !important;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      box-shadow: 10px 0 35px rgba(0,0,0,0.3) !important;
+      overflow-y: auto !important;
+    }
+    .mobile-nav-drawer.active {
+      transform: translateX(0) !important;
+    }
     .side-drawer {
       position: fixed;
       top: 0;
@@ -1394,6 +1428,9 @@
         width: 32px !important;
         height: 32px !important;
       }
+      #adminPublicNav .mobile-menu-btn {
+        display: flex !important;
+      }
       .admin-top-bar {
         padding: 0 12px !important;
         height: 56px !important;
@@ -1561,14 +1598,33 @@
           </ul>
         </nav>
 
-        <div style="display:flex; align-items:center; gap:10px;">
-          <a href="index.html" style="display:inline-flex; align-items:center; gap:6px; background:rgba(212,175,55,0.15); color:var(--gold-500); border:1px solid rgba(212,175,55,0.35); border-radius:var(--radius-pill); padding:7px 16px; font-size:0.82rem; font-weight:700; text-decoration:none;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="index.html" style="display:inline-flex; align-items:center; gap:6px; background:rgba(212,175,55,0.15); color:var(--gold-500); border:1px solid rgba(212,175,55,0.35); border-radius:var(--radius-pill); padding:7px 14px; font-size:0.8rem; font-weight:700; text-decoration:none;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
             <span>Live Store</span>
           </a>
+          <button type="button" class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Open Menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
         </div>
       </div>
     </header>
+
+    <!-- Mobile Drawer Menu on Login Screen -->
+    <div class="drawer-backdrop" id="mobileMenuBackdrop" onclick="closeMobileMenu()"></div>
+    <aside class="mobile-nav-drawer" id="mobileMenuDrawer">
+      <div style="padding:18px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-subtle); background:var(--green-950); color:#FFFFFF;">
+        <span class="brand-title" style="font-size:1.15rem; color:#FFFFFF;">AL-AMEEN PERFUMES</span>
+        <button onclick="closeMobileMenu()" style="color:#FFFFFF; font-size:1.3rem;">✕</button>
+      </div>
+      <div style="padding: 24px; display:flex; flex-direction:column; gap:16px;">
+        <a href="index.html" class="nav-link" style="color:var(--green-950); font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">Home</a>
+        <a href="shop.html" class="nav-link" style="color:var(--green-950); font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">Shop Catalog</a>
+        <a href="about.html" class="nav-link" style="color:var(--green-950); font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">About Heritage</a>
+        <a href="contact.html" class="nav-link" style="color:var(--green-950); font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">Contact & Inquiries</a>
+        <a href="admin.html" class="nav-link" style="color:var(--gold-700); font-weight:700; font-size:1.05rem; padding:8px 0;">Admin Portal</a>
+      </div>
+    </aside>
 
     <div class="signin-card" style="margin: auto 20px;">
       <div class="signin-logo">
@@ -5764,6 +5820,27 @@
     }
 
     const adminApp = new AdminAppEngine();
+
+    function toggleMobileMenu() {
+      const drawer = document.getElementById('mobileMenuDrawer');
+      const backdrop = document.getElementById('mobileMenuBackdrop');
+      if (!drawer) return;
+      if (drawer.classList.contains('active')) {
+        closeMobileMenu();
+      } else {
+        drawer.classList.add('active');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeMobileMenu() {
+      const drawer = document.getElementById('mobileMenuDrawer');
+      const backdrop = document.getElementById('mobileMenuBackdrop');
+      if (drawer) drawer.classList.remove('active');
+      if (backdrop) backdrop.classList.remove('active');
+      document.body.style.overflow = '';
+    }
   </script>
 </body>
 </html>

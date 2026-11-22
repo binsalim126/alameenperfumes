@@ -1148,14 +1148,17 @@
       inset: 0;
       background: rgba(4, 20, 14, 0.65);
       backdrop-filter: blur(4px);
-      z-index: 100;
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 1040;
       opacity: 0;
       visibility: hidden;
-      transition: var(--transition);
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      pointer-events: none;
     }
     .drawer-backdrop.active {
       opacity: 1;
       visibility: visible;
+      pointer-events: auto;
     }
     .cart-drawer {
       position: fixed;
@@ -1165,7 +1168,7 @@
       max-width: 420px;
       height: 100%;
       background: #FFFFFF;
-      z-index: 101;
+      z-index: 1050;
       transform: translateX(100%);
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
@@ -1174,6 +1177,27 @@
     }
     .cart-drawer.active {
       transform: translateX(0);
+    }
+    .mobile-nav-drawer {
+      position: fixed !important;
+      top: 0 !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: auto !important;
+      width: 320px !important;
+      max-width: 86vw !important;
+      height: 100% !important;
+      background: #FFFFFF !important;
+      z-index: 1060 !important;
+      transform: translateX(-100%) !important;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      box-shadow: 10px 0 35px rgba(0,0,0,0.3) !important;
+      overflow-y: auto !important;
+    }
+    .mobile-nav-drawer.active {
+      transform: translateX(0) !important;
     }
     .drawer-header {
       padding: 18px 22px;
@@ -1679,7 +1703,7 @@
         </a>
 
         <!-- Mobile Burger Menu -->
-        <button class="mobile-menu-btn" onclick="app.toggleMobileMenu()" aria-label="Open Menu">
+        <button type="button" class="mobile-menu-btn" onclick="app.toggleMobileMenu()" aria-label="Open Menu">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </button>
       </div>
@@ -1689,7 +1713,7 @@
 
   <!-- Mobile Drawer Menu -->
   <div class="drawer-backdrop" id="mobileMenuBackdrop" onclick="app.closeMobileMenu()"></div>
-  <aside class="cart-drawer" id="mobileMenuDrawer" style="right:auto; left:0; transform:translateX(-100%);">
+  <aside class="mobile-nav-drawer" id="mobileMenuDrawer">
     <div class="drawer-header">
       <span class="brand-title" style="font-size:1.15rem;">AL-AMEEN PERFUMES</span>
       <button class="drawer-close-btn" onclick="app.closeMobileMenu()">✕</button>
@@ -2673,13 +2697,24 @@
       }
 
       toggleMobileMenu() {
-        document.getElementById('mobileMenuBackdrop').classList.toggle('active');
-        document.getElementById('mobileMenuDrawer').classList.toggle('active');
+        const drawer = document.getElementById('mobileMenuDrawer');
+        const backdrop = document.getElementById('mobileMenuBackdrop');
+        if (!drawer) return;
+        if (drawer.classList.contains('active')) {
+          this.closeMobileMenu();
+        } else {
+          drawer.classList.add('active');
+          if (backdrop) backdrop.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
       }
 
       closeMobileMenu() {
-        document.getElementById('mobileMenuBackdrop').classList.remove('active');
-        document.getElementById('mobileMenuDrawer').classList.remove('active');
+        const drawer = document.getElementById('mobileMenuDrawer');
+        const backdrop = document.getElementById('mobileMenuBackdrop');
+        if (drawer) drawer.classList.remove('active');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.style.overflow = '';
       }
 
       rotateTestimonial() {
@@ -2697,6 +2732,8 @@
     }
 
     const app = new StorefrontApp();
+    window.toggleMobileMenu = () => app.toggleMobileMenu();
+    window.closeMobileMenu = () => app.closeMobileMenu();
   </script>
 </body>
 </html>

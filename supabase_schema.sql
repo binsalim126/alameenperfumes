@@ -156,15 +156,14 @@ create policy "Allow public insert orders" on public.orders for insert with chec
 create policy "Allow public update orders" on public.orders for update using (true);
 create policy "Allow public delete orders" on public.orders for delete using (true);
 
--- SITE SETTINGS
+-- SITE SETTINGS (Unrestricted public configuration access for web store and admin portal)
+alter table public.site_settings disable row level security;
+grant all on public.site_settings to anon, authenticated, service_role;
 drop policy if exists "Allow public read site_settings" on public.site_settings;
 drop policy if exists "Allow public insert site_settings" on public.site_settings;
 drop policy if exists "Allow public update site_settings" on public.site_settings;
 drop policy if exists "Allow public delete site_settings" on public.site_settings;
-create policy "Allow public read site_settings" on public.site_settings for select using (true);
-create policy "Allow public insert site_settings" on public.site_settings for insert with check (true);
-create policy "Allow public update site_settings" on public.site_settings for update using (true);
-create policy "Allow public delete site_settings" on public.site_settings for delete using (true);
+drop policy if exists "Allow all site_settings" on public.site_settings;
 
 -- REVIEWS
 drop policy if exists "Allow public read reviews" on public.reviews;

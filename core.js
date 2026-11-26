@@ -75,7 +75,7 @@ const DEFAULT_SETTINGS = {
   offer_coupon_code: "",
   offer_min_order: 0,
   offer_end_date: "",
-  wholesale_default_moq: 6,
+  wholesale_default_moq: 1,
   wholesale_default_discount: 40,
   wholesale_tier1_min: 6,
   wholesale_tier1_discount: 40,
@@ -408,11 +408,11 @@ function formatProductFromRow(row) {
     retailPrice: baseRetail,
     mrp: Number(row.mrp) || (rawRetailSizes && rawRetailSizes[0]?.mrp) || Math.round(baseRetail * 1.4),
     stock: typeof row.stock === 'number' ? row.stock : (row.in_stock ? 20 : 0),
-    wholesaleMOQ: Number(row.wholesale_moq) || 6,
+    wholesaleMOQ: Number(row.wholesale_moq) || 1,
     wholesalePrice: baseWholesale,
     wholesaleTiers: Array.isArray(row.wholesale_tiers) && row.wholesale_tiers.length > 0 
       ? row.wholesale_tiers 
-      : [{ min: Number(row.wholesale_moq) || 6, max: 9999, price: baseWholesale }],
+      : [{ min: Number(row.wholesale_moq) || 1, max: 9999, price: baseWholesale }],
     notes: row.notes && typeof row.notes === 'object' ? row.notes : { top: '', heart: '', base: '' },
     description: row.description || '',
     images: (Array.isArray(row.images) && row.images.length > 0) ? row.images : ((typeof row.images === 'string' && row.images.trim()) ? [row.images.trim()] : ['https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80']),
@@ -447,10 +447,10 @@ function formatProductToRow(product) {
     retail_price: retail || (sizes[0]?.price) || 0,
     mrp: Number(product.mrp) || (sizes[0]?.mrp) || Math.round((retail || 0) * 1.4),
     stock: typeof product.stock === 'number' ? product.stock : 20,
-    wholesale_moq: Number(product.wholesaleMOQ) || 6,
+    wholesale_moq: Number(product.wholesaleMOQ) || 1,
     wholesale_tiers: [
       {
-        min: Number(product.wholesaleMOQ) || 6,
+        min: Number(product.wholesaleMOQ) || 1,
         max: 9999,
         price: baseWholesalePrice
       }
@@ -1215,7 +1215,7 @@ function calculateProductPrice(product, mode = 'retail', qty = 1, settings = nul
     isOffer: isOfferActive,
     discountPercent: settings.offer_discount_percent,
     totalPrice: effectiveUnitPrice * qty,
-    moq: (isWholesale ? (product.wholesaleMOQ || 6) : 1)
+    moq: 1
   };
 }
 

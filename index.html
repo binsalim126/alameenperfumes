@@ -1935,8 +1935,8 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
         </div>
         <div>
-          <h4>Wholesale MOQ</h4>
-          <p>Wholesale MOQ pricing for boutique partners.</p>
+          <h4>Wholesale Bulk Rates</h4>
+          <p>Bulk flacon pricing for boutique & salon partners.</p>
         </div>
       </div>
     </div>
@@ -2295,7 +2295,7 @@
           if (wholesaleBtn) wholesaleBtn.classList.add('active');
           if (drawerRetailBtn) drawerRetailBtn.classList.remove('active');
           if (drawerWholesaleBtn) drawerWholesaleBtn.classList.add('active');
-          if (cartLabel) cartLabel.textContent = 'Mode: Wholesale (MOQ Applied)';
+          if (cartLabel) cartLabel.textContent = 'Mode: Wholesale (Bulk Flacons)';
         } else {
           if (retailBtn) retailBtn.classList.add('active');
           if (wholesaleBtn) wholesaleBtn.classList.remove('active');
@@ -2378,7 +2378,6 @@
                     <span class="price-current">₹${pricing.unitPrice.toLocaleString('en-IN')}</span>
                     ${pricing.isOffer ? `<span class="price-mrp">₹${pricing.originalPrice.toLocaleString('en-IN')}</span>` : `<span class="price-mrp">₹${pricing.mrp.toLocaleString('en-IN')}</span>`}
                   </div>
-                  ${this.mode === 'wholesale' ? `<span class="wholesale-moq-label">Min Order: ${product.wholesaleMOQ} pcs</span>` : ''}
 
                   <!-- Longer Button with Text (Img 4 Fix) -->
                   <button type="button" class="card-add-btn" id="addbtn-${product.id}" data-size="${defaultSize}" onclick="event.stopPropagation(); app.addToCart('${product.id}', null, this.getAttribute('data-size'))">
@@ -2432,7 +2431,7 @@
         const product = this.products.find(p => p.id === productId);
         if (!product) return;
 
-        const defaultQty = (this.mode === 'wholesale') ? product.wholesaleMOQ : 1;
+        const defaultQty = 1;
         const qty = qtyToAdd || defaultQty;
         const availableSizes = getProductSizes(product, this.settings, this.mode);
         const defaultSize = (this.mode === 'wholesale') ? '50ml' : (availableSizes[0]?.size || '3ml');
@@ -2563,7 +2562,7 @@
         const item = this.cart.find(i => i.productId === productId && (i.selectedSize || '12ml') === sizeName);
         if (!item) return;
         const product = this.products.find(p => p.id === productId);
-        const minQty = (this.mode === 'wholesale' && product) ? product.wholesaleMOQ : 1;
+        const minQty = 1;
 
         item.qty += delta;
         if (item.qty < minQty) {

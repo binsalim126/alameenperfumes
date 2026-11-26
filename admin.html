@@ -2083,7 +2083,7 @@
           <div class="section-header-wrap">
             <div>
               <h1 class="page-title">Product Catalog</h1>
-              <p class="header-subtext">Manage formulas, retail pricing, wholesale MOQ, and real-time inventory</p>
+              <p class="header-subtext">Manage formulas, retail pricing, wholesale bulk rates, and real-time inventory</p>
             </div>
             <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
               <button type="button" class="btn-action-secondary" onclick="adminApp.openCsvImportModal()" title="Upload multiple products at once via CSV">
@@ -2145,7 +2145,7 @@
                   <th>Product</th>
                   <th>Category / Size</th>
                   <th>Retail Price</th>
-                  <th>Wholesale MOQ</th>
+                  <th>Wholesale Price</th>
                   <th>Stock Inventory</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -2455,11 +2455,6 @@
                   </div>
                 </div>
 
-                <div class="form-group">
-                  <label class="form-label">Wholesale Minimum Order Quantity (MOQ) (pcs)</label>
-                  <input type="number" id="settingTierMoq" class="form-input" value="6" min="1">
-                  <span style="font-size:0.72rem; color:var(--text-light);">Default minimum bottles customer must purchase to unlock wholesale rate</span>
-                </div>
               </div>
 
               <!-- Manage Available Bottle Sizes (Attar & Spray) -->
@@ -2770,18 +2765,12 @@
         <input type="hidden" id="pRetailPrice" value="499">
         <input type="hidden" id="pMrp" value="699">
 
-        <div class="product-form-grid-2" style="margin-bottom:16px;">
-          <div class="form-group">
-            <label class="form-label">Stock Units *</label>
-            <input type="number" id="pStock" class="form-input" required placeholder="25" value="25" min="0">
-            <span style="font-size:0.72rem; color:var(--text-light);">Total available units</span>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Wholesale MOQ (pcs) *</label>
-            <input type="number" id="pMoq" class="form-input" required placeholder="6" value="6" min="1">
-            <span style="font-size:0.72rem; color:var(--text-light);">Minimum quantity for wholesale</span>
-          </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label class="form-label">Stock Units *</label>
+          <input type="number" id="pStock" class="form-input" required placeholder="25" value="25" min="0">
+          <span style="font-size:0.72rem; color:var(--text-light);">Total available inventory units</span>
         </div>
+        <input type="hidden" id="pMoq" value="1">
 
         <!-- Retail Bottle Sizes & Rates Configuration Box -->
         <div id="bottleSizesConfigBox" style="background:var(--green-50); border:1.5px solid var(--gold-500); padding:14px; border-radius:12px; margin-bottom:14px;">
@@ -2912,7 +2901,7 @@
             <span id="pasteAreaToggleIcon">▶</span> Or paste raw CSV text from clipboard
           </button>
           <div id="csvPasteBox" style="display:none;">
-            <textarea id="csvPasteTextarea" class="form-input" rows="5" style="font-family:monospace; font-size:0.8rem;" placeholder="Name,Category,Type,RetailPrice,MRP,Stock,WholesaleMOQ...&#10;Royal Oud,Luxury,Attar,1499,2199,25,6" oninput="adminApp.handleCsvTextInput()"></textarea>
+            <textarea id="csvPasteTextarea" class="form-input" rows="5" style="font-family:monospace; font-size:0.8rem;" placeholder="Name,Category,Type,RetailPrice,MRP,Stock...&#10;Royal Oud,Luxury,Attar,1499,2199,25" oninput="adminApp.handleCsvTextInput()"></textarea>
           </div>
         </div>
       </div>
@@ -2937,7 +2926,7 @@
                 <th style="padding:8px 10px; color:var(--green-950);">Type</th>
                 <th style="padding:8px 10px; color:var(--green-950);">Rate / MRP</th>
                 <th style="padding:8px 10px; color:var(--green-950);">Sizes</th>
-                <th style="padding:8px 10px; color:var(--green-950);">Stock / MOQ</th>
+                <th style="padding:8px 10px; color:var(--green-950);">Stock Inventory</th>
               </tr>
             </thead>
             <tbody id="csvPreviewTableBody">
@@ -4038,8 +4027,8 @@
                   <div style="font-size:0.75rem; text-decoration:line-through; color:var(--text-light);">MRP ₹${p.mrp}</div>
                 </td>
                 <td>
-                  <span style="font-size:0.74rem; font-weight:800; color:#7A5B12;">MOQ: ${moq} pcs</span>
-                  <div style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">Wholesale: ₹${wsPrice}</div>
+                  <span style="font-size:0.74rem; font-weight:800; color:#7A5B12;">₹${wsPrice}</span>
+                  <div style="font-size:0.74rem; color:var(--text-muted); margin-top:2px;">Bulk Wholesale</div>
                 </td>
                 <td>
                   <!-- Inline Stock Edit -->
@@ -4080,7 +4069,7 @@
                       <strong style="color:var(--green-900); font-size:0.95rem;">${p.name}</strong>
                       <strong style="color:var(--green-900);">₹${p.retailPrice}</strong>
                     </div>
-                    <div style="font-size:0.75rem; color:var(--text-light);">${p.category} · ${p.size} · MOQ ${moq} pcs (Wholesale: ₹${wsPrice})</div>
+                    <div style="font-size:0.75rem; color:var(--text-light);">${p.category} · ${p.size} · Wholesale: ₹${wsPrice}</div>
                   </div>
                 </div>
 
@@ -4504,7 +4493,8 @@
           document.getElementById('pName').value = p.name;
           document.getElementById('pCategory').value = p.category;
           document.getElementById('pStock').value = p.stock || 25;
-          document.getElementById('pMoq').value = p.wholesaleMOQ || 6;
+          const pMoqEl = document.getElementById('pMoq');
+          if (pMoqEl) pMoqEl.value = '1';
 
           const typeStr = ((p.type || '') + ' ' + (p.category || '')).toLowerCase();
           let detectedType = 'attar';
@@ -4540,7 +4530,8 @@
           this.renderWholesaleSizeInputs();
 
           document.getElementById('pStock').value = '25';
-          document.getElementById('pMoq').value = this.settings.wholesale_default_moq || '6';
+          const pMoqDefaultEl = document.getElementById('pMoq');
+          if (pMoqDefaultEl) pMoqDefaultEl.value = '1';
           this.clearProductImage();
           document.getElementById('pDesc').value = '';
           document.getElementById('pBestseller').checked = true;
@@ -4566,7 +4557,7 @@
 
         const editId = document.getElementById('pEditId').value;
         const stock = parseInt(document.getElementById('pStock').value, 10) || 20;
-        const moq = parseInt(document.getElementById('pMoq')?.value, 10) || 6;
+        const moq = parseInt(document.getElementById('pMoq')?.value, 10) || 1;
 
         // Construct retail bottle sizes from inputs
         const type = this.currentProductFormType || 'attar';
@@ -4937,7 +4928,7 @@
           const stock = stockRaw ? parseInt(stockRaw, 10) : 25;
 
           const moqRaw = (rowObj.wholesalemoq || rowObj.moq || rowObj.minorder || '').replace(/[^\d]/g, '');
-          const wholesaleMOQ = moqRaw ? parseInt(moqRaw, 10) : (this.settings.wholesale_default_moq || 6);
+          const wholesaleMOQ = moqRaw ? parseInt(moqRaw, 10) : 1;
           const wholesalePrice = Math.round(retailPrice * 0.6);
 
           // Build bottle sizes (use explicit or auto-generate with configured attar_sizes / spray_sizes)
@@ -5105,7 +5096,7 @@
               <td style="padding:8px 10px; font-size:0.75rem;">${p.type}</td>
               <td style="padding:8px 10px; font-weight:700; color:var(--green-900);">₹${p.retailPrice.toLocaleString('en-IN')} <span style="font-size:0.72rem; color:var(--text-light); text-decoration:line-through;">₹${p.mrp}</span></td>
               <td style="padding:8px 10px; font-size:0.75rem; color:var(--text-muted);">${sizesPreview}</td>
-              <td style="padding:8px 10px; font-size:0.76rem;">Stock: ${p.stock} | MOQ: ${p.wholesaleMOQ}</td>
+              <td style="padding:8px 10px; font-size:0.76rem;">Stock: ${p.stock}</td>
             </tr>
           `;
         }).join('');
@@ -5686,8 +5677,11 @@
           this.settings.low_stock_threshold = parseInt(document.getElementById('settingLowStockThreshold').value, 10) || 10;
         }
         if (document.getElementById('settingTierMoq')) {
-          this.settings.wholesale_default_moq = parseInt(document.getElementById('settingTierMoq').value, 10) || 6;
+          this.settings.wholesale_default_moq = parseInt(document.getElementById('settingTierMoq').value, 10) || 1;
           this.settings.wholesale_tier1_min = this.settings.wholesale_default_moq;
+        } else {
+          this.settings.wholesale_default_moq = 1;
+          this.settings.wholesale_tier1_min = 1;
         }
 
         if (!Array.isArray(this.settings.attar_sizes) || this.settings.attar_sizes.length === 0) {

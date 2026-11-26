@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Shop Fragrances & Attars | AL-AMEEN PERFUMES</title>
   
-  <!-- Google Fonts: Poppins Firm Geometric Sans -->
+  <!-- Google Fonts: Cinzel (Royal Luxury Perfumery Display) & Poppins (Modern Geometric Sans) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230B2B20'%3E%3Cpath d='M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z'/%3E%3C/svg%3E">
 
@@ -50,6 +50,7 @@
       --shadow-sm: 0 2px 8px rgba(6, 31, 23, 0.05);
       --shadow-md: 0 10px 28px rgba(6, 31, 23, 0.08);
       
+      --font-serif: 'Cinzel', 'Playfair Display', Georgia, serif;
       --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --transition: all 0.24s cubic-bezier(0.4, 0, 0.2, 1);
       --header-height: 72px;
@@ -83,7 +84,13 @@
       overflow-x: hidden;
     }
 
-    h1, h2, h3, h4, .brand-title {
+    h1, h2, h3, .brand-title, .shop-header-title {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    h4, .card-title {
       font-family: var(--font-main);
       font-weight: 700;
       letter-spacing: -0.01em;
@@ -161,10 +168,13 @@
       color: var(--gold-500);
     }
     .brand-title {
-      font-size: 1.25rem;
+      font-family: var(--font-serif);
       font-weight: 800;
-      letter-spacing: 0.03em;
-      color: #FFFFFF;
+      letter-spacing: 0.08em;
+      font-size: 1.25rem;
+      background: linear-gradient(135deg, #FFFFFF 0%, #F5DE88 50%, #D4AF37 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
     .nav-links {
       display: flex;
@@ -375,33 +385,37 @@
     }
     .product-card {
       background: #FFFFFF;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-card);
+      border-radius: 18px;
+      border: 1px solid rgba(222, 232, 227, 0.85);
       overflow: hidden;
       display: flex;
       flex-direction: column;
       position: relative;
-      transition: var(--transition);
-      box-shadow: var(--shadow-sm);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 18px rgba(6, 31, 23, 0.05);
     }
     .product-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
-      border-color: rgba(212, 175, 55, 0.5);
+      transform: translateY(-5px);
+      box-shadow: 0 16px 36px rgba(6, 31, 23, 0.12);
+      border-color: rgba(212, 175, 55, 0.6);
     }
     .card-media {
       position: relative;
-      height: 220px;
-      background: #F7FAF8;
+      height: 230px;
+      background: radial-gradient(circle at center, #FFFFFF 30%, #F4F8F5 100%);
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
     }
     .card-img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      transition: transform 0.4s ease;
+      object-fit: contain;
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .product-card:hover .card-img { transform: scale(1.05); }
+    .product-card:hover .card-img { transform: scale(1.07); }
     .card-badge {
       position: absolute;
       top: 12px;
@@ -487,27 +501,31 @@
     .price-mrp { font-size: 0.85rem; color: var(--text-light); text-decoration: line-through; }
     .wholesale-moq-label { font-size: 0.68rem; color: var(--gold-700); font-weight: 700; text-transform: uppercase; }
 
-    /* Longer Add to Bag Button with Writing (Img 4 Fix) */
+    /* Card Action Button: Full-width / longer pill button with writing */
     .card-add-btn {
       width: 100%;
-      min-height: 42px;
-      padding: 10px 16px;
-      background: linear-gradient(135deg, var(--green-700) 0%, var(--green-900) 100%);
+      min-height: 44px;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #10382B 0%, #062319 100%);
       color: #FFFFFF;
+      border: 1px solid rgba(212, 175, 55, 0.45);
       border-radius: var(--radius-md);
-      font-size: 0.84rem;
+      font-size: 0.86rem;
       font-weight: 700;
+      letter-spacing: 0.02em;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 2px 8px rgba(11, 43, 32, 0.15);
-      transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(6, 31, 23, 0.15);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .card-add-btn:hover {
-      background: linear-gradient(135deg, var(--green-600) 0%, var(--green-800) 100%);
+      background: linear-gradient(135deg, #D4AF37 0%, #B89228 100%);
+      color: #04140E;
+      border-color: #F8E7A2;
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
       transform: translateY(-2px);
-      box-shadow: 0 4px 14px rgba(11, 43, 32, 0.25);
     }
     .card-add-btn svg { width: 18px; height: 18px; }
 
@@ -951,11 +969,19 @@
 
       /* Compact Product Cards on Phone */
       .product-card {
-        border-radius: 12px;
+        border-radius: 14px;
       }
       .card-media {
         height: auto !important;
         aspect-ratio: 1 / 1 !important;
+        background: radial-gradient(circle at center, #FFFFFF 30%, #F4F8F5 100%) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 10px !important;
+      }
+      .card-img {
+        object-fit: contain !important;
       }
       .card-badge {
         top: 6px !important;
@@ -1681,13 +1707,13 @@
           <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
             <div>
               <span class="card-category">${product.category} · ${product.type}</span>
-              <h2 style="font-size:1.5rem; color:var(--green-950); margin-top:4px;">${product.name}</h2>
+              <h2 style="font-family:var(--font-serif); font-size:1.6rem; color:var(--green-950); margin-top:4px;">${product.name}</h2>
             </div>
             <button class="drawer-close-btn" style="background:#E5ECE8; color:#061F17;" onclick="shopApp.closeProductModal()">✕</button>
           </div>
 
-          <div style="height:220px; border-radius:14px; overflow:hidden; margin-bottom:16px;">
-            <img src="${imgUrl}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">
+          <div style="height:240px; border-radius:16px; overflow:hidden; margin-bottom:16px; background:radial-gradient(circle at center, #FFFFFF 30%, #F4F8F5 100%); display:flex; align-items:center; justify-content:center; padding:16px; border:1px solid var(--border-subtle);">
+            <img src="${imgUrl}" alt="${product.name}" style="width:100%; height:100%; object-fit:contain;">
           </div>
 
           <!-- Bottle Size Selector in QuickView -->

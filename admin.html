@@ -2455,6 +2455,19 @@
                   </div>
                 </div>
 
+                <div class="settings-two-col" style="margin-top:14px;">
+                  <div class="form-group">
+                    <label class="form-label">Retail Minimum Purchase Rate (₹)</label>
+                    <input type="number" id="settingMinOrderRetail" class="form-input" value="0" min="0" placeholder="0 (No minimum)">
+                    <span style="font-size:0.72rem; color:var(--text-light);">Orders below this rate cannot be placed in Retail Store (0 = No minimum)</span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Wholesale Minimum Purchase Rate (₹)</label>
+                    <input type="number" id="settingMinOrderWholesale" class="form-input" value="1500" min="0" placeholder="e.g. 1500">
+                    <span style="font-size:0.72rem; color:var(--text-light);">Orders below this rate cannot be placed in Wholesale Store</span>
+                  </div>
+                </div>
+
               </div>
 
               <!-- Manage Available Bottle Sizes (Attar & Spray) -->
@@ -5478,6 +5491,11 @@
         if (address) address.value = this.settings.store_address || (CONFIG.ADDRESS || 'Alameen Perfumes Online, Near Ernakulam, Eramalloor, 688537, Keralam');
         if (ship) ship.value = this.settings.free_shipping_min || CONFIG.FREE_SHIPPING_MIN;
         if (low) low.value = this.settings.low_stock_threshold || CONFIG.LOW_STOCK_THRESHOLD;
+
+        const minRetail = document.getElementById('settingMinOrderRetail');
+        const minWholesale = document.getElementById('settingMinOrderWholesale');
+        if (minRetail) minRetail.value = (typeof this.settings.min_order_retail !== 'undefined') ? this.settings.min_order_retail : 0;
+        if (minWholesale) minWholesale.value = (typeof this.settings.min_order_wholesale !== 'undefined') ? this.settings.min_order_wholesale : 1500;
         const tierMoq = document.getElementById('settingTierMoq');
         if (tierMoq) tierMoq.value = this.settings.wholesale_default_moq || this.settings.wholesale_tier1_min || 6;
 
@@ -5675,6 +5693,12 @@
         }
         if (document.getElementById('settingLowStockThreshold')) {
           this.settings.low_stock_threshold = parseInt(document.getElementById('settingLowStockThreshold').value, 10) || 10;
+        }
+        if (document.getElementById('settingMinOrderRetail')) {
+          this.settings.min_order_retail = Math.max(0, parseInt(document.getElementById('settingMinOrderRetail').value, 10) || 0);
+        }
+        if (document.getElementById('settingMinOrderWholesale')) {
+          this.settings.min_order_wholesale = Math.max(0, parseInt(document.getElementById('settingMinOrderWholesale').value, 10) || 0);
         }
         if (document.getElementById('settingTierMoq')) {
           this.settings.wholesale_default_moq = parseInt(document.getElementById('settingTierMoq').value, 10) || 1;

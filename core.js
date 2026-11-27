@@ -62,6 +62,8 @@ const DEFAULT_SETTINGS = {
   courier_partners: "DTDC, Speed & Safe Gokulam",
   free_shipping_min: 999,
   low_stock_threshold: 10,
+  min_order_retail: 0,
+  min_order_wholesale: 1500,
   announcement_enabled: false,
   announcement_text: "Free shipping Pan-India · Wholesale rates available",
   announcement_link: "shop.html",
@@ -1217,6 +1219,15 @@ function calculateProductPrice(product, mode = 'retail', qty = 1, settings = nul
     totalPrice: effectiveUnitPrice * qty,
     moq: 1
   };
+}
+
+// Get minimum purchase amount for current shopping mode (Retail vs Wholesale)
+function getMinOrderAmount(mode, settings) {
+  const s = settings || (typeof window !== 'undefined' ? window.currentSettings : null) || DEFAULT_SETTINGS;
+  if (mode === 'wholesale') {
+    return Math.max(0, Number(s.min_order_wholesale) || 0);
+  }
+  return Math.max(0, Number(s.min_order_retail) || 0);
 }
 
 // UI Cart & Wishlist Storage (Isolated client-side session only)

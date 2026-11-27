@@ -2135,6 +2135,7 @@
     </div>
 
     <div class="drawer-footer">
+      <div id="cartMinOrderNotice" style="display:none; margin-bottom:12px; padding:10px 12px; border-radius:8px; font-size:0.8rem; line-height:1.4; background:rgba(217,119,6,0.12); border:1px solid rgba(217,119,6,0.35); color:#FBBF24;"></div>
       <div class="drawer-total-row">
         <span>Total:</span>
         <span id="cartDrawerTotal">₹0</span>
@@ -2577,6 +2578,22 @@
         }).join('');
 
         totalEl.textContent = `₹${overallTotal.toLocaleString('en-IN')}`;
+
+        const minOrder = (typeof getMinOrderAmount === 'function')
+          ? getMinOrderAmount(this.mode, this.settings)
+          : ((this.mode === 'wholesale') ? (Number(this.settings?.min_order_wholesale) || 1500) : (Number(this.settings?.min_order_retail) || 0));
+
+        const noticeEl = document.getElementById('cartMinOrderNotice');
+        if (noticeEl) {
+          if (minOrder > 0 && overallTotal < minOrder) {
+            const diff = minOrder - overallTotal;
+            noticeEl.style.display = 'block';
+            noticeEl.innerHTML = `⚠️ <strong>Minimum Purchase Required:</strong> ₹${minOrder.toLocaleString('en-IN')}<br>Add <strong>₹${diff.toLocaleString('en-IN')}</strong> more to checkout in ${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'} mode.`;
+          } else {
+            noticeEl.style.display = 'none';
+            noticeEl.innerHTML = '';
+          }
+        }
       }
 
       updateItemSize(productId, oldSize, newSize) {
@@ -2621,6 +2638,31 @@
           alert("Your bag is empty! Please add products before placing an order.");
           return;
         }
+
+        let overallTotal = 0;
+        this.cart.forEach(item => {
+          const product = this.products.find(p => p.id === item.productId);
+          if (product) {
+            const chosenSize = item.selectedSize || product.size || (this.mode === 'wholesale' ? '50ml' : '12ml');
+            const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings, chosenSize);
+            overallTotal += pricing.totalPrice;
+          }
+        });
+
+        const minOrder = (typeof getMinOrderAmount === 'function')
+          ? getMinOrderAmount(this.mode, this.settings)
+          : ((this.mode === 'wholesale') ? (Number(this.settings?.min_order_wholesale) || 1500) : (Number(this.settings?.min_order_retail) || 0));
+
+        if (minOrder > 0 && overallTotal < minOrder) {
+          const diff = minOrder - overallTotal;
+          const msg = `Minimum purchase amount for ${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'} is ₹${minOrder.toLocaleString('en-IN')}. Your current total is ₹${overallTotal.toLocaleString('en-IN')}. Please add ₹${diff.toLocaleString('en-IN')} more to place your order.`;
+          alert(msg);
+          if (typeof showToast === 'function') {
+            showToast(msg, 'warning');
+          }
+          return;
+        }
+
         this.closeCartDrawer();
         document.getElementById('orderModalBackdrop').classList.add('active');
       }
@@ -2666,6 +2708,21 @@
               });
             }
           });
+
+          const minOrder = (typeof getMinOrderAmount === 'function')
+            ? getMinOrderAmount(this.mode, this.settings)
+            : ((this.mode === 'wholesale') ? (Number(this.settings?.min_order_wholesale) || 1500) : (Number(this.settings?.min_order_retail) || 0));
+
+          if (minOrder > 0 && total < minOrder) {
+            const diff = minOrder - total;
+            const msg = `Minimum purchase amount for ${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'} is ₹${minOrder.toLocaleString('en-IN')}. Your current total is ₹${total.toLocaleString('en-IN')}. Please add ₹${diff.toLocaleString('en-IN')} more to place your order.`;
+            alert(msg);
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = origText;
+            }
+            return;
+          }
 
           const tempOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
           let finalOrderId = tempOrderId;

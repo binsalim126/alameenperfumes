@@ -24,39 +24,39 @@
        ROYAL EMERALD & GOLD DESIGN SYSTEM (Prompt Color Specifications)
        ========================================================================== */
     :root {
-      --green-900: #0B3D2E;  /* header, sidebar active item, headings */
-      --green-800: #145C46;  /* hover on dark */
-      --green-700: #1E7A5D;  /* primary buttons, links */
-      --green-600: #2E9D74;  /* success, active states */
-      --green-400: #61B795;  /* icons, chart lines */
-      --green-200: #A7D6C0;  /* borders, soft chips */
-      --green-50:  #EAF6F0;  /* page background */
+      --green-900: #0F4C3A;  /* Official Royal Emerald */
+      --green-800: #0D382B;
+      --green-700: #0F4C3A;
+      --green-600: #15803D;
+      --green-400: #22C55E;
+      --green-200: #E5E7EB;
+      --green-50:  #F8F9FA;  /* Crisp light grey / off-white background */
       
-      --gold-500:  #C9A227;  /* premium accent: main CTA, highlights */
-      --gold-100:  #FBF3D6;  /* soft gold chip background */
+      --gold-500:  #D4AF37;  /* Champagne Gold */
+      --gold-100:  #FEF9C3;  /* soft gold chip background */
       
       /* Status Palette */
-      --status-new-text: #C9A227;
-      --status-new-bg:   #FBF3D6;
+      --status-new-text: #B45309;
+      --status-new-bg:   #FEF3C7;
       --status-conf-text: #2563EB;
       --status-conf-bg:   #EFF6FF;
       --status-pack-text: #7C3AED;
       --status-pack-bg:   #F5F3FF;
       --status-ship-text: #0891B2;
       --status-ship-bg:   #ECFEFF;
-      --status-del-text:  #2E9D74;
-      --status-del-bg:    #EAF6F0;
+      --status-del-text:  #15803D;
+      --status-del-bg:    #DCFCE7;
       --status-canc-text: #DC2626;
       --status-canc-bg:   #FEF2F2;
       
       --surface: #FFFFFF;
-      --surface-subtle: #F8FAF9;
-      --border: #DEE8E3;
-      --border-light: #E5ECE8;
+      --surface-subtle: #F9FAFB;
+      --border: #E5E7EB;
+      --border-light: #F3F4F6;
       
-      --text: #061F17;
-      --text-muted: #3B5448;
-      --text-light: #718D80;
+      --text: #111827;       /* Noir Black */
+      --text-muted: #4B5563; /* Slate Grey */
+      --text-light: #9CA3AF; /* Light Grey */
       
       --radius-sm: 8px;
       --radius-md: 14px;
@@ -64,12 +64,12 @@
       --radius-xl: 26px;
       --radius-pill: 9999px;
       
-      --shadow-sm: 0 2px 8px rgba(6, 31, 23, 0.05);
-      --shadow-md: 0 8px 24px rgba(6, 31, 23, 0.08);
-      --shadow-lg: 0 18px 48px rgba(6, 31, 23, 0.14);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.10);
       
       --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-ui: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-ui: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
       
       --header-h: 70px;
       --sidebar-w: 250px;
@@ -141,12 +141,12 @@
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(11, 61, 46, 0.95);
+      background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
-      color: #FFFFFF;
-      box-shadow: 0 4px 20px rgba(5, 26, 19, 0.25);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      box-shadow: 0 2px 14px rgba(0, 0, 0, 0.04);
+      border-bottom: 1px solid var(--border);
       flex-shrink: 0;
     }
     .navbar-inner {
@@ -164,12 +164,12 @@
       align-items: center;
       gap: 10px;
       text-decoration: none;
-      color: #FFFFFF;
+      color: var(--text);
     }
     .brand-logo-icon {
       width: 38px;
       height: 38px;
-      background: linear-gradient(135deg, var(--green-700), var(--green-900));
+      background: linear-gradient(135deg, #0F4C3A, #062319);
       border: 1.5px solid var(--gold-500);
       border-radius: 10px;
       display: flex;
@@ -177,15 +177,16 @@
       justify-content: center;
       color: var(--gold-500);
       flex-shrink: 0;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
     }
     .brand-title {
       font-family: var(--font-display);
       font-size: 1.15rem;
       font-weight: 800;
       letter-spacing: 0.04em;
-      background: linear-gradient(135deg, #FFFFFF 0%, #F5DE88 50%, #D4AF37 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #111827;
+      background: none;
+      -webkit-text-fill-color: initial;
     }
     .nav-links {
       display: flex;
@@ -198,16 +199,16 @@
     .nav-link {
       font-size: 0.88rem;
       font-weight: 600;
-      color: var(--green-200);
+      color: var(--text-muted);
       text-decoration: none;
       transition: var(--transition);
     }
-    .nav-link:hover { color: #FFFFFF; }
+    .nav-link:hover { color: #111827; }
 
     .signin-container {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at top right, var(--green-800) 0%, var(--green-900) 60%, #03130C 100%);
+      background: linear-gradient(180deg, #F8F9FA 0%, #EDF0F3 100%);
       z-index: 1000;
       display: flex;
       flex-direction: column;
@@ -222,8 +223,8 @@
       background: #FFFFFF;
       border-radius: var(--radius-lg);
       padding: clamp(24px, 5vw, 36px);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-      border: 1px solid rgba(201, 162, 39, 0.35);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border);
     }
     .signin-logo {
       display: flex;
@@ -236,7 +237,7 @@
       width: 44px;
       height: 44px;
       border-radius: 12px;
-      background: linear-gradient(135deg, var(--green-700), var(--green-900));
+      background: linear-gradient(135deg, #0F4C3A, #062319);
       border: 1.5px solid var(--gold-500);
       display: flex;
       align-items: center;
@@ -247,7 +248,7 @@
       font-family: var(--font-display);
       font-size: 1.4rem;
       font-weight: 700;
-      color: var(--green-900);
+      color: #111827;
     }
     .form-group {
       margin-bottom: 16px;
@@ -256,7 +257,7 @@
       display: block;
       font-size: 0.82rem;
       font-weight: 700;
-      color: var(--green-900);
+      color: #111827;
       margin-bottom: 6px;
       white-space: normal;
       word-break: break-word;
@@ -266,20 +267,21 @@
       padding: 11px 14px;
       border-radius: var(--radius-md);
       border: 1.5px solid var(--border);
-      background: var(--surface-subtle);
+      background: #FFFFFF;
       font-size: 16px !important; /* Prevents auto zoom on iOS */
       transition: var(--transition);
       box-sizing: border-box;
+      color: #111827;
     }
     .form-input:focus {
-      border-color: var(--green-600);
+      border-color: #111827;
       background: #FFFFFF;
-      box-shadow: 0 0 0 3px rgba(46, 157, 116, 0.15);
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
     }
     .btn-login {
       width: 100%;
       padding: 13px;
-      background: linear-gradient(135deg, var(--green-700) 0%, var(--green-900) 100%);
+      background: #111827;
       color: #FFFFFF;
       font-weight: 700;
       border-radius: var(--radius-pill);
@@ -288,10 +290,10 @@
       justify-content: center;
       gap: 8px;
       margin-top: 12px;
-      box-shadow: 0 4px 14px rgba(11, 61, 46, 0.25);
+      box-shadow: 0 4px 14px rgba(17, 24, 39, 0.2);
     }
     .btn-login:hover {
-      background: linear-gradient(135deg, var(--green-600) 0%, var(--green-800) 100%);
+      background: #000000;
       transform: translateY(-2px);
     }
 
@@ -1169,12 +1171,12 @@
       max-width: 440px;
       margin: 0 auto;
       height: 64px;
-      background: linear-gradient(135deg, rgba(10, 38, 28, 0.98) 0%, rgba(4, 20, 14, 0.99) 100%);
+      background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-radius: 36px;
-      border: 1.5px solid rgba(201, 162, 39, 0.4);
-      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45), 0 0 16px rgba(201, 162, 39, 0.15);
+      border: 1.5px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
       z-index: 100;
       justify-content: space-around;
       align-items: center;
@@ -1188,7 +1190,7 @@
       align-items: center;
       justify-content: center;
       gap: 2px;
-      color: var(--green-200);
+      color: #6B7280;
       font-size: 0.68rem;
       font-weight: 700;
       position: relative;
@@ -1196,10 +1198,13 @@
       cursor: pointer;
       transition: var(--transition);
     }
+    .bottom-tab-item svg {
+      color: #6B7280;
+    }
     .bottom-tab-item.active {
-      background: linear-gradient(135deg, rgba(34, 123, 94, 0.85), rgba(16, 56, 43, 0.95));
-      border: 1px solid rgba(201, 162, 39, 0.5);
-      color: var(--gold-300);
+      background: #111827;
+      border: 1px solid #111827;
+      color: #FFFFFF;
     }
     .bottom-tab-item.active svg {
       color: var(--gold-500) !important;
@@ -1208,28 +1213,29 @@
       width: 48px;
       height: 48px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--gold-500) 0%, #A88120 100%);
-      color: var(--green-950);
+      background: #111827;
+      color: #FFFFFF;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 16px rgba(201, 162, 39, 0.5);
+      box-shadow: 0 4px 16px rgba(17, 24, 39, 0.3);
       cursor: pointer;
       transform: translateY(-10px);
-      border: 2.5px solid var(--green-900);
+      border: 2.5px solid #FFFFFF;
       transition: var(--transition);
       flex-shrink: 0;
     }
     .bottom-tab-center-add:hover {
       transform: translateY(-12px) scale(1.06);
-      box-shadow: 0 6px 22px rgba(201, 162, 39, 0.65);
+      box-shadow: 0 6px 22px rgba(17, 24, 39, 0.4);
+      background: #000000;
     }
     .bottom-tab-badge {
       position: absolute;
       top: 4px;
       right: calc(50% - 18px);
-      background: var(--gold-500);
-      color: var(--green-900);
+      background: #111827;
+      color: #FFFFFF;
       font-size: 0.62rem;
       font-weight: 900;
       width: 17px;

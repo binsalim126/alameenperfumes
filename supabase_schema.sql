@@ -165,6 +165,13 @@ drop policy if exists "Allow public update site_settings" on public.site_setting
 drop policy if exists "Allow public delete site_settings" on public.site_settings;
 drop policy if exists "Allow all site_settings" on public.site_settings;
 
+-- In case RLS is re-enabled, ensure permissive policy exists
+create policy "Allow all site_settings" on public.site_settings
+for all
+to public
+using (true)
+with check (true);
+
 -- REVIEWS
 drop policy if exists "Allow public read reviews" on public.reviews;
 drop policy if exists "Allow public insert reviews" on public.reviews;
@@ -254,7 +261,7 @@ values
   '[{"min": 6, "max": 11, "price": 990}, {"min": 12, "max": 23, "price": 890}, {"min": 24, "max": 9999, "price": 810}]'::jsonb,
   '{"top": "Morning Dew Roses, Lychee", "heart": "Damask Rose, Peony Petals", "base": "White Amber, Cashmere Musk"}'::jsonb,
   'Freshly blossomed Taif roses dipped in crystal morning dew with soft sensual white amber undertones.',
-  array['https://images.unsplash.com/photo-1583445013765-46c20c4a6772?auto=format&fit=crop&w=800&q=80'],
+  array['https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=800&q=80'],
   true,
   false,
   true
@@ -274,7 +281,7 @@ values
   '[{"min": 6, "max": 11, "price": 1050}, {"min": 12, "max": 23, "price": 950}, {"min": 24, "max": 9999, "price": 860}]'::jsonb,
   '{"top": "Kashmiri Saffron, Cardamom", "heart": "Saffron, Bulgarian Rose", "base": "Pure Mysore Sandalwood Oil"}'::jsonb,
   '100% alcohol-free traditional attar crafted using age-old hydro-distillation with pure Mysore sandalwood oil.',
-  array['https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=800&q=80'],
+  array['https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=800&q=80'],
   true,
   false,
   true
@@ -290,10 +297,10 @@ on conflict (id) do update set
 insert into public.categories (id, name, image, display_order)
 values
   ('cat_all', 'All', 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=400&q=80', 1),
-  ('cat_luxury', 'Luxury', 'https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=400&q=80', 2),
-  ('cat_attar', 'Attars', 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=400&q=80', 3),
+  ('cat_luxury', 'Luxury', 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=400&q=80', 2),
+  ('cat_attar', 'Attars', 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=400&q=80', 3),
   ('cat_men', 'Men', 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=400&q=80', 4),
-  ('cat_women', 'Women', 'https://images.unsplash.com/photo-1583445013765-46c20c4a6772?auto=format&fit=crop&w=400&q=80', 5),
+  ('cat_women', 'Women', 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=400&q=80', 5),
   ('cat_unisex', 'Unisex', 'https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?auto=format&fit=crop&w=400&q=80', 6)
 on conflict (id) do nothing;
 

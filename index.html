@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AL-AMEEN PERFUMES | Luxury Scents & Pure Attars | Wholesale & Retail</title>
   
-  <!-- Google Fonts: Poppins Firm Geometric Sans -->
+  <!-- Google Fonts: Cinzel & Montserrat -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230B2B20'%3E%3Cpath d='M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z'/%3E%3C/svg%3E">
@@ -63,8 +63,9 @@
       --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.09);
       --shadow-glow: 0 0 24px rgba(212, 175, 55, 0.25);
       
-      /* Typography: Pure Poppins Modern Geometric Sans */
-      --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      /* Typography: Haute Parfumerie (Cinzel & Montserrat) */
+      --font-display: 'Cinzel', serif;
+      --font-main: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       
       --header-height: 72px;
       --container-max: 1240px;
@@ -99,11 +100,11 @@
       overflow-x: hidden;
     }
 
-    /* Typography Hierarchy: Bold Modern Headings & Clean Body */
+    /* Typography Hierarchy: Royal Haute Parfumerie Headings */
     h1, h2, h3, .brand-title, .hero-title, .section-title, .promo-title {
-      font-family: var(--font-main);
+      font-family: var(--font-display);
       font-weight: 700;
-      letter-spacing: -0.01em;
+      letter-spacing: 0.02em;
       line-height: 1.25;
     }
 
@@ -364,13 +365,13 @@
     }
 
     /* ==========================================================================
-       3. HERO SECTION (Firm, Luxury, Responsive)
+       3. HERO SECTION (Luminous Luxury Floating Visual & First-View Layout)
        ========================================================================== */
     .hero-section {
-      background: radial-gradient(circle at 75% 30%, rgba(212, 175, 55, 0.08) 0%, rgba(248, 249, 250, 0.5) 50%, #F8F9FA 100%),
-                  linear-gradient(180deg, #FFFFFF 0%, #F4F5F7 100%);
+      background: radial-gradient(circle at 50% 15%, rgba(212, 175, 55, 0.12) 0%, rgba(248, 249, 250, 0.75) 38%, #FFFFFF 100%),
+                  linear-gradient(180deg, #FFFFFF 0%, #F8F9FA 50%, #FFFFFF 100%);
       color: var(--text-dark);
-      padding: 60px 0 70px;
+      padding: 48px 0 54px;
       position: relative;
       overflow: hidden;
       border-bottom: 1px solid var(--border-subtle);
@@ -378,8 +379,13 @@
     .hero-grid {
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
-      gap: 48px;
+      gap: 40px;
       align-items: center;
+    }
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
     .hero-tag {
       display: inline-flex;
@@ -394,18 +400,20 @@
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
     .hero-tag svg {
       color: var(--gold-500);
     }
     .hero-title {
-      font-size: clamp(2.3rem, 4.4vw, 3.6rem);
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4.2vw, 3.5rem);
       font-weight: 800;
       line-height: 1.15;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
       color: #111827;
+      letter-spacing: 0.02em;
     }
     .hero-title span.gold-gradient {
       background: linear-gradient(135deg, #A88120 0%, #D4AF37 50%, #7A5B12 100%);
@@ -413,17 +421,18 @@
       -webkit-text-fill-color: transparent;
     }
     .hero-subtitle {
-      font-size: 1.05rem;
+      font-size: 0.98rem;
       color: #4B5563;
-      line-height: 1.65;
-      margin-bottom: 30px;
-      max-width: 540px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      max-width: 520px;
     }
     .hero-actions {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
       flex-wrap: wrap;
+      margin-bottom: 24px;
     }
     .btn-primary {
       background: #111827;
@@ -437,6 +446,8 @@
       align-items: center;
       gap: 8px;
       box-shadow: 0 4px 14px rgba(17, 24, 39, 0.2);
+      transition: var(--transition);
+      cursor: pointer;
     }
     .btn-primary:hover {
       transform: translateY(-2px);
@@ -457,6 +468,7 @@
       align-items: center;
       gap: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      transition: var(--transition);
     }
     .btn-secondary:hover {
       background: #F9FAFB;
@@ -468,9 +480,8 @@
     .hero-trust-strip {
       display: flex;
       align-items: center;
-      gap: 24px;
-      margin-top: 36px;
-      padding-top: 24px;
+      gap: 20px;
+      padding-top: 18px;
       border-top: 1px solid var(--border-subtle);
       flex-wrap: wrap;
     }
@@ -478,7 +489,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       color: #4B5563;
     }
@@ -486,29 +497,65 @@
       color: var(--green-700);
     }
 
-    /* Hero Visual Card */
+    /* Floating Hero Visual Showpiece */
+    .hero-visual {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @keyframes heroFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes floatPillGlow {
+      0%, 100% { box-shadow: 0 4px 14px rgba(0,0,0,0.06), 0 0 10px rgba(212,175,55,0.15); }
+      50% { box-shadow: 0 6px 20px rgba(0,0,0,0.09), 0 0 18px rgba(212,175,55,0.3); }
+    }
     .hero-card-frame {
       position: relative;
       background: #FFFFFF;
-      border: 1px solid var(--border-subtle);
+      border: 1.5px solid rgba(212, 175, 55, 0.35);
       border-radius: var(--radius-xl);
       padding: 12px;
-      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.06), 0 0 20px rgba(212, 175, 55, 0.08);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.08), 0 0 30px rgba(212, 175, 55, 0.12);
+      animation: heroFloat 6s ease-in-out infinite;
+      width: 100%;
+      max-width: 440px;
     }
     .hero-img {
       width: 100%;
-      height: 380px;
+      height: 360px;
       object-fit: cover;
       border-radius: calc(var(--radius-xl) - 8px);
+      display: block;
+    }
+    .hero-top-pill {
+      position: absolute;
+      top: 22px;
+      right: 22px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: floatPillGlow 4s ease-in-out infinite;
     }
     .hero-float-badge {
       position: absolute;
-      bottom: 24px;
-      left: 24px;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
+      bottom: 22px;
+      left: 22px;
+      right: 22px;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
       border: 1px solid var(--border-subtle);
-      padding: 10px 18px;
+      padding: 10px 16px;
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
@@ -517,8 +564,8 @@
       color: #111827;
     }
     .float-badge-icon {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 8px;
       background: #111827;
       color: var(--gold-500);
@@ -526,6 +573,8 @@
       align-items: center;
       justify-content: center;
       font-weight: 900;
+      font-size: 0.9rem;
+      flex-shrink: 0;
     }
 
     /* ==========================================================================
@@ -834,14 +883,6 @@
       color: #04140E;
       border-color: #D4AF37;
       box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
-      transform: translateY(-2px);
-    }
-    }
-    .card-add-btn:hover {
-      background: linear-gradient(135deg, #D4AF37 0%, #B89228 100%);
-      color: #04140E;
-      border-color: #F8E7A2;
-      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
       transform: translateY(-2px);
     }
     .card-add-btn svg {
@@ -1214,14 +1255,6 @@
       transition: opacity 0.3s ease, visibility 0.3s ease;
       pointer-events: none;
     }
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      z-index: 1040;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-      pointer-events: none;
-    }
     .drawer-backdrop.active {
       opacity: 1;
       visibility: visible;
@@ -1273,6 +1306,48 @@
       align-items: center;
       justify-content: space-between;
       background: #FFFFFF;
+      color: #111827;
+    }
+    .cart-store-tabs {
+      display: flex;
+      background: #F3F4F6;
+      border-radius: var(--radius-pill);
+      padding: 4px;
+      margin: 12px 18px 4px;
+      border: 1px solid var(--border-subtle);
+      gap: 4px;
+    }
+    .cart-store-tab {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: var(--radius-pill);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      background: none;
+    }
+    .cart-store-tab.active {
+      background: #111827;
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(17, 24, 39, 0.15);
+    }
+    .cart-tab-count {
+      font-size: 0.72rem;
+      padding: 1px 7px;
+      border-radius: var(--radius-pill);
+      background: rgba(0, 0, 0, 0.08);
+      color: inherit;
+      font-weight: 800;
+    }
+    .cart-store-tab.active .cart-tab-count {
+      background: var(--gold-500);
       color: #111827;
     }
     .drawer-close-btn {
@@ -1445,46 +1520,82 @@
         display: flex !important;
       }
 
-      /* Hero Section: Text leads first, Perfume Bottle visible as user scrolls */
+      /* Hero Section: Floating Image First, Followed by Headline & Buttons in Immediate First View */
       .hero-section {
-        padding: 24px 0 36px;
+        padding: 16px 0 28px;
       }
       .hero-grid {
         grid-template-columns: 1fr;
-        gap: 22px;
-      }
-      .hero-content {
-        order: 1; /* Headline & actions first */
+        gap: 16px;
       }
       .hero-visual {
-        order: 2; /* Bottle image below, visible upon scroll */
-        max-width: 480px;
+        order: 1; /* Floating Image comes on top in first view! */
+        max-width: 320px;
         margin: 0 auto;
         width: 100%;
       }
-      .hero-title {
-        font-size: clamp(1.8rem, 5vw, 2.4rem);
-        margin-bottom: 12px;
-      }
-      .hero-subtitle {
-        font-size: 0.94rem;
-        margin-bottom: 20px;
-      }
       .hero-card-frame {
-        position: relative;
         padding: 8px;
-        overflow: hidden;
-      }
-      .hero-card-frame::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(4, 20, 14, 0.1) 0%, rgba(4, 20, 14, 0.78) 100%);
-        border-radius: var(--radius-xl);
-        pointer-events: none;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08), 0 0 20px rgba(212, 175, 55, 0.15);
       }
       .hero-img {
-        height: 240px;
+        height: 200px; /* Compact height so entire hero fits on mobile screen! */
+        border-radius: calc(var(--radius-lg) - 4px);
+      }
+      .hero-top-pill {
+        top: 14px;
+        right: 14px;
+        padding: 4px 10px;
+        font-size: 0.68rem;
+      }
+      .hero-float-badge {
+        bottom: 14px;
+        left: 14px;
+        right: 14px;
+        padding: 6px 12px;
+      }
+      .hero-content {
+        order: 2; /* Headline and buttons directly below in first view */
+        align-items: center;
+        text-align: center;
+      }
+      .hero-tag {
+        margin-bottom: 8px;
+        font-size: 0.68rem;
+        padding: 4px 10px;
+      }
+      .hero-title {
+        font-size: clamp(1.6rem, 5.5vw, 2.1rem);
+        margin-bottom: 8px;
+        line-height: 1.2;
+      }
+      .hero-subtitle {
+        font-size: 0.86rem;
+        margin-bottom: 16px;
+        line-height: 1.5;
+        max-width: 95%;
+      }
+      .hero-actions {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        margin-bottom: 16px;
+      }
+      .btn-primary, .btn-secondary {
+        padding: 11px 18px;
+        font-size: 0.85rem;
+        justify-content: center;
+        flex: 1 1 auto;
+        max-width: 200px;
+      }
+      .hero-trust-strip {
+        justify-content: center;
+        gap: 12px;
+        padding-top: 12px;
+        font-size: 0.72rem;
       }
 
       .products-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
@@ -1851,12 +1962,12 @@
   </aside>
 
   <!-- ==========================================================================
-       3. HERO SECTION (Firm Font & Image Visible When Scrolled on Mobile)
+       3. HERO SECTION (Floating Visual & Immediate Dual Actions in First View)
        ========================================================================== -->
   <section class="hero-section">
     <div class="container hero-grid">
       
-      <!-- Left Content: Leads First -->
+      <!-- Content Column -->
       <div class="hero-content">
         <div class="hero-tag">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
@@ -1866,11 +1977,11 @@
           A Scent For Every <br><span class="gold-gradient">Side Of You</span>
         </h1>
         <p class="hero-subtitle">
-          Handcrafted pure attars & French Eau de Parfum formulations made for royalty. Available in retail flacons and wholesale master batches.
+          Handcrafted pure attars & French Eau de Parfum. Experience imperial luxury formulated for connoisseurs and commercial wholesale boutiques.
         </p>
         <div class="hero-actions">
           <a href="shop.html" class="btn-primary">
-            <span>Shop Bestsellers</span>
+            <span>Shop Collection</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
           </a>
           <a href="about.html" class="btn-secondary">
@@ -1880,29 +1991,33 @@
 
         <div class="hero-trust-strip">
           <div class="trust-badge-item">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
             <span>24h+ Long-Lasting</span>
           </div>
           <div class="trust-badge-item">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
             <span>Aged Assam Agarwood</span>
           </div>
           <div class="trust-badge-item">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
             <span>Pan-India Dispatch</span>
           </div>
         </div>
       </div>
 
-      <!-- Right Visual Card: Appears Below on Mobile (Img 5 Fix) -->
+      <!-- Floating Visual Showcase Frame -->
       <div class="hero-visual">
         <div class="hero-card-frame">
-          <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80" alt="Al-Ameen Sultan Attar" class="hero-img">
+          <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80" alt="Al-Ameen Sultan Attar Flacon" class="hero-img">
+          <div class="hero-top-pill">
+            <span style="color:var(--gold-500);">✦</span>
+            <span>100% Pure Oil</span>
+          </div>
           <div class="hero-float-badge">
             <div class="float-badge-icon">★</div>
             <div>
-              <div style="font-size:0.88rem; font-weight:800; color:#FFFFFF;">Al-Ameen Sultan Attar</div>
-              <div style="font-size:0.72rem; color:var(--gold-300); font-weight:600;">Flagship Royal Blend · 100% Pure Oil</div>
+              <div style="font-size:0.86rem; font-weight:800; color:#111827;">Al-Ameen Sultan Attar</div>
+              <div style="font-size:0.72rem; color:#4B5563; font-weight:600;">Flagship Royal Blend · Hydro-Distilled</div>
             </div>
           </div>
         </div>
@@ -2028,7 +2143,7 @@
   <section class="heritage-preview-section">
     <div class="container story-grid">
       <div class="story-tile-big">
-        <img src="https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=800&q=80" alt="Perfume Craft">
+        <img src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80" alt="Al-Ameen Royal Flacon Craft">
       </div>
       <div class="story-content">
         <span class="section-subtitle">Since Inception</span>
@@ -2161,10 +2276,27 @@
   <aside class="cart-drawer" id="cartDrawer">
     <div class="drawer-header">
       <div>
-        <span class="brand-title" style="font-size:1.1rem;">Your Bag</span>
+        <span class="brand-title" style="font-size:1.1rem;">Shopping Bag</span>
         <div style="font-size:0.75rem; color:#4B5563;" id="cartModeLabel">Mode: Retail</div>
       </div>
       <button class="drawer-close-btn" onclick="app.closeCartDrawer()">✕</button>
+    </div>
+
+    <!-- Dual Cart Switcher Tabs -->
+    <div class="cart-store-tabs">
+      <button type="button" class="cart-store-tab active" id="cartTabRetail" onclick="app.switchCartStore('retail')">
+        <span>Retail Bag</span>
+        <span class="cart-tab-count" id="cartTabRetailCount">0</span>
+      </button>
+      <button type="button" class="cart-store-tab" id="cartTabWholesale" onclick="app.switchCartStore('wholesale')">
+        <span>Wholesale Bag</span>
+        <span class="cart-tab-count" id="cartTabWholesaleCount">0</span>
+      </button>
+    </div>
+
+    <!-- Isolation Notice Banner -->
+    <div id="cartCrossStoreNotice" style="display:none; padding:10px 14px; margin:8px 18px 0; background:#FFFBEB; border:1px solid #FDE68A; border-radius:10px; font-size:0.78rem; color:#92400E; line-height:1.4;">
+      ⚠️ <strong>Separate Orders Required:</strong> Retail and Wholesale orders cannot be combined into a single purchase. You are currently viewing your <strong id="cartNoticeActiveMode">Retail</strong> Bag.
     </div>
 
     <div class="drawer-items-list" id="cartItemsList">
@@ -2172,12 +2304,12 @@
     </div>
 
     <div class="drawer-footer">
-      <div id="cartMinOrderNotice" style="display:none; margin-bottom:12px; padding:10px 12px; border-radius:8px; font-size:0.8rem; line-height:1.4; background:rgba(217,119,6,0.12); border:1px solid rgba(217,119,6,0.35); color:#FBBF24;"></div>
+      <div id="cartMinOrderNotice" style="display:none; margin-bottom:12px; padding:10px 12px; border-radius:8px; font-size:0.8rem; line-height:1.4; background:#FEF3C7; border:1px solid #FDE68A; color:#92400E;"></div>
       <div class="drawer-total-row">
         <span>Total:</span>
         <span id="cartDrawerTotal">₹0</span>
       </div>
-      <button type="button" class="btn-primary" style="width:100%; justify-content:center; padding:14px;" onclick="app.openOrderModal()">
+      <button type="button" class="btn-primary" id="cartCheckoutBtn" style="width:100%; justify-content:center; padding:14px;" onclick="app.openOrderModal()">
         Proceed to WhatsApp Order
       </button>
     </div>
@@ -2250,7 +2382,8 @@
         this.products = [];
         this.settings = { ...DEFAULT_SETTINGS };
         this.mode = getClientSession('alameen_mode', 'retail');
-        this.cart = getClientSession('alameen_cart', []);
+        this.retailCart = (typeof getCartForMode === 'function') ? getCartForMode('retail') : getClientSession('alameen_cart_retail', getClientSession('alameen_cart', []));
+        this.wholesaleCart = (typeof getCartForMode === 'function') ? getCartForMode('wholesale') : getClientSession('alameen_cart_wholesale', []);
         this.wishlist = getClientSession('alameen_wishlist', []);
         
         this.testimonials = [
@@ -2262,6 +2395,33 @@
         this.realtimeChannels = [];
 
         this.init();
+      }
+
+      getActiveCart() {
+        return this.mode === 'wholesale' ? this.wholesaleCart : this.retailCart;
+      }
+
+      setActiveCart(cartArr) {
+        if (this.mode === 'wholesale') {
+          this.wholesaleCart = cartArr;
+          if (typeof setCartForMode === 'function') setCartForMode('wholesale', cartArr);
+          else setClientSession('alameen_cart_wholesale', cartArr);
+        } else {
+          this.retailCart = cartArr;
+          if (typeof setCartForMode === 'function') setCartForMode('retail', cartArr);
+          else setClientSession('alameen_cart_retail', cartArr);
+        }
+        setClientSession('alameen_cart', cartArr);
+        this.updateBadges();
+      }
+
+      switchCartStore(targetMode) {
+        if (this.mode === targetMode) return;
+        this.setMode(targetMode);
+        this.renderCartItems();
+        if (typeof showToast === 'function') {
+          showToast(`Viewing ${targetMode === 'wholesale' ? 'Wholesale Bulk Bag' : 'Retail Boutique Bag'}`, 'info');
+        }
       }
 
       async init() {
@@ -2362,6 +2522,7 @@
         this.updateModeUI();
         this.renderBestsellers();
         this.renderCartItems();
+        this.updateBadges();
       }
 
       updateModeUI() {
@@ -2512,24 +2673,29 @@
         const product = this.products.find(p => p.id === productId);
         if (!product) return;
 
+        const activeCart = this.getActiveCart();
+        const otherCart = (this.mode === 'wholesale') ? this.retailCart : this.wholesaleCart;
+
         const defaultQty = 1;
         const qty = qtyToAdd || defaultQty;
         const availableSizes = getProductSizes(product, this.settings, this.mode);
         const defaultSize = (this.mode === 'wholesale') ? '50ml' : (availableSizes[0]?.size || '3ml');
         const chosenSize = sizeToAdd || defaultSize;
 
-        const existing = this.cart.find(item => item.productId === productId && (item.selectedSize || product.size || '12ml') === chosenSize);
+        const existing = activeCart.find(item => item.productId === productId && (item.selectedSize || product.size || '12ml') === chosenSize);
         if (existing) {
           existing.qty += qty;
         } else {
-          this.cart.push({ productId, qty, selectedSize: chosenSize });
+          activeCart.push({ productId, qty, selectedSize: chosenSize, mode: this.mode });
         }
 
-        setClientSession('alameen_cart', this.cart);
-        this.updateBadges();
+        this.setActiveCart(activeCart);
         this.openCartDrawer();
-        if (typeof showToast === 'function') {
-          showToast(`Added ${product.name} [${chosenSize}] to your Bag`, 'success');
+
+        if (otherCart.length > 0 && typeof showToast === 'function') {
+          showToast(`Added to ${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'} Bag. Note: Retail and Wholesale items check out in separate orders.`, 'info');
+        } else if (typeof showToast === 'function') {
+          showToast(`Added ${product.name} [${chosenSize}] to your ${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'} Bag`, 'success');
         }
       }
 
@@ -2545,11 +2711,20 @@
       }
 
       updateBadges() {
-        const totalItems = this.cart.reduce((sum, item) => sum + item.qty, 0);
+        const activeCart = this.getActiveCart();
+        const totalItems = activeCart.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+        const retailCount = this.retailCart.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+        const wholesaleCount = this.wholesaleCart.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+
         const navCart = document.getElementById('navCartCount');
         const mobileDock = document.getElementById('mobileDockCartCount');
         if (navCart) navCart.textContent = totalItems;
         if (mobileDock) mobileDock.textContent = totalItems;
+
+        const tabRCount = document.getElementById('cartTabRetailCount');
+        const tabWCount = document.getElementById('cartTabWholesaleCount');
+        if (tabRCount) tabRCount.textContent = retailCount;
+        if (tabWCount) tabWCount.textContent = wholesaleCount;
       }
 
       openCartDrawer() {
@@ -2566,35 +2741,80 @@
       renderCartItems() {
         const list = document.getElementById('cartItemsList');
         const totalEl = document.getElementById('cartDrawerTotal');
+        const tabR = document.getElementById('cartTabRetail');
+        const tabW = document.getElementById('cartTabWholesale');
+        const modeLabel = document.getElementById('cartModeLabel');
+        const crossNotice = document.getElementById('cartCrossStoreNotice');
+        const noticeMode = document.getElementById('cartNoticeActiveMode');
+        const checkoutBtn = document.getElementById('cartCheckoutBtn');
+
         if (!list || !totalEl) return;
 
-        if (this.cart.length === 0) {
-          list.innerHTML = `<div style="text-align:center; padding:40px 10px; color:var(--text-muted);">Your bag is empty.<br><a href="shop.html" style="color:var(--green-700); font-weight:700; display:inline-block; margin-top:10px;">Explore Fragrances →</a></div>`;
+        const isWholesale = (this.mode === 'wholesale');
+        const activeCart = this.getActiveCart();
+        const otherCart = isWholesale ? this.retailCart : this.wholesaleCart;
+
+        if (tabR && tabW) {
+          if (isWholesale) {
+            tabW.classList.add('active');
+            tabR.classList.remove('active');
+          } else {
+            tabR.classList.add('active');
+            tabW.classList.remove('active');
+          }
+        }
+
+        if (modeLabel) {
+          modeLabel.textContent = isWholesale ? 'Mode: Wholesale (Bulk Flacons)' : 'Mode: Retail (Boutique)';
+        }
+
+        if (crossNotice && noticeMode) {
+          if (otherCart.length > 0) {
+            crossNotice.style.display = 'block';
+            noticeMode.textContent = isWholesale ? 'Wholesale' : 'Retail';
+          } else {
+            crossNotice.style.display = 'none';
+          }
+        }
+
+        if (checkoutBtn) {
+          checkoutBtn.textContent = isWholesale ? 'Proceed to Wholesale Order via WhatsApp' : 'Proceed to Retail Order via WhatsApp';
+        }
+
+        if (activeCart.length === 0) {
+          list.innerHTML = `
+            <div style="text-align:center; padding:40px 14px; color:var(--text-muted);">
+              Your ${isWholesale ? 'Wholesale Bulk' : 'Retail'} bag is empty.<br>
+              <a href="shop.html" style="color:#111827; font-weight:700; display:inline-block; margin-top:10px; border-bottom:1.5px solid var(--gold-500);">Explore Fragrances →</a>
+            </div>
+          `;
           totalEl.textContent = '₹0';
+          const noticeEl = document.getElementById('cartMinOrderNotice');
+          if (noticeEl) noticeEl.style.display = 'none';
           return;
         }
 
         let overallTotal = 0;
-        list.innerHTML = this.cart.map(item => {
+        list.innerHTML = activeCart.map(item => {
           const product = this.products.find(p => p.id === item.productId);
           if (!product) return '';
           const availableSizes = getProductSizes(product, this.settings, this.mode);
-          const defaultSize = (this.mode === 'wholesale') ? '50ml' : (availableSizes[0]?.size || '3ml');
+          const defaultSize = isWholesale ? '50ml' : (availableSizes[0]?.size || '3ml');
           const currentSize = item.selectedSize || defaultSize;
           const pricing = calculateProductPrice(product, this.mode, item.qty, this.settings, currentSize);
           overallTotal += pricing.totalPrice;
 
           return `
             <div class="cart-item-card">
-              <img src="${product.images[0]}" alt="${product.name}" class="cart-item-thumb">
+              <img src="${product.images && product.images[0] ? product.images[0] : ''}" alt="${product.name}" class="cart-item-thumb">
               <div class="cart-item-info">
                 <div class="cart-item-title">${product.name}</div>
                 
-                <!-- Bottle Size Selector in Bag (Attar 3ml, 6ml, 12ml / Spray 50ml, 100ml) -->
+                <!-- Bottle Size Selector in Bag -->
                 <div style="margin: 4px 0 6px; display:flex; align-items:center; gap:6px;">
                   <span style="font-size:0.72rem; color:var(--text-light); font-weight:700; text-transform:uppercase;">Size:</span>
                   <select class="cart-size-select" 
-                    style="padding:3px 8px; font-size:0.76rem; font-weight:700; border-radius:6px; border:1.5px solid var(--green-200); background:#FFFFFF; color:var(--green-950); cursor:pointer;"
+                    style="padding:3px 8px; font-size:0.76rem; font-weight:700; border-radius:6px; border:1.5px solid var(--border-subtle); background:#FFFFFF; color:#111827; cursor:pointer;"
                     onchange="app.updateItemSize('${item.productId}', '${currentSize}', this.value)">
                     ${availableSizes.map(s => {
                       const sPricing = calculateProductPrice(product, this.mode, 1, this.settings, s.size);
@@ -2606,9 +2826,9 @@
                 <div class="cart-item-price">₹${pricing.unitPrice.toLocaleString('en-IN')} × ${item.qty} = ₹${pricing.totalPrice.toLocaleString('en-IN')}</div>
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
-                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="app.updateItemQty('${item.productId}', '${currentSize}', -1)">−</button>
-                <span style="font-size:0.85rem; font-weight:700;">${item.qty}</span>
-                <button type="button" style="padding:4px 8px; background:#E5ECE8; border-radius:4px; font-weight:700;" onclick="app.updateItemQty('${item.productId}', '${currentSize}', 1)">+</button>
+                <button type="button" style="padding:4px 8px; background:#F3F4F6; border-radius:4px; font-weight:700; color:#111827;" onclick="app.updateItemQty('${item.productId}', '${currentSize}', -1)">−</button>
+                <span style="font-size:0.85rem; font-weight:700; color:#111827;">${item.qty}</span>
+                <button type="button" style="padding:4px 8px; background:#F3F4F6; border-radius:4px; font-weight:700; color:#111827;" onclick="app.updateItemQty('${item.productId}', '${currentSize}', 1)">+</button>
               </div>
             </div>
           `;
@@ -2618,14 +2838,14 @@
 
         const minOrder = (typeof getMinOrderAmount === 'function')
           ? getMinOrderAmount(this.mode, this.settings)
-          : ((this.mode === 'wholesale') ? (Number(this.settings?.min_order_wholesale) || 1500) : (Number(this.settings?.min_order_retail) || 0));
+          : (isWholesale ? (Number(this.settings?.min_order_wholesale) || 1500) : (Number(this.settings?.min_order_retail) || 0));
 
         const noticeEl = document.getElementById('cartMinOrderNotice');
         if (noticeEl) {
           if (minOrder > 0 && overallTotal < minOrder) {
             const diff = minOrder - overallTotal;
             noticeEl.style.display = 'block';
-            noticeEl.innerHTML = `⚠️ <strong>Minimum Purchase Required:</strong> ₹${minOrder.toLocaleString('en-IN')}<br>Add <strong>₹${diff.toLocaleString('en-IN')}</strong> more to checkout in ${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'} mode.`;
+            noticeEl.innerHTML = `⚠️ <strong>Minimum Purchase Required:</strong> ₹${minOrder.toLocaleString('en-IN')}<br>Add <strong>₹${diff.toLocaleString('en-IN')}</strong> more to checkout your ${isWholesale ? 'Wholesale' : 'Retail'} bag.`;
           } else {
             noticeEl.style.display = 'none';
             noticeEl.innerHTML = '';
@@ -2634,50 +2854,51 @@
       }
 
       updateItemSize(productId, oldSize, newSize) {
-        const itemIndex = this.cart.findIndex(i => i.productId === productId && (i.selectedSize || '12ml') === oldSize);
+        const activeCart = this.getActiveCart();
+        const itemIndex = activeCart.findIndex(i => i.productId === productId && (i.selectedSize || '12ml') === oldSize);
         if (itemIndex === -1) return;
         const product = this.products.find(p => p.id === productId);
 
         // Check if target size already exists in cart; if so, merge quantities
-        const targetIndex = this.cart.findIndex((i, idx) => idx !== itemIndex && i.productId === productId && (i.selectedSize || '12ml') === newSize);
+        const targetIndex = activeCart.findIndex((i, idx) => idx !== itemIndex && i.productId === productId && (i.selectedSize || '12ml') === newSize);
         if (targetIndex > -1) {
-          this.cart[targetIndex].qty += this.cart[itemIndex].qty;
-          this.cart.splice(itemIndex, 1);
+          activeCart[targetIndex].qty += activeCart[itemIndex].qty;
+          activeCart.splice(itemIndex, 1);
         } else {
-          this.cart[itemIndex].selectedSize = newSize;
+          activeCart[itemIndex].selectedSize = newSize;
         }
 
-        setClientSession('alameen_cart', this.cart);
+        this.setActiveCart(activeCart);
         this.renderCartItems();
-        this.updateBadges();
         if (typeof showToast === 'function') {
           showToast(`Updated ${product ? product.name : 'Perfume'} size to ${newSize}`, 'success');
         }
       }
 
       updateItemQty(productId, sizeName, delta) {
-        const item = this.cart.find(i => i.productId === productId && (i.selectedSize || '12ml') === sizeName);
+        let activeCart = this.getActiveCart();
+        const item = activeCart.find(i => i.productId === productId && (i.selectedSize || '12ml') === sizeName);
         if (!item) return;
         const product = this.products.find(p => p.id === productId);
         const minQty = 1;
 
         item.qty += delta;
         if (item.qty < minQty) {
-          this.cart = this.cart.filter(i => !(i.productId === productId && (i.selectedSize || '12ml') === sizeName));
+          activeCart = activeCart.filter(i => !(i.productId === productId && (i.selectedSize || '12ml') === sizeName));
         }
-        setClientSession('alameen_cart', this.cart);
-        this.updateBadges();
+        this.setActiveCart(activeCart);
         this.renderCartItems();
       }
 
       openOrderModal() {
-        if (this.cart.length === 0) {
-          alert("Your bag is empty! Please add products before placing an order.");
+        const activeCart = this.getActiveCart();
+        if (activeCart.length === 0) {
+          alert(`Your ${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'} bag is empty! Please add products before placing an order.`);
           return;
         }
 
         let overallTotal = 0;
-        this.cart.forEach(item => {
+        activeCart.forEach(item => {
           const product = this.products.find(p => p.id === item.productId);
           if (product) {
             const chosenSize = item.selectedSize || product.size || (this.mode === 'wholesale' ? '50ml' : '12ml');
@@ -2724,11 +2945,12 @@
           const pincode = document.getElementById('orderPincode').value.trim();
           const notes = document.getElementById('orderNotes').value.trim();
 
+          const activeCart = this.getActiveCart();
           let total = 0;
           let itemsText = "";
           const orderItems = [];
 
-          this.cart.forEach((item, idx) => {
+          activeCart.forEach((item, idx) => {
             const product = this.products.find(p => p.id === item.productId);
             if (product) {
               const chosenSize = item.selectedSize || product.size || '12ml';
@@ -2791,8 +3013,8 @@
           const rawWaNumber = this.settings?.whatsapp_number || (typeof CONFIG !== 'undefined' ? CONFIG.WHATSAPP_NUMBER : '919446617266');
           const waNumber = String(rawWaNumber).replace(/\D/g, '') || '919446617266';
 
-          const message = `*New Order [${finalOrderId}] – ${storeName}*\n` +
-            `Order Type: ${this.mode.toUpperCase()}\n` +
+          const message = `*New ${this.mode === 'wholesale' ? 'WHOLESALE' : 'RETAIL'} Order [${finalOrderId}] – ${storeName}*\n` +
+            `Order Type: ${this.mode === 'wholesale' ? 'WHOLESALE BULK' : 'RETAIL BOUTIQUE'}\n` +
             `-----------------------------------\n` +
             `${itemsText}` +
             `*Total: ₹${total.toLocaleString('en-IN')}*\n` +
@@ -2808,9 +3030,21 @@
 
           const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
 
-          // Clear cart on order
-          this.cart = [];
-          setClientSession('alameen_cart', this.cart);
+          // Clear ONLY the active store's cart upon order placement
+          this.setActiveCart([]);
+          this.closeOrderModal();
+
+          // Resilient WhatsApp redirect (bypass popup blocker)
+          const waWin = window.open(waUrl, '_blank');
+          if (!waWin || waWin.closed || typeof waWin.closed === 'undefined') {
+            window.location.href = waUrl;
+          }
+
+          if (typeof showToast === 'function') {
+            showToast(`Order ${finalOrderId} placed! Opening WhatsApp...`, 'success');
+          } else {
+            alert(`Your order [${finalOrderId}] has been initiated! WhatsApp is opening to finalize dispatch.`);
+          }
           this.updateBadges();
           this.closeOrderModal();
 

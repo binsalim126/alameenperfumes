@@ -17,25 +17,25 @@
 
   <style>
     :root {
-      --green-950: #04140E;
-      --green-900: #0A261C;
-      --green-800: #10382B;
-      --green-700: #185340;
-      --green-600: #227B5E;
-      --green-400: #54B08C;
-      --green-200: #A8DDC2;
-      --green-50:  #F4F7F5;
+      --green-950: #0F4C3A; /* Official Royal Emerald */
+      --green-900: #115E59;
+      --green-800: #0D382B;
+      --green-700: #0F4C3A;
+      --green-600: #15803D;
+      --green-400: #22C55E;
+      --green-200: #E5E7EB;
+      --green-50:  #F8F9FA; /* Crisp light grey / off-white */
       
       --gold-500: #D4AF37;
       --gold-700: #A88120;
-      --gold-300: #ECD485;
+      --gold-300: #F3C64F;
       
-      --text-dark: #061F17;
-      --text-muted: #3B5448;
-      --text-light: #718D80;
+      --text-dark: #111827;  /* High-end Noir Black */
+      --text-muted: #4B5563; /* Slate Grey */
+      --text-light: #9CA3AF; /* Light Grey */
       
-      --border-card: #E5ECE8;
-      --border-subtle: #DEE8E3;
+      --border-card: #E5E7EB;
+      --border-subtle: #E5E7EB;
       --border-gold: rgba(212, 175, 55, 0.4);
       
       --radius-sm: 8px;
@@ -44,8 +44,8 @@
       --radius-xl: 28px;
       --radius-pill: 9999px;
       
-      --shadow-sm: 0 2px 8px rgba(6, 31, 23, 0.05);
-      --shadow-md: 0 10px 28px rgba(6, 31, 23, 0.08);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
       
       --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --transition: all 0.24s cubic-bezier(0.4, 0, 0.2, 1);
@@ -108,12 +108,12 @@
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(11, 61, 46, 0.95);
+      background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
-      color: #FFFFFF;
-      box-shadow: 0 4px 20px rgba(5, 26, 19, 0.25);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-dark);
+      box-shadow: 0 2px 14px rgba(0, 0, 0, 0.04);
+      border-bottom: 1px solid var(--border-subtle);
       height: var(--header-height);
     }
     .navbar-inner {
@@ -131,22 +131,23 @@
     .brand-logo-icon {
       width: 38px;
       height: 38px;
-      background: linear-gradient(135deg, var(--green-700), var(--green-950));
+      background: linear-gradient(135deg, #0F4C3A, #062319);
       border: 1.5px solid var(--gold-500);
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--gold-500);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
     }
     .brand-title {
       font-family: var(--font-main);
       font-weight: 800;
       letter-spacing: 0.04em;
       font-size: 1.25rem;
-      background: linear-gradient(135deg, #FFFFFF 0%, #F5DE88 50%, #D4AF37 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #111827;
+      background: none;
+      -webkit-text-fill-color: initial;
     }
     .nav-links {
       display: flex;
@@ -157,11 +158,11 @@
     .nav-link {
       font-size: 0.88rem;
       font-weight: 600;
-      color: var(--green-200);
+      color: #4B5563;
       padding: 6px 2px;
       position: relative;
     }
-    .nav-link:hover, .nav-link.active { color: #FFFFFF; }
+    .nav-link:hover, .nav-link.active { color: #111827; }
     .nav-link.active::after {
       content: '';
       position: absolute;
@@ -186,21 +187,28 @@
       width: 40px !important;
       height: 40px !important;
       border-radius: 50% !important;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: #F3F4F6 !important;
+      border: 1px solid var(--border-subtle) !important;
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
-      color: #FFFFFF;
+      color: #111827 !important;
       position: relative;
       flex-shrink: 0 !important;
+    }
+    .action-icon-btn:hover {
+      background: #FFFFFF !important;
+      border-color: var(--gold-500) !important;
+      color: var(--gold-700) !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      transform: translateY(-2px);
     }
     .action-icon-btn .count-badge {
       position: absolute;
       top: -3px;
       right: -3px;
-      background: var(--gold-500);
-      color: var(--green-950);
+      background: #111827;
+      color: #FFFFFF;
       font-size: 0.68rem;
       font-weight: 800;
       width: 19px;
@@ -216,9 +224,9 @@
       width: 44px;
       height: 44px;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      color: #FFFFFF;
+      background: #F3F4F6;
+      border: 1px solid var(--border-subtle);
+      color: #111827;
       align-items: center;
       justify-content: center;
       cursor: pointer;
@@ -265,19 +273,20 @@
 
     /* Page Header */
     .contact-hero {
-      background: linear-gradient(175deg, var(--green-950) 0%, var(--green-900) 100%);
-      color: #FFFFFF;
-      padding: 50px 0;
+      background: linear-gradient(180deg, #FFFFFF 0%, #F4F5F7 100%);
+      color: var(--text-dark);
+      padding: 55px 0 45px;
       text-align: center;
-      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+      border-bottom: 1px solid var(--border-subtle);
     }
     .contact-hero-title {
       font-size: clamp(2rem, 3.8vw, 2.8rem);
       font-weight: 800;
+      color: #111827;
       margin-bottom: 8px;
     }
     .contact-hero-subtitle {
-      color: var(--green-200);
+      color: #4B5563;
       max-width: 600px;
       margin: 0 auto;
       font-size: 0.95rem;
@@ -307,7 +316,7 @@
     }
     .info-card h4 {
       font-size: 1.05rem;
-      color: var(--green-950);
+      color: #111827;
       margin-bottom: 6px;
       display: flex;
       align-items: center;
@@ -320,12 +329,13 @@
     }
 
     .wa-direct-banner {
-      background: linear-gradient(135deg, #0A3626, #04140E);
-      border: 1.5px solid var(--border-gold);
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-subtle);
       border-radius: var(--radius-lg);
-      padding: 24px;
-      color: #FFFFFF;
+      padding: 26px;
+      color: var(--text-dark);
       text-align: center;
+      box-shadow: var(--shadow-sm);
     }
     .wa-btn {
       background: #25D366;
@@ -338,12 +348,12 @@
       align-items: center;
       gap: 10px;
       margin-top: 16px;
-      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
+      box-shadow: 0 4px 16px rgba(37, 211, 102, 0.25);
       transition: var(--transition);
     }
     .wa-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.45);
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
       background: #20BA5A;
     }
 
@@ -362,7 +372,7 @@
       display: block;
       font-size: 0.82rem;
       font-weight: 700;
-      color: var(--green-950);
+      color: #111827;
       margin-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -375,18 +385,19 @@
       font-size: 0.94rem;
       outline: none;
       transition: var(--transition);
-      background: var(--green-50);
+      background: #FFFFFF;
+      color: #111827;
     }
     .form-control:focus {
-      border-color: var(--green-600);
+      border-color: #111827;
       background: #FFFFFF;
-      box-shadow: 0 0 0 3px rgba(34, 123, 94, 0.15);
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
     }
     .form-type-radios {
       display: flex;
       gap: 16px;
       margin-bottom: 20px;
-      background: var(--green-50);
+      background: #F3F4F6;
       padding: 6px;
       border-radius: var(--radius-pill);
       border: 1px solid var(--border-subtle);
@@ -403,14 +414,14 @@
       transition: var(--transition);
     }
     .form-type-label.active {
-      background: var(--green-900);
+      background: #111827;
       color: #FFFFFF;
     }
 
     .btn-submit {
-      background: linear-gradient(135deg, var(--gold-500) 0%, var(--gold-700) 100%);
-      color: var(--green-950);
-      font-weight: 800;
+      background: #111827;
+      color: #FFFFFF;
+      font-weight: 700;
       font-size: 0.95rem;
       padding: 14px 28px;
       border-radius: var(--radius-pill);
@@ -419,12 +430,14 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 4px 18px rgba(212, 175, 55, 0.35);
+      box-shadow: 0 4px 16px rgba(17, 24, 39, 0.2);
       cursor: pointer;
+      transition: var(--transition);
     }
     .btn-submit:hover {
+      background: #000000;
       transform: translateY(-2px);
-      box-shadow: 0 6px 24px rgba(212, 175, 55, 0.45);
+      box-shadow: 0 6px 20px rgba(17, 24, 39, 0.3);
     }
 
     /* FAQ Section */
@@ -468,10 +481,10 @@
 
     /* Footer */
     .main-footer {
-      background: #04140E;
-      color: var(--green-200);
+      background: #0B0F12;
+      color: #9CA3AF;
       padding: 60px 0 30px;
-      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
     .footer-grid {
       display: grid;
@@ -494,7 +507,7 @@
       color: #FFFFFF;
       transition: var(--transition);
     }
-    .social-btn:hover { background: var(--gold-500); color: var(--green-950); }
+    .social-btn:hover { background: var(--gold-500); color: #111827; }
 
     /* STRICTLY HIDE MOBILE TAB BAR ON LAPTOP/DESKTOP */
     .mobile-tab-bar { display: none !important; }
@@ -572,12 +585,12 @@
         max-width: 440px;
         margin: 0 auto;
         height: 62px;
-        background: linear-gradient(135deg, rgba(10, 38, 28, 0.96) 0%, rgba(4, 20, 14, 0.98) 100%);
+        background: rgba(255, 255, 255, 0.96);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         border-radius: 36px;
-        border: 1.5px solid rgba(212, 175, 55, 0.4);
-        box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45), 0 0 16px rgba(212, 175, 55, 0.15);
+        border: 1.5px solid var(--border-subtle);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
         z-index: 95;
         justify-content: space-around;
         align-items: center;
@@ -591,15 +604,19 @@
         align-items: center;
         justify-content: center;
         gap: 2px;
-        color: #E2F0EA !important;
+        color: #6B7280 !important;
         border-radius: 24px;
         position: relative;
         cursor: pointer;
+        transition: var(--transition);
+      }
+      .tab-bar-item svg {
+        color: #6B7280 !important;
       }
       .tab-bar-item.active {
-        background: linear-gradient(135deg, rgba(34, 123, 94, 0.85), rgba(16, 56, 43, 0.95));
-        border: 1px solid rgba(212, 175, 55, 0.5);
-        color: var(--gold-300) !important;
+        background: #111827;
+        border: 1px solid #111827;
+        color: #FFFFFF !important;
       }
       .tab-bar-item.active svg { color: var(--gold-500) !important; }
       .tab-bar-item span { font-size: 0.7rem; font-weight: 700; }
@@ -607,8 +624,8 @@
         position: absolute;
         top: 4px;
         right: calc(50% - 18px);
-        background: var(--gold-500);
-        color: var(--green-950);
+        background: #111827;
+        color: #FFFFFF;
         font-size: 0.62rem;
         font-weight: 900;
         width: 17px;
@@ -676,15 +693,15 @@
   <!-- Mobile Drawer Menu -->
   <div class="drawer-backdrop" id="mobileMenuBackdrop" onclick="closeMobileMenu()"></div>
   <aside class="mobile-nav-drawer" id="mobileMenuDrawer">
-    <div style="padding:18px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-subtle); background:var(--green-950); color:#FFFFFF;">
-      <span class="brand-title" style="font-size:1.15rem; color:#FFFFFF;">AL-AMEEN PERFUMES</span>
-      <button onclick="closeMobileMenu()" style="color:#FFFFFF; font-size:1.3rem;">✕</button>
+    <div style="padding:18px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-subtle); background:#FFFFFF; color:#111827;">
+      <span class="brand-title" style="font-size:1.15rem; color:#111827;">AL-AMEEN PERFUMES</span>
+      <button onclick="closeMobileMenu()" style="color:#111827; font-size:1.3rem;">✕</button>
     </div>
     <div style="padding: 24px; display:flex; flex-direction:column; gap:16px;">
-      <a href="index.html" class="nav-link" style="color:var(--green-950); font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">Home</a>
-      <a href="shop.html" class="nav-link" style="color:var(--green-950); font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">Shop Catalog</a>
-      <a href="about.html" class="nav-link" style="color:var(--green-950); font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">About Heritage</a>
-      <a href="contact.html" class="nav-link" style="color:var(--green-950); font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">Contact & Inquiries</a>
+      <a href="index.html" class="nav-link" style="color:#111827; font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">Home</a>
+      <a href="shop.html" class="nav-link" style="color:#111827; font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">Shop Catalog</a>
+      <a href="about.html" class="nav-link" style="color:#111827; font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">About Heritage</a>
+      <a href="contact.html" class="nav-link" style="color:#111827; font-weight:700; font-size:1.05rem; padding:8px 0; border-bottom:1px solid var(--border-subtle);">Contact & Inquiries</a>
       <a href="admin.html" class="nav-link" style="color:var(--gold-700); font-weight:700; font-size:1.05rem; padding:8px 0;">Admin Portal</a>
     </div>
   </aside>
@@ -705,7 +722,7 @@
       <div class="wa-direct-banner">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="#25D366"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
         <h3 style="font-size:1.3rem; margin:10px 0 6px;">Instant WhatsApp Assistance</h3>
-        <p style="font-size:0.86rem; color:var(--green-200);">Our representative is online Monday to Saturday, 9:30 AM to 8:30 PM IST.</p>
+        <p style="font-size:0.86rem; color:#4B5563;">Our representative is online Monday to Saturday, 9:30 AM to 8:30 PM IST.</p>
         <a href="https://wa.me/919446617266?text=Hello%20Al-Ameen%20Perfumes,%20I%20have%20an%20inquiry%20regarding%20your%20fragrances" target="_blank" rel="noopener" class="wa-btn">
           <span>Start WhatsApp Chat</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
@@ -854,9 +871,9 @@
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
       <span>About</span>
     </a>
-    <a href="shop.html" class="tab-bar-item">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-      <span>Bag</span>
+    <a href="contact.html" class="tab-bar-item active">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+      <span>Contact</span>
     </a>
   </nav>
 

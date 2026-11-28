@@ -7,7 +7,7 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230B2B20'%3E%3Cpath d='M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z'/%3E%3C/svg%3E">
   <!-- Supabase Official JS Client -->
@@ -47,7 +47,8 @@
       --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
       --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
       
-      --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-display: 'Cinzel', serif;
+      --font-main: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --transition: all 0.24s cubic-bezier(0.4, 0, 0.2, 1);
       --header-height: 72px;
     }
@@ -81,9 +82,9 @@
     }
 
     h1, h2, h3, .brand-title, .page-header-title {
-      font-family: var(--font-main);
+      font-family: var(--font-display);
       font-weight: 700;
-      letter-spacing: -0.01em;
+      letter-spacing: 0.02em;
     }
 
     h4 {
@@ -651,7 +652,7 @@
     <!-- Story 2 -->
     <div class="split-grid reverse">
       <div class="split-image-card">
-        <img src="https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=800&q=80" alt="French Formulation Craft">
+        <img src="https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=800&q=80" alt="Royal Amber & French Formulation Craft">
       </div>
       <div class="split-text">
         <span style="color:var(--green-600); font-size:0.75rem; font-weight:800; text-transform:uppercase;">East Meets West</span>
@@ -799,8 +800,7 @@
       document.body.style.overflow = '';
     }
 
-    const cart = getClientSession('alameen_cart', []);
-    const count = cart.reduce((sum, item) => sum + item.qty, 0);
+    const count = (typeof getCartCount === 'function') ? getCartCount() : getClientSession('alameen_cart', []).reduce((sum, item) => sum + item.qty, 0);
     const navCart = document.getElementById('navCartCount');
     const dockCart = document.getElementById('mobileDockCartCount');
     if (navCart) navCart.textContent = count;

@@ -92,12 +92,12 @@ const DEFAULT_SETTINGS = {
 // Default Categories for UI Carousel & Filters (100% Authentic Attar & Luxury Perfume Flacons)
 const CATEGORIES = [
   { name: "All", image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=400&q=80" },
-  { name: "Luxury", image: "https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=400&q=80" },
-  { name: "Attars", image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=400&q=80" },
+  { name: "Luxury", image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=400&q=80" },
+  { name: "Attars", image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=400&q=80" },
   { name: "Men", image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=400&q=80" },
-  { name: "Women", image: "https://images.unsplash.com/photo-1583445013765-46c20c4a6772?auto=format&fit=crop&w=400&q=80" },
+  { name: "Women", image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=400&q=80" },
   { name: "Unisex", image: "https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?auto=format&fit=crop&w=400&q=80" },
-  { name: "Gift Sets", image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=400&q=80" },
+  { name: "Gift Sets", image: "https://images.unsplash.com/photo-1563178406-4cdc2923acbc?auto=format&fit=crop&w=400&q=80" },
   { name: "Miniatures", image: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=400&q=80" }
 ];
 
@@ -195,7 +195,7 @@ const FLAGSHIP_SEED_PRODUCTS = [
       base: "White Amber, Cashmere Musk"
     },
     description: "Freshly blossomed Taif roses dipped in crystal morning dew with soft sensual white amber undertones.",
-    images: ["https://images.unsplash.com/photo-1583445013765-46c20c4a6772?auto=format&fit=crop&w=800&q=80"],
+    images: ["https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=800&q=80"],
     bestseller: true,
     newArrival: false,
     active: true
@@ -228,7 +228,7 @@ const FLAGSHIP_SEED_PRODUCTS = [
       base: "Pure Mysore Sandalwood Oil"
     },
     description: "100% alcohol-free traditional attar crafted using age-old hydro-distillation with pure Mysore sandalwood oil.",
-    images: ["https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=800&q=80"],
+    images: ["https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=800&q=80"],
     bestseller: true,
     newArrival: false,
     active: true
@@ -1254,10 +1254,44 @@ function getStorage(key, fallback = null) {
   return getClientSession(key, fallback);
 }
 
+// Dual-Cart Isolated Storage (Retail & Wholesale Separate Bags)
+function getCartForMode(mode) {
+  const isWholesale = (mode === 'wholesale');
+  const key = isWholesale ? 'alameen_cart_wholesale' : 'alameen_cart_retail';
+  let cart = getClientSession(key, null);
+  if (!cart) {
+    if (!isWholesale) {
+      // Migrate legacy cart if retail cart is empty
+      const legacy = getClientSession('alameen_cart', []);
+      cart = Array.isArray(legacy) ? legacy : [];
+      setClientSession(key, cart);
+    } else {
+      cart = [];
+    }
+  }
+  return Array.isArray(cart) ? cart : [];
+}
+
+function setCartForMode(mode, cart) {
+  const isWholesale = (mode === 'wholesale');
+  const key = isWholesale ? 'alameen_cart_wholesale' : 'alameen_cart_retail';
+  setClientSession(key, cart);
+  // Mirror active cart to alameen_cart for backward compatibility
+  setClientSession('alameen_cart', cart);
+}
+
+function getCartCount(mode) {
+  const cart = getCartForMode(mode);
+  return cart.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+}
+
 // Global Exports
 window.CONFIG = CONFIG;
 window.setStorage = setStorage;
 window.getStorage = getStorage;
+window.getCartForMode = getCartForMode;
+window.setCartForMode = setCartForMode;
+window.getCartCount = getCartCount;
 window.getProductSizes = getProductSizes;
 window.calculateTiersFromRetail = calculateTiersFromRetail;
 window.dbFetchProducts = dbFetchProducts;

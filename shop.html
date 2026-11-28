@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Shop Fragrances & Attars | AL-AMEEN PERFUMES</title>
   
-  <!-- Google Fonts: Poppins Firm Geometric Sans -->
+  <!-- Google Fonts: Cinzel & Montserrat -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230B2B20'%3E%3Cpath d='M10 2h4v2h-4zM7 6h10v2H7zm-1 4h12c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2zm6 2c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z'/%3E%3C/svg%3E">
 
@@ -50,7 +50,8 @@
       --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
       --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
       
-      --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-display: 'Cinzel', serif;
+      --font-main: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --transition: all 0.24s cubic-bezier(0.4, 0, 0.2, 1);
       --header-height: 72px;
     }
@@ -84,9 +85,9 @@
     }
 
     h1, h2, h3, .brand-title, .shop-header-title {
-      font-family: var(--font-main);
+      font-family: var(--font-display);
       font-weight: 700;
-      letter-spacing: -0.01em;
+      letter-spacing: 0.02em;
     }
 
     h4, .card-title {
@@ -729,6 +730,48 @@
       background: #FFFFFF;
       color: #111827;
     }
+    .cart-store-tabs {
+      display: flex;
+      background: #F3F4F6;
+      border-radius: var(--radius-pill);
+      padding: 4px;
+      margin: 12px 18px 4px;
+      border: 1px solid var(--border-subtle);
+      gap: 4px;
+    }
+    .cart-store-tab {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: var(--radius-pill);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      background: none;
+    }
+    .cart-store-tab.active {
+      background: #111827;
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(17, 24, 39, 0.15);
+    }
+    .cart-tab-count {
+      font-size: 0.72rem;
+      padding: 1px 7px;
+      border-radius: var(--radius-pill);
+      background: rgba(0, 0, 0, 0.08);
+      color: inherit;
+      font-weight: 800;
+    }
+    .cart-store-tab.active .cart-tab-count {
+      background: var(--gold-500);
+      color: #111827;
+    }
     .drawer-close-btn {
       width: 32px;
       height: 32px;
@@ -1256,14 +1299,32 @@
   <aside class="cart-drawer" id="cartDrawer">
     <div class="drawer-header">
       <div>
-        <span class="brand-title" style="font-size:1.1rem;">Your Bag</span>
+        <span class="brand-title" style="font-size:1.1rem;">Shopping Bag</span>
         <div style="font-size:0.75rem; color:#4B5563;" id="cartModeLabel">Mode: Retail</div>
       </div>
       <button class="drawer-close-btn" onclick="shopApp.closeCartDrawer()">✕</button>
     </div>
+
+    <!-- Dual Cart Switcher Tabs -->
+    <div class="cart-store-tabs">
+      <button type="button" class="cart-store-tab active" id="cartTabRetail" onclick="shopApp.switchCartStore('retail')">
+        <span>Retail Bag</span>
+        <span class="cart-tab-count" id="cartTabRetailCount">0</span>
+      </button>
+      <button type="button" class="cart-store-tab" id="cartTabWholesale" onclick="shopApp.switchCartStore('wholesale')">
+        <span>Wholesale Bag</span>
+        <span class="cart-tab-count" id="cartTabWholesaleCount">0</span>
+      </button>
+    </div>
+
+    <!-- Isolation Notice Banner -->
+    <div id="cartCrossStoreNotice" style="display:none; padding:10px 14px; margin:8px 18px 0; background:#FFFBEB; border:1px solid #FDE68A; border-radius:10px; font-size:0.78rem; color:#92400E; line-height:1.4;">
+      ⚠️ <strong>Separate Orders Required:</strong> Retail and Wholesale orders cannot be combined into a single purchase. You are currently viewing your <strong id="cartNoticeActiveMode">Retail</strong> Bag.
+    </div>
+
     <div class="drawer-items-list" id="cartItemsList"></div>
     <div class="drawer-footer">
-      <div id="cartMinOrderNotice" style="display:none; margin-bottom:12px; padding:10px 12px; border-radius:8px; font-size:0.8rem; line-height:1.4; background:rgba(217,119,6,0.12); border:1px solid rgba(217,119,6,0.35); color:#FBBF24;"></div>
+      <div id="cartMinOrderNotice" style="display:none; margin-bottom:12px; padding:10px 12px; border-radius:8px; font-size:0.8rem; line-height:1.4; background:#FEF3C7; border:1px solid #FDE68A; color:#92400E;"></div>
       <div class="drawer-total-row">
         <span>Total:</span>
         <span id="cartDrawerTotal">₹0</span>
@@ -1390,7 +1451,8 @@
         this.products = [];
         this.settings = { ...DEFAULT_SETTINGS };
         this.mode = getClientSession('alameen_mode', 'retail');
-        this.cart = getClientSession('alameen_cart', []);
+        this.retailCart = (typeof getCartForMode === 'function') ? getCartForMode('retail') : getClientSession('alameen_cart_retail', getClientSession('alameen_cart', []));
+        this.wholesaleCart = (typeof getCartForMode === 'function') ? getCartForMode('wholesale') : getClientSession('alameen_cart_wholesale', []);
         this.wishlist = getClientSession('alameen_wishlist', []);
         
         // URL Param check
@@ -1401,6 +1463,33 @@
         this.realtimeChannels = [];
 
         this.init();
+      }
+
+      getActiveCart() {
+        return this.mode === 'wholesale' ? this.wholesaleCart : this.retailCart;
+      }
+
+      setActiveCart(cartArr) {
+        if (this.mode === 'wholesale') {
+          this.wholesaleCart = cartArr;
+          if (typeof setCartForMode === 'function') setCartForMode('wholesale', cartArr);
+          else setClientSession('alameen_cart_wholesale', cartArr);
+        } else {
+          this.retailCart = cartArr;
+          if (typeof setCartForMode === 'function') setCartForMode('retail', cartArr);
+          else setClientSession('alameen_cart_retail', cartArr);
+        }
+        setClientSession('alameen_cart', cartArr);
+        this.updateBadges();
+      }
+
+      switchCartStore(targetMode) {
+        if (this.mode === targetMode) return;
+        this.setMode(targetMode);
+        this.renderCartItems();
+        if (typeof showToast === 'function') {
+          showToast(`Viewing ${targetMode === 'wholesale' ? 'Wholesale Bulk Bag' : 'Retail Boutique Bag'}`, 'info');
+        }
       }
 
       async init() {
@@ -1501,6 +1590,7 @@
         this.mode = newMode;
         setClientSession('alameen_mode', this.mode);
         this.updateModeUI();
+        this.updateBadges();
         this.renderProducts();
         this.renderCartItems();
       }
@@ -1869,18 +1959,18 @@
         const defaultSize = (this.mode === 'wholesale') ? '50ml' : (availableSizes[0]?.size || '3ml');
         const chosenSize = sizeToAdd || defaultSize;
 
-        const existing = this.cart.find(item => item.productId === productId && (item.selectedSize || product.size || '12ml') === chosenSize);
+        const activeCart = this.getActiveCart();
+        const existing = activeCart.find(item => item.productId === productId && (item.selectedSize || product.size || '12ml') === chosenSize);
         if (existing) {
           existing.qty += qty;
         } else {
-          this.cart.push({ productId, qty, selectedSize: chosenSize });
+          activeCart.push({ productId, qty, selectedSize: chosenSize });
         }
 
-        setClientSession('alameen_cart', this.cart);
-        this.updateBadges();
+        this.setActiveCart(activeCart);
         this.openCartDrawer();
         if (typeof showToast === 'function') {
-          showToast(`Added ${product.name} [${chosenSize}] to your Bag`, 'success');
+          showToast(`Added ${product.name} [${chosenSize}] to your ${this.mode === 'wholesale' ? 'Wholesale Bag' : 'Retail Bag'}`, 'success');
         }
       }
 
@@ -1896,11 +1986,20 @@
       }
 
       updateBadges() {
-        const totalItems = this.cart.reduce((sum, item) => sum + item.qty, 0);
+        const activeCart = this.getActiveCart();
+        const totalItems = activeCart.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+        const retailCount = this.retailCart.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+        const wholesaleCount = this.wholesaleCart.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+
         const navCart = document.getElementById('navCartCount');
         const mobileDock = document.getElementById('mobileDockCartCount');
         if (navCart) navCart.textContent = totalItems;
         if (mobileDock) mobileDock.textContent = totalItems;
+
+        const tabRCount = document.getElementById('cartTabRetailCount');
+        const tabWCount = document.getElementById('cartTabWholesaleCount');
+        if (tabRCount) tabRCount.textContent = retailCount;
+        if (tabWCount) tabWCount.textContent = wholesaleCount;
       }
 
       toggleMobileMenu() {
@@ -1938,16 +2037,61 @@
       renderCartItems() {
         const list = document.getElementById('cartItemsList');
         const totalEl = document.getElementById('cartDrawerTotal');
+        const tabR = document.getElementById('cartTabRetail');
+        const tabW = document.getElementById('cartTabWholesale');
+        const modeLabel = document.getElementById('cartModeLabel');
+        const crossNotice = document.getElementById('cartCrossStoreNotice');
+        const noticeMode = document.getElementById('cartNoticeActiveMode');
+        const checkoutBtn = document.getElementById('btnCartProceed');
+
         if (!list || !totalEl) return;
 
-        if (this.cart.length === 0) {
-          list.innerHTML = `<div style="text-align:center; padding:40px 10px; color:var(--text-muted);">Your bag is empty.</div>`;
+        const isWholesale = (this.mode === 'wholesale');
+        const activeCart = this.getActiveCart();
+        const otherCart = isWholesale ? this.retailCart : this.wholesaleCart;
+
+        if (tabR && tabW) {
+          if (isWholesale) {
+            tabW.classList.add('active');
+            tabR.classList.remove('active');
+          } else {
+            tabR.classList.add('active');
+            tabW.classList.remove('active');
+          }
+        }
+
+        if (modeLabel) {
+          modeLabel.textContent = isWholesale ? 'Mode: Wholesale (Bulk Flacons)' : 'Mode: Retail (Boutique)';
+        }
+
+        if (crossNotice && noticeMode) {
+          if (otherCart.length > 0) {
+            crossNotice.style.display = 'block';
+            noticeMode.textContent = isWholesale ? 'Wholesale' : 'Retail';
+          } else {
+            crossNotice.style.display = 'none';
+          }
+        }
+
+        if (checkoutBtn) {
+          checkoutBtn.textContent = isWholesale ? 'Proceed to Wholesale Order via WhatsApp' : 'Proceed to Retail Order via WhatsApp';
+        }
+
+        if (activeCart.length === 0) {
+          list.innerHTML = `
+            <div style="text-align:center; padding:40px 14px; color:var(--text-muted);">
+              Your ${isWholesale ? 'Wholesale Bulk' : 'Retail'} bag is empty.<br>
+              <span style="font-size:0.8rem; color:var(--text-light); margin-top:6px; display:inline-block;">Select fragrances to start your order.</span>
+            </div>
+          `;
           totalEl.textContent = '₹0';
+          const noticeEl = document.getElementById('cartMinOrderNotice');
+          if (noticeEl) noticeEl.style.display = 'none';
           return;
         }
 
         let overallTotal = 0;
-        list.innerHTML = this.cart.map(item => {
+        list.innerHTML = activeCart.map(item => {
           const product = this.products.find(p => p.id === item.productId);
           if (!product) return '';
           const availableSizes = getProductSizes(product, this.settings, this.mode);
@@ -1958,7 +2102,7 @@
 
           return `
             <div class="cart-item-card">
-              <img src="${product.images[0]}" alt="${product.name}" class="cart-item-thumb">
+              <img src="${product.images && product.images[0] ? product.images[0] : ''}" alt="${product.name}" class="cart-item-thumb">
               <div style="flex:1;">
                 <div style="font-size:0.88rem; font-weight:700; color:var(--green-950);">${product.name}</div>
                 
@@ -1997,7 +2141,7 @@
           if (minOrder > 0 && overallTotal < minOrder) {
             const diff = minOrder - overallTotal;
             noticeEl.style.display = 'block';
-            noticeEl.innerHTML = `⚠️ <strong>Minimum Purchase Required:</strong> ₹${minOrder.toLocaleString('en-IN')}<br>Add <strong>₹${diff.toLocaleString('en-IN')}</strong> more to checkout in ${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'} mode.`;
+            noticeEl.innerHTML = `⚠️ <strong>Minimum Purchase Required:</strong> ₹${minOrder.toLocaleString('en-IN')}<br>Add <strong>₹${diff.toLocaleString('en-IN')}</strong> more to checkout your ${isWholesale ? 'Wholesale' : 'Retail'} bag.`;
           } else {
             noticeEl.style.display = 'none';
             noticeEl.innerHTML = '';
@@ -2006,49 +2150,50 @@
       }
 
       updateItemSize(productId, oldSize, newSize) {
-        const itemIndex = this.cart.findIndex(i => i.productId === productId && (i.selectedSize || '12ml') === oldSize);
+        const activeCart = this.getActiveCart();
+        const itemIndex = activeCart.findIndex(i => i.productId === productId && (i.selectedSize || '12ml') === oldSize);
         if (itemIndex === -1) return;
         const product = this.products.find(p => p.id === productId);
 
-        const targetIndex = this.cart.findIndex((i, idx) => idx !== itemIndex && i.productId === productId && (i.selectedSize || '12ml') === newSize);
+        const targetIndex = activeCart.findIndex((i, idx) => idx !== itemIndex && i.productId === productId && (i.selectedSize || '12ml') === newSize);
         if (targetIndex > -1) {
-          this.cart[targetIndex].qty += this.cart[itemIndex].qty;
-          this.cart.splice(itemIndex, 1);
+          activeCart[targetIndex].qty += activeCart[itemIndex].qty;
+          activeCart.splice(itemIndex, 1);
         } else {
-          this.cart[itemIndex].selectedSize = newSize;
+          activeCart[itemIndex].selectedSize = newSize;
         }
 
-        setClientSession('alameen_cart', this.cart);
+        this.setActiveCart(activeCart);
         this.renderCartItems();
-        this.updateBadges();
         if (typeof showToast === 'function') {
           showToast(`Updated ${product ? product.name : 'Perfume'} size to ${newSize}`, 'success');
         }
       }
 
       updateItemQty(productId, sizeName, delta) {
-        const item = this.cart.find(i => i.productId === productId && (i.selectedSize || '12ml') === sizeName);
+        let activeCart = this.getActiveCart();
+        const item = activeCart.find(i => i.productId === productId && (i.selectedSize || '12ml') === sizeName);
         if (!item) return;
         const product = this.products.find(p => p.id === productId);
         const minQty = 1;
 
         item.qty += delta;
         if (item.qty < minQty) {
-          this.cart = this.cart.filter(i => !(i.productId === productId && (i.selectedSize || '12ml') === sizeName));
+          activeCart = activeCart.filter(i => !(i.productId === productId && (i.selectedSize || '12ml') === sizeName));
         }
-        setClientSession('alameen_cart', this.cart);
-        this.updateBadges();
+        this.setActiveCart(activeCart);
         this.renderCartItems();
       }
 
       openOrderModal() {
-        if (this.cart.length === 0) {
-          alert("Your bag is empty! Please add products before placing an order.");
+        const activeCart = this.getActiveCart();
+        if (activeCart.length === 0) {
+          alert(`Your ${this.mode === 'wholesale' ? 'Wholesale' : 'Retail'} bag is empty! Please add products before placing an order.`);
           return;
         }
 
         let overallTotal = 0;
-        this.cart.forEach(item => {
+        activeCart.forEach(item => {
           const product = this.products.find(p => p.id === item.productId);
           if (product) {
             const chosenSize = item.selectedSize || product.size || (this.mode === 'wholesale' ? '50ml' : '12ml');
@@ -2094,11 +2239,12 @@
           const address = document.getElementById('orderAddress').value.trim();
           const pincode = document.getElementById('orderPincode').value.trim();
 
+          const activeCart = this.getActiveCart();
           let total = 0;
           let itemsText = "";
           const orderItems = [];
 
-          this.cart.forEach((item, idx) => {
+          activeCart.forEach((item, idx) => {
             const product = this.products.find(p => p.id === item.productId);
             if (product) {
               const chosenSize = item.selectedSize || product.size || '12ml';
@@ -2161,8 +2307,8 @@
           const rawWaNumber = this.settings?.whatsapp_number || (typeof CONFIG !== 'undefined' ? CONFIG.WHATSAPP_NUMBER : '919446617266');
           const waNumber = String(rawWaNumber).replace(/\D/g, '') || '919446617266';
 
-          const message = `*New Order [${finalOrderId}] – ${storeName}*\n` +
-            `Order Type: ${this.mode.toUpperCase()}\n` +
+          const message = `*New ${this.mode === 'wholesale' ? 'WHOLESALE' : 'RETAIL'} Order [${finalOrderId}] – ${storeName}*\n` +
+            `Order Type: ${this.mode === 'wholesale' ? 'WHOLESALE BULK' : 'RETAIL BOUTIQUE'}\n` +
             `-----------------------------------\n` +
             `${itemsText}` +
             `*Total: ₹${total.toLocaleString('en-IN')}*\n` +
@@ -2177,11 +2323,10 @@
 
           const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
 
-          // Clear cart
-          this.cart = [];
-          setClientSession('alameen_cart', this.cart);
-          this.updateBadges();
+          // Clear ONLY the active store's cart
+          this.setActiveCart([]);
           this.closeOrderModal();
+          this.closeCartDrawer();
 
           // Resilient WhatsApp redirect (bypass popup blocker)
           const waWin = window.open(waUrl, '_blank');
